@@ -1,9 +1,9 @@
 # =============================================================================
-# SELLER FULFILLMENT FACT TABLE
+# Raw Data Structural Contract Enforcement
 # =============================================================================
-# - Derive core, repeatable fulfillment metrics
-# - Standardize time, calendar, and seller activity
-# - Output: Clean fact data for analysis and dashboards
+# - Enforce non-negotiable structural contracts on raw event data
+# - Remove records that violate declared schema, key, or temporal invariants
+# - Produce a contract-compliant dataset suitable for CI validation and downstream assembly
 
 
 

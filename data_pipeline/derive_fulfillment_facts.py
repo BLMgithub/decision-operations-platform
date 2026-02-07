@@ -1,9 +1,10 @@
 # =============================================================================
-# MERGE RAW DATA PARTITIONS
+# Derive Seller Fulfillment Fact Tables
 # =============================================================================
-# - Restore full historical continuity across raw data partitions
-# - Merge train/test splits into a single time-ordered dataset
-# - Preserve source origin for traceability
+# - Transform assembled event data into seller-level fact tables
+# - Define and lock the analytical grain for downstream reporting
+# - Compute repeatable, time-aware fulfillment metrics
+# - Output fact tables safe for direct BI consumption
 
 
 
