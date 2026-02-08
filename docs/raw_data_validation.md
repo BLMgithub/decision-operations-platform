@@ -43,8 +43,7 @@ Guarantees identity and join safety.
 
 Guarantees temporal correctness.
 
-### Transaction Detail Validations  
-(`df_OrderItems`, `df_payments`)
+### Transaction Detail Validations  (`df_OrderItems`, `df_payments`)
 **CI-blocking**
 - Negative numeric values
 
