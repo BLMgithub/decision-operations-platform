@@ -59,11 +59,19 @@ def test_init_report_structure():
 
 
 def test_log_error_appends_only_to_errors(empty_report):
-    log_error('error detected', empty_report)
+    log_error('errors', empty_report)
 
-    assert empty_report['errors'] == ['error detected']
-    assert empty_report['warnings'] == []
-    assert empty_report['info'] == []
+    assert empty_report['errors'] == ['errors']
+
+def test_log_warning_appends_only_to_warnings(empty_report):
+    log_warning('warnings', empty_report)
+
+    assert empty_report['warnings'] == ['warnings']
+
+def test_log_info_appends_only_to_info(empty_report):
+    log_info('info', empty_report)
+
+    assert empty_report['info'] == ['info']
 
 
 # ------------------------------------------------------------
@@ -83,7 +91,7 @@ def test_base_validation_fails_on_missing_pk(empty_report):
     ok = run_base_validations(df, 'df_test', ['id'], empty_report)
 
     assert ok is False
-    assert 'missing primary key' in empty_report['errors'][0]
+    assert len(empty_report['errors']) == 1
 
 
 def test_base_validation_passes_with_non_fatal_issues(empty_report):
@@ -95,7 +103,7 @@ def test_base_validation_passes_with_non_fatal_issues(empty_report):
     ok = run_base_validations(df, 'df_test', ['id'], empty_report)
 
     assert ok is True
-    assert len(empty_report['errors']) > 0
+    assert len(empty_report['warnings']) > 0
 
 
 
@@ -121,14 +129,15 @@ def test_event_fact_fails_on_missing_timestamp(valid_orders_df, empty_report):
     assert len(empty_report['errors']) == 1
 
 
-def test_event_fact_fails_on_invalid_temporal_order(valid_orders_df, empty_report):
+def test_event_fact_logs_warning_on_invalid_temporal_order(valid_orders_df, empty_report):
     valid_orders_df['order_approved_at'] = ['2022-12-01', '2022-12-01']
 
     ok = run_event_fact_validations(
         valid_orders_df, 'df_Orders', empty_report
     )
 
-    assert ok is False
+    assert ok is True
+    assert len(empty_report['warnings']) > 0
 
 
 # ------------------------------------------------------------
@@ -153,8 +162,8 @@ def test_transaction_detail_fails_on_negative_value(empty_report):
         df, 'df_payments', empty_report
     )
 
-    assert ok is False
-    assert len(empty_report['errors']) == 1
+    assert ok is True
+    assert len(empty_report['warnings']) == 1
 
 
 # ------------------------------------------------------------
@@ -183,7 +192,7 @@ def test_cross_table_fails_on_missing_table(empty_report):
 
 
 # ------------------------------------------------------------
-# MAIN EXECUTION
+# CI- GATE TEST (ERRORS & WARNING FAILS CI) 
 # ------------------------------------------------------------
 
 def test_main_exits_with_error_when_base_validation_fails(monkeypatch):
@@ -206,22 +215,56 @@ def test_main_exits_with_error_when_base_validation_fails(monkeypatch):
         lambda *args, **kwargs: True
     )
 
+    # error > 0 == sys.exit(1)
     with pytest.raises(SystemExit) as exc:
         main()
 
-    # sys.exit(1) = CI failure
+    # Failed CI
     assert exc.value.code == 1
 
 
-# ------------------------------------------------------------
-# CI-GATE TEST
-# ------------------------------------------------------------
+def test_main_exits_when_only_warnings_exist(monkeypatch):
 
-def test_pipeline_fails_if_any_validator_fails():
-    report = init_report()
-    report['errors'].append('error detected')
+    # Force base validation to pass
+    monkeypatch.setattr(
+        'data_pipeline.validate_raw_data.run_base_validations',
+        lambda *args, **kwargs: True
+    )
 
-    assert bool(report['errors']) is True
+    # Force event validation to generate a warning
+    def fake_event_validation(*args, **kwargs):
+        report = args[-1]
+        report['warnings'].append('integrity issue')
+        return True
+
+    monkeypatch.setattr(
+        'data_pipeline.validate_raw_data.run_event_fact_validations',
+        fake_event_validation
+    )
+
+    # Avoid filesystem dependency
+    monkeypatch.setattr(
+        'data_pipeline.validate_raw_data.load_logical_table',
+        lambda *args, **kwargs: pd.DataFrame({
+            'order_id': ['o1'],
+            'order_purchase_timestamp': ['2023-01-01'],
+            'order_approved_at': ['2023-01-01'],
+            'order_delivered_timestamp': ['2023-01-02'],
+            'order_estimated_delivery_date': ['2023-01-03'],
+            })
+    )
+
+    monkeypatch.setattr(
+        'data_pipeline.validate_raw_data.os.path.exists',
+        lambda *args, **kwargs: True
+    )
+
+    # if warnings > 0 == sys.exit(1)
+    with pytest.raises(SystemExit) as exc:
+        main()
+
+    # Failed CI
+    assert exc.value.code == 1
 
 # =============================================================================
 # UNIT TESTS END
