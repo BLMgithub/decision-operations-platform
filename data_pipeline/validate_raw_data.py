@@ -108,21 +108,21 @@ def run_base_validations(df: pd.DataFrame,
     
     duplicate_columns = df.columns[df.columns.duplicated()].tolist()
     if duplicate_columns:
-        log_error(
+        log_warning(
             f'{table_name}: duplicate column names detected: {duplicate_columns}', 
             report
             )
 
     pk_null_count = df[primary_key].isnull().any(axis=1).sum()
     if pk_null_count > 0:
-        log_error(
+        log_warning(
             f'{table_name}: {pk_null_count} row(s) with null primary key values', 
             report
             )
 
     duplicate_pk_count = df.duplicated(subset=primary_key).sum()
     if duplicate_pk_count > 0:
-        log_error(
+        log_warning(
             f'{table_name}: {duplicate_pk_count} duplicated primary key value(s)', 
             report
             )
@@ -162,7 +162,6 @@ def run_event_fact_validations(df: pd.DataFrame,
 
     # Timestamps completeness
     parsed = {}
-    parsing_failed = False
 
     for col in required_timestamps:
         ts = pd.to_datetime(df[col], errors='coerce')
@@ -170,40 +169,30 @@ def run_event_fact_validations(df: pd.DataFrame,
 
         invalid_count = ts.isna().sum()
         if invalid_count > 0:
-            parsing_failed = True
-            log_error(
+            log_warning(
                 f'{table_name}: {invalid_count} unparsable timestamp value(s) in `{col}`',
                 report
                 )
-
-    if parsing_failed:
-
-        return False
 
     purchase_ts = parsed['order_purchase_timestamp']
     approved_ts = parsed['order_approved_at']
     delivered_ts = parsed['order_delivered_timestamp']
 
-
     # Approval before Purchase
     invalid_approval = (approved_ts < purchase_ts).sum()
     if invalid_approval > 0:
-        log_error(
+        log_warning(
             f'{table_name}: {invalid_approval} record(s) where approval precedes purchase',
             report
             )
 
-        return False
-
     # Delivery before Purchase
     invalid_delivery = (delivered_ts < purchase_ts).sum()
     if invalid_delivery > 0:
-        log_error(
+        log_warning(
             f'{table_name}: {invalid_delivery} record(s) where delivery precedes purchase',
             report
             )
-        
-        return False
     
     return True
 
@@ -227,12 +216,10 @@ def run_transaction_detail_validations(df: pd.DataFrame,
     for col in numeric_columns:
         negative_count = (df[col] < 0).sum()
         if negative_count > 0:
-            log_error(
+            log_warning(
                 f'{table_name}: {negative_count} negative value(s) in numeric column `{col}`', 
                 report
                 )
-
-            return False
     
     return True
 
@@ -270,22 +257,18 @@ def run_cross_table_validations(tables: Dict[str, pd.DataFrame],
     # OrderItems to Orders integrity
     orphan_items = ~order_items_df['order_id'].isin(order_id_set)
     if orphan_items.any():
-        log_error(
+        log_warning(
             f'df_OrderItems: {orphan_items.sum()} orphan record(s) referencing non-existent order_id', 
             report
             )
-        
-        return False
 
     # Payments to Orders integrity
     orphan_payments = ~payments_df['order_id'].isin(order_id_set)
     if orphan_payments.any():
-        log_error(
+        log_warning(
             f'df_payments: {orphan_payments.sum()} orphan record(s) referencing non-existent order_id', 
             report
             )
-
-        return False
     
     return True
 
@@ -366,7 +349,7 @@ def main() -> None:
 
             df = load_logical_table(partition_path, table_name, report)
             if df is None:
-                
+
                 continue
 
             if not run_base_validations(df, table_name, config['primary_key'], report):
@@ -383,7 +366,7 @@ def main() -> None:
 
         run_cross_table_validations(tables, report)
 
-    if report['errors']:
+    if report['errors'] or report['warnings']:
         sys.exit(1)
 
     sys.exit(0)
