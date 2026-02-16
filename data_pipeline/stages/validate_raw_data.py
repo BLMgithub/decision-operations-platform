@@ -158,6 +158,39 @@ def run_base_validations(df: pd.DataFrame,
 
         return False
     
+
+    duplicate_mask = df.duplicated(subset=primary_key, keep= False)    
+    if duplicate_mask.any():
+        
+        duplicate_rows = df[duplicate_mask]
+        pk_group = duplicate_rows.groupby(primary_key, dropna= False)
+        
+        conflicting = False
+        repairable_count = 0
+        
+        for _, group in pk_group:
+            
+            if len(group.drop_duplicates()) == 1:
+                repairable_count += len(group) - 1
+            
+            else:
+                conflicting = True
+            
+        if conflicting:
+            log_error(
+                f'{table_name}: conflicting duplicate primary key records detected',
+                report
+            )
+            
+            return False
+        
+        if repairable_count > 0:
+            log_warning(
+                f'{table_name}: {repairable_count} duplicate row(s) eligible for deduplication',
+                report
+            )
+        
+
     duplicate_columns = df.columns[df.columns.duplicated()].tolist()
     if duplicate_columns:
         log_warning(
@@ -169,13 +202,6 @@ def run_base_validations(df: pd.DataFrame,
     if pk_null_count > 0:
         log_warning(
             f'{table_name}: {pk_null_count} row(s) with null primary key values', 
-            report
-            )
-
-    duplicate_pk_count = df.duplicated(subset=primary_key).sum()
-    if duplicate_pk_count > 0:
-        log_warning(
-            f'{table_name}: {duplicate_pk_count} duplicated primary key value(s)', 
             report
             )
 
@@ -292,8 +318,8 @@ def run_cross_table_validations(tables: Dict[str, pd.DataFrame],
     missing_tables = [t for t in required_tables if t not in tables]
 
     if missing_tables:
-        log_error(
-            f'Cross-table validation failed: missing required table(s): {missing_tables}', 
+        log_info(
+            f'Cross-table validation skipped: missing required table(s): {missing_tables}', 
             report
             )
         
@@ -343,6 +369,7 @@ def apply_validation(run_context: RunContext, base_path: Path | None = None) -> 
         log_error(msg, report)
     
     tables: Dict[str, pd.DataFrame] = {}
+    loaded_table_names = set()
     
     # Get assigned table attributes
     for table_name, config in TABLE_CONFIG.items():
@@ -350,7 +377,11 @@ def apply_validation(run_context: RunContext, base_path: Path | None = None) -> 
         df = load_logical_table(base_path, table_name, log_info = info, log_error = error)
     
         if df is None:
+            log_error(f'{table_name} logical table is missing', report)
             continue
+        
+        loaded_table_names.add(table_name)
+        tables[table_name] = df
         
         if not run_base_validations(df, table_name, config['primary_key'], config['allowed_column'], report):
             continue
@@ -360,9 +391,13 @@ def apply_validation(run_context: RunContext, base_path: Path | None = None) -> 
         
         elif config['role'] == 'transaction_detail':
             run_transaction_detail_validations(df, table_name, report)
-            
-        tables[table_name] = df
-        
+    
+    expected_tables = set(TABLE_CONFIG.keys())
+    
+    missing_tables = sorted(expected_tables - loaded_table_names)
+    if missing_tables:
+        log_error(f'missing expected table(s) {missing_tables}',report)
+         
     run_cross_table_validations(tables, report)
     
     return report
