@@ -7,10 +7,11 @@ from shutil import copytree
 import sys
 import json
 
+from data_pipeline.shared.table_configs import TABLE_CONFIG
 from data_pipeline.shared.run_context import RunContext
 from data_pipeline.stages.validate_raw_data import apply_validation
 from data_pipeline.stages.apply_raw_data_contract import apply_contract
-from data_pipeline.stages.apply_raw_data_contract import TABLE_CONFIG
+
 
 def snapshot_raw(run_context: RunContext) -> None:
     """
@@ -44,15 +45,24 @@ def main() -> None:
     
     persist_json(run_context.logs_path / 'validation_1.json', validation_1)
     
-    # If validation passed continue to assembly
-    if not (validation_1['errors'] or validation_1['warnings']):
-        sys.exit(0)
+    # Early exit for structural errors else apply contract
+    if validation_1['errors']:
+        sys.exit(1)
+    
         
     contract_reports = []
+    invalid_order_ids = set()
     
     for table_name in TABLE_CONFIG:
-        result = apply_contract(run_context, table_name)
-        contract_reports.append(result)
+        
+        report, new_invalid_ids = apply_contract(
+            run_context,
+            table_name,
+            invalid_order_ids
+        )
+        
+        invalid_order_ids |= new_invalid_ids
+        contract_reports.append(report)
 
     persist_json(
         run_context.logs_path / 'contract_report.json',
