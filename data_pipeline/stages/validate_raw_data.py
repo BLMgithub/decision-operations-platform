@@ -22,23 +22,60 @@ from pathlib import Path
 TABLE_CONFIG = {
     'df_orders': {
         'role': 'event_fact',
-        'primary_key': ['order_id']
+        'primary_key': ['order_id'],
+        'allowed_column': [
+            'order_id',
+            'customer_id',
+            'order_status',
+            'order_purchase_timestamp',
+            'order_approved_at',
+            'order_delivered_timestamp',
+            'order_estimated_delivery_date'
+        ]
     },
     'df_order_items': {
         'role': 'transaction_detail',
-        'primary_key': ['order_id']
+        'primary_key': ['order_id'],
+        'allowed_column' : [
+            'order_id',
+            'product_id',
+            'seller_id',
+            'price',
+            'shipping_charges'
+        ]
     },
     'df_customers': {
         'role': 'entity_reference',
-        'primary_key': ['customer_id']
+        'primary_key': ['customer_id'],
+        'allowed_column' : [
+            'customer_id',
+            'customer_zip_code_prefix',
+            'customer_city',
+            'customer_state'
+        ]
     },
     'df_payments': {
         'role': 'transaction_detail',
-        'primary_key': ['order_id', 'payment_sequential']
+        'primary_key': ['order_id', 'payment_sequential'],
+        'allowed_column' : [
+            'order_id',
+            'payment_sequential',
+            'payment_type',
+            'payment_installments',
+            'payment_value'
+        ]
     },
     'df_products': {
         'role': 'entity_reference',
-        'primary_key': ['product_id']
+        'primary_key': ['product_id'],
+        'allowed_column' : [
+            'product_id',
+            'product_category_name',
+            'product_weight_g',
+            'product_length_cm',
+            'product_height_cm',
+            'product_width_cm'
+        ]
     },
 }
 
@@ -78,6 +115,7 @@ def log_error(message: str, report: Dict[str, List[str]]) -> None:
 def run_base_validations(df: pd.DataFrame,
                          table_name: str,
                          primary_key: List[str],
+                         allowed_column: List[str],
                          report: Dict[str, List[str]]
                          ) -> bool:
     """
@@ -89,6 +127,26 @@ def run_base_validations(df: pd.DataFrame,
     if df.empty:
         log_error(f'{table_name}: dataset is empty', report)
 
+        return False
+    
+    actual =  set(df.columns)
+    allowed = set(allowed_column)
+    
+    missing_allowed = sorted(allowed - actual)
+    if missing_allowed:
+        log_error(
+            f'{table_name}: missing allowed column(s): {missing_allowed}',
+            report
+        )
+    
+    invalid_column =  sorted(actual - allowed)
+    if invalid_column:
+        log_error(
+            f'{table_name}: non-allowed extra column(s): {invalid_column}',
+            report
+        )
+    
+    if missing_allowed or invalid_column:
         return False
     
     missing_pk_columns = [col for col in primary_key if col not in df.columns]
@@ -286,7 +344,7 @@ def apply_validation(run_context: RunContext, base_path: Path | None = None) -> 
     
     tables: Dict[str, pd.DataFrame] = {}
     
-    # Get assigned table role
+    # Get assigned table attributes
     for table_name, config in TABLE_CONFIG.items():
         
         df = load_logical_table(base_path, table_name, log_info = info, log_error = error)
@@ -294,7 +352,7 @@ def apply_validation(run_context: RunContext, base_path: Path | None = None) -> 
         if df is None:
             continue
         
-        if not run_base_validations(df, table_name, config['primary_key'], report):
+        if not run_base_validations(df, table_name, config['primary_key'], config['allowed_column'], report):
             continue
         
         if config['role'] == 'event_fact':
