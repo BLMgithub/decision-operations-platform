@@ -18,16 +18,17 @@ from pathlib import Path
 # ------------------------------------------------------------
 
 REQUIRED_TIMESTAMPS = [
-    'order_purchase_timestamp',
-    'order_approved_at',
-    'order_delivered_timestamp',
-    'order_estimated_delivery_date',
+    "order_purchase_timestamp",
+    "order_approved_at",
+    "order_delivered_timestamp",
+    "order_estimated_delivery_date",
 ]
 
 
 # ------------------------------------------------------------
 # CONTRACT ENFORCEMENT
 # ------------------------------------------------------------
+
 
 def deduplicate_exact_events(df: pd.DataFrame) -> tuple[pd.DataFrame, int]:
     """
@@ -41,7 +42,7 @@ def deduplicate_exact_events(df: pd.DataFrame) -> tuple[pd.DataFrame, int]:
 
         df = df.drop_duplicates()
         removed_count = initial_count - df.shape[0]
-        
+
     else:
         removed_count = 0
 
@@ -64,12 +65,12 @@ def remove_unparsable_timestamps(df: pd.DataFrame) -> tuple[pd.DataFrame, int, s
 
     invalid_order_ids = set()
     if unparsable_mask.any():
-        
-        invalid_order_ids = set(df.loc[unparsable_mask, 'order_id'])
-        
+
+        invalid_order_ids = set(df.loc[unparsable_mask, "order_id"])
+
         df = df[~unparsable_mask]
-        remove_count =  initial_count - df.shape[0]
-        
+        remove_count = initial_count - df.shape[0]
+
     else:
         remove_count = 0
 
@@ -81,37 +82,39 @@ def remove_impossible_timestamps(df: pd.DataFrame) -> tuple[pd.DataFrame, int, s
     Remove rows violating declared temporal invariants (e.g. delivery_date < order_date)
     """
 
-    purchase_ts = pd.to_datetime(df['order_purchase_timestamp'])
-    approved_ts = pd.to_datetime(df['order_approved_at'])
-    delivered_ts = pd.to_datetime(df['order_delivered_timestamp'])
+    purchase_ts = pd.to_datetime(df["order_purchase_timestamp"])
+    approved_ts = pd.to_datetime(df["order_approved_at"])
+    delivered_ts = pd.to_datetime(df["order_delivered_timestamp"])
 
-    invalid_mask = ((approved_ts < purchase_ts) | (delivered_ts < purchase_ts))
+    invalid_mask = (approved_ts < purchase_ts) | (delivered_ts < purchase_ts)
     initial_count = df.shape[0]
 
     invalid_order_ids = set()
     if invalid_mask.any():
 
-        invalid_order_ids = set(df.loc[invalid_mask, 'order_id'])
+        invalid_order_ids = set(df.loc[invalid_mask, "order_id"])
 
         df = df[~invalid_mask]
         remove_count = initial_count - df.shape[0]
-        
+
     else:
         remove_count = 0
 
     return df, remove_count, invalid_order_ids
 
 
-def cascade_drop_by_order_id(df: pd.DataFrame, invalid_order_ids: set) -> tuple[pd.DataFrame, int]:
+def cascade_drop_by_order_id(
+    df: pd.DataFrame, invalid_order_ids: set
+) -> tuple[pd.DataFrame, int]:
     """
     Remove rows that contains invalid parent primary key (drop from previous enforcement)
     """
-    
+
     initial_count = df.shape[0]
-    
-    df = df[~df['order_id'].isin(invalid_order_ids)]
+
+    df = df[~df["order_id"].isin(invalid_order_ids)]
     removed = initial_count - df.shape[0]
-    
+
     return df, removed
 
 
@@ -119,83 +122,83 @@ def cascade_drop_by_order_id(df: pd.DataFrame, invalid_order_ids: set) -> tuple[
 # CONTRACT APPLICATION
 # ------------------------------------------------------------
 
-def apply_contract(run_context: RunContext,
-                   table_name: str,
-                   invalid_order_ids: set | None = None
-                   ) -> tuple[dict, set]:
-    
+
+def apply_contract(
+    run_context: RunContext, table_name: str, invalid_order_ids: set | None = None
+) -> tuple[dict, set]:
+
     report = {
-    'table': table_name,
-    'initial_rows': 0,
-    'final_rows': 0,
-    'deduplicated_rows': 0,
-    'removed_unparsable_timestamps': 0,
-    'removed_cascade_rows': 0,
-    'removed_impossible_timestamps': 0,
-    'status': 'success',
-    'errors': [] 
+        "table": table_name,
+        "initial_rows": 0,
+        "final_rows": 0,
+        "deduplicated_rows": 0,
+        "removed_unparsable_timestamps": 0,
+        "removed_cascade_rows": 0,
+        "removed_impossible_timestamps": 0,
+        "status": "success",
+        "errors": [],
     }
-    
+
     invalid_ids = set()
-    
+
     if invalid_order_ids is None:
         invalid_order_ids = set()
 
     if table_name not in TABLE_CONFIG:
-        report['status'] = 'failed'
-        report['errors'].append(f'Unknown table: {table_name}')
-        
+        report["status"] = "failed"
+        report["errors"].append(f"Unknown table: {table_name}")
+
         return report, invalid_ids
 
     base_path = run_context.raw_snapshot_path
     config = TABLE_CONFIG[table_name]
 
     df = load_logical_table(base_path, table_name)
-   
+
     if df is None:
-        report['status'] = 'failed'
-        report['errors'].append('Failed to load logical table')
+        report["status"] = "failed"
+        report["errors"].append("Failed to load logical table")
         return report, invalid_ids
-     
-    report['initial_rows'] = len(df)
 
-    if config['role'] == 'event_fact':
+    report["initial_rows"] = len(df)
+
+    if config["role"] == "event_fact":
 
         df, removed = deduplicate_exact_events(df)
-        report['deduplicated_rows'] += removed
-        
+        report["deduplicated_rows"] += removed
+
         df, removed, invalid_1 = remove_unparsable_timestamps(df)
-        report['removed_unparsable_timestamps'] += removed
-        
-        df, removed, invalid_2 = remove_impossible_timestamps(df)
-        report['removed_impossible_timestamps'] += removed
-        
-        invalid_ids = invalid_1.union(invalid_2)
-        
+        report["removed_unparsable_timestamps"] += removed
 
-    elif config['role'] == 'transaction_detail':
-        
+        df, removed, invalid_2 = remove_impossible_timestamps(df)
+        report["removed_impossible_timestamps"] += removed
+
+        invalid_ids = invalid_1.union(invalid_2)
+
+    elif config["role"] == "transaction_detail":
+
         df, removed = deduplicate_exact_events(df)
-        report['deduplicated_rows'] += removed
-        
+        report["deduplicated_rows"] += removed
+
         if invalid_order_ids:
             df, removed = cascade_drop_by_order_id(df, invalid_order_ids)
-            report['removed_cascade_rows'] += removed
-    
-    elif config['role'] == 'entity_reference':
-        
-        df, removed = deduplicate_exact_events(df)
-        report['deduplicated_rows'] += removed
+            report["removed_cascade_rows"] += removed
 
-    report['final_rows'] = len(df)
-    
-    output_path = run_context.contracted_path / f'{table_name}_contracted.parquet'
-    
+    elif config["role"] == "entity_reference":
+
+        df, removed = deduplicate_exact_events(df)
+        report["deduplicated_rows"] += removed
+
+    report["final_rows"] = len(df)
+
+    output_path = run_context.contracted_path / f"{table_name}_contracted.parquet"
+
     if not export_file(df, output_path):
-        report['status'] = 'failed'
-        report['errors'].append('Export failed')
-        
+        report["status"] = "failed"
+        report["errors"].append("Export failed")
+
     return report, invalid_ids
+
 
 # =============================================================================
 # END OF SCRIPT
