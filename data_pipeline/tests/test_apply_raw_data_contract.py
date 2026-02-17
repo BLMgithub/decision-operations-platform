@@ -67,9 +67,10 @@ def invalid_temporal_order_df():
 def test_deduplicate_exact_events_passed():
     df = pd.DataFrame({"id": ["x", "x"], "value": [1, 2]})
 
-    result, _ = deduplicate_exact_events(df)
+    result, removed_count = deduplicate_exact_events(df)
 
     assert len(result) == 2
+    assert removed_count == 0
     assert result.iloc[0]["id"] == "x"
     assert result.iloc[0]["value"] == 1
     assert result.iloc[1]["id"] == "x"
@@ -79,9 +80,10 @@ def test_deduplicate_exact_events_passed():
 def test_deduplicate_exact_events_removes_duplicates():
     df = pd.DataFrame({"id": ["x", "x"], "value": [1, 1]})
 
-    result, _ = deduplicate_exact_events(df)
+    result, removed_count = deduplicate_exact_events(df)
 
     assert len(result) == 1
+    assert removed_count == 1
     assert result.iloc[0]["id"] == "x"
     assert result.iloc[0]["value"] == 1
 
@@ -94,17 +96,20 @@ def test_deduplicate_exact_events_removes_duplicates():
 def test_remove_unparsable_timestamps_passed(valid_orders_df):
 
     initial_count = len(valid_orders_df)
-    result, _, _ = remove_unparsable_timestamps(valid_orders_df)
+    result, remove_count, invalid_ids = remove_unparsable_timestamps(valid_orders_df)
 
     assert len(result) == initial_count
+    assert remove_count == 0 or invalid_ids == {}
 
 
 def test_remove_unparsable_timestamps_drops_invalid_rows(invalid_order_df):
 
     initial_count = len(invalid_order_df)
-    result, _, _ = remove_unparsable_timestamps(invalid_order_df)
+    result, remove_count, invalid_ids = remove_unparsable_timestamps(invalid_order_df)
 
     assert len(result) < initial_count
+    assert remove_count == 1
+    assert "o2" in invalid_ids
 
 
 # ------------------------------------------------------------
@@ -115,17 +120,22 @@ def test_remove_unparsable_timestamps_drops_invalid_rows(invalid_order_df):
 def test_remove_impossible_timestamps(valid_orders_df):
 
     initial_count = len(valid_orders_df)
-    result, _, _ = remove_impossible_timestamps(valid_orders_df)
+    result, remove_count, invalid_ids = remove_impossible_timestamps(valid_orders_df)
 
     assert len(result) == initial_count
+    assert remove_count == 0 or invalid_ids == {}
 
 
 def test_remove_impossible_timestamps_drops_invalid_rows(invalid_temporal_order_df):
 
     initial_count = len(invalid_temporal_order_df)
-    result, _, _ = remove_impossible_timestamps(invalid_temporal_order_df)
+    result, remove_count, invalid_ids = remove_impossible_timestamps(
+        invalid_temporal_order_df
+    )
 
     assert len(result) < initial_count
+    assert remove_count == 1
+    assert "o1" in invalid_ids
 
 
 # ------------------------------------------------------------
@@ -322,6 +332,7 @@ def test_apply_contract_cascade_drop_with_order_id(tmp_path):
         run_context, "df_order_items", invalid_ids
     )
 
+    assert "o1" in invalid_ids
     assert report_df_order["removed_unparsable_timestamps"] == 1
     assert report_df_order["final_rows"] == 2
 
