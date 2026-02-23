@@ -5,7 +5,6 @@
 import pandas as pd
 import pytest
 
-from shutil import copytree
 from data_pipeline.shared.run_context import RunContext
 from data_pipeline.stages.validate_raw_data import (
     init_report,
@@ -76,10 +75,7 @@ def valid_customers_df():
     return pd.DataFrame(
         {
             "customer_id": [1, 2],
-            "customer_zip_code_prefix": [
-                "zip1",
-                "zip2",
-            ],
+            "customer_zip_code_prefix": ["zip1", "zip2"],
             "customer_city": ["city1", "city2"],
             "customer_state": ["state1", "state2"],
         }
@@ -136,7 +132,8 @@ def test_log_info_appends_only_to_info(empty_report):
 
 
 def test_base_validation_fails_on_missing_allowed_column(
-    empty_report, valid_customers_df
+    empty_report,
+    valid_customers_df,
 ):
     df = valid_customers_df.drop(columns="customer_city")
     ok = run_base_validations(
@@ -161,7 +158,8 @@ def test_base_validation_fails_on_missing_allowed_column(
 
 
 def test_base_validation_fails_on_invalid_extra_column(
-    empty_report, valid_customers_df
+    empty_report,
+    valid_customers_df,
 ):
 
     df = valid_customers_df
@@ -211,7 +209,8 @@ def test_base_validation_fails_on_missing_pk(empty_report):
 
 
 def test_base_validation_logs_error_on_conflicting_duplicate_pk(
-    empty_report, valid_products_df
+    empty_report,
+    valid_products_df,
 ):
 
     df = valid_products_df
@@ -287,7 +286,12 @@ def test_base_validation_passes_with_non_fatal_issues(empty_report):
         df,
         "df_customers",
         ["customer_id"],
-        ["customer_id", "customer_zip_code_prefix", "customer_city", "customer_state"],
+        [
+            "customer_id",
+            "customer_zip_code_prefix",
+            "customer_city",
+            "customer_state",
+        ],
         empty_report,
     )
 
@@ -304,14 +308,20 @@ def test_base_validation_passes_with_non_fatal_issues(empty_report):
 # ------------------------------------------------------------
 
 
-def test_event_fact_validation_passes(valid_orders_df, empty_report):
+def test_event_fact_validation_passes(
+    valid_orders_df,
+    empty_report,
+):
     ok = run_event_fact_validations(valid_orders_df, "df_orders", empty_report)
 
     assert ok is True
     assert empty_report["errors"] or empty_report["warnings"] == []
 
 
-def test_event_fact_fails_on_missing_timestamp(valid_orders_df, empty_report):
+def test_event_fact_fails_on_missing_timestamp(
+    valid_orders_df,
+    empty_report,
+):
     df = valid_orders_df.drop(columns=["order_approved_at"])
 
     ok = run_event_fact_validations(df, "df_orders", empty_report)
@@ -326,7 +336,8 @@ def test_event_fact_fails_on_missing_timestamp(valid_orders_df, empty_report):
 
 
 def test_event_fact_logs_warning_on_invalid_temporal_order(
-    valid_orders_df, empty_report
+    valid_orders_df,
+    empty_report,
 ):
     valid_orders_df["order_approved_at"] = [
         "2022-12-01 10:05:20",
@@ -348,7 +359,10 @@ def test_event_fact_logs_warning_on_invalid_temporal_order(
 # ------------------------------------------------------------
 
 
-def test_transaction_detail_passes(valid_transaction_df, empty_report):
+def test_transaction_detail_passes(
+    valid_transaction_df,
+    empty_report,
+):
     ok = run_transaction_detail_validations(
         valid_transaction_df, "df_payments", empty_report
     )
@@ -358,6 +372,7 @@ def test_transaction_detail_passes(valid_transaction_df, empty_report):
 
 
 def test_transaction_detail_fails_on_negative_value(empty_report):
+
     df = pd.DataFrame({"order_id": ["o1"], "payment_value": [-10]})
 
     ok = run_transaction_detail_validations(df, "df_payments", empty_report)
@@ -376,7 +391,9 @@ def test_transaction_detail_fails_on_negative_value(empty_report):
 
 
 def test_cross_table_validation_passes(
-    valid_orders_df, valid_transaction_df, empty_report
+    valid_orders_df,
+    valid_transaction_df,
+    empty_report,
 ):
     tables = {
         "df_orders": valid_orders_df,
@@ -418,21 +435,30 @@ def test_validation_passes(
     valid_products_df,
 ):
 
-    # Dummy raw structure
-    raw_dir = tmp_path / "raw"
-    raw_dir.mkdir()
-
-    # Export to snapshot directory
-    valid_orders_df.to_csv(raw_dir / "df_orders_2026_01.csv", index=False)
-    valid_order_items_df.to_csv(raw_dir / "df_order_items_2026_01.csv", index=False)
-    valid_transaction_df.to_csv(raw_dir / "df_payments_2026_01.csv", index=False)
-    valid_customers_df.to_csv(raw_dir / "df_customers_2026_01.csv", index=False)
-    valid_products_df.to_csv(raw_dir / "df_products_2026_01.csv", index=False)
-
     run_context = RunContext.create(base_path=tmp_path)
     run_context.initialize_directories()
 
-    copytree(raw_dir, run_context.raw_snapshot_path, dirs_exist_ok=True)
+    # Export to snapshot directory
+    valid_orders_df.to_csv(
+        run_context.raw_snapshot_path / "df_orders_2026_01.csv",
+        index=False,
+    )
+    valid_order_items_df.to_csv(
+        run_context.raw_snapshot_path / "df_order_items_2026_01.csv",
+        index=False,
+    )
+    valid_transaction_df.to_csv(
+        run_context.raw_snapshot_path / "df_payments_2026_01.csv",
+        index=False,
+    )
+    valid_customers_df.to_csv(
+        run_context.raw_snapshot_path / "df_customers_2026_01.csv",
+        index=False,
+    )
+    valid_products_df.to_csv(
+        run_context.raw_snapshot_path / "df_products_2026_01.csv",
+        index=False,
+    )
 
     report = apply_validation(run_context)
 
@@ -448,19 +474,26 @@ def test_validation_fails_on_missing_logical_table(
     valid_products_df,
 ):
 
-    raw_dir = tmp_path / "raw"
-    raw_dir.mkdir()
-
-    # Missing df_payments on snapshot
-    valid_orders_df.to_csv(raw_dir / "df_orders_2026_01.csv", index=False)
-    valid_order_items_df.to_csv(raw_dir / "df_order_items_2026_01.csv", index=False)
-    valid_customers_df.to_csv(raw_dir / "df_customers_2026_01.csv", index=False)
-    valid_products_df.to_csv(raw_dir / "df_products_2026_01.csv", index=False)
-
     run_context = RunContext.create(base_path=tmp_path)
     run_context.initialize_directories()
 
-    copytree(raw_dir, run_context.raw_snapshot_path, dirs_exist_ok=True)
+    # Missing df_payments on snapshot
+    valid_orders_df.to_csv(
+        run_context.raw_snapshot_path / "df_orders_2026_01.csv",
+        index=False,
+    )
+    valid_order_items_df.to_csv(
+        run_context.raw_snapshot_path / "df_order_items_2026_01.csv",
+        index=False,
+    )
+    valid_customers_df.to_csv(
+        run_context.raw_snapshot_path / "df_customers_2026_01.csv",
+        index=False,
+    )
+    valid_products_df.to_csv(
+        run_context.raw_snapshot_path / "df_products_2026_01.csv",
+        index=False,
+    )
 
     report = apply_validation(run_context)
 
@@ -471,17 +504,15 @@ def test_validation_fails_on_missing_logical_table(
 
 def test_validation_fails_on_multiple_errors(tmp_path, valid_orders_df):
 
-    raw_dir = tmp_path / "raw"
-    raw_dir.mkdir()
-
     df_orders = valid_orders_df
-
-    df_orders.to_csv(raw_dir / "df_orders_2026_01.csv", index=False)
 
     run_context = RunContext.create(base_path=tmp_path)
     run_context.initialize_directories()
 
-    copytree(raw_dir, run_context.raw_snapshot_path, dirs_exist_ok=True)
+    df_orders.to_csv(
+        run_context.raw_snapshot_path / "df_orders_2026_01.csv",
+        index=False,
+    )
 
     report = apply_validation(run_context)
 

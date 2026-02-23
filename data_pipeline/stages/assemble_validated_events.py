@@ -20,7 +20,7 @@ EVENT_TABLES = ["df_orders", "df_order_items", "df_payments"]
 
 
 def init_report():
-    return {"status": "success", "error": [], "info": []}
+    return {"status": "success", "errors": [], "info": []}
 
 
 def log_info(message: str, report: Dict[str, List[str]]) -> None:
@@ -30,7 +30,7 @@ def log_info(message: str, report: Dict[str, List[str]]) -> None:
 
 def log_error(message: str, report: Dict[str, list[str]]) -> None:
     print(f"[ERROR] {message}")
-    report["error"].append(message)
+    report["errors"].append(message)
 
 
 # ------------------------------------------------------------
@@ -153,11 +153,21 @@ def freeze_schema(df: pd.DataFrame) -> pd.DataFrame:
 
     ENFORCED_DTYPES = {
         "order_id": "string",
-        "order_year": "int64",
+        "seller_id": "string",
+        "product_id": "string",
+        "order_status": "string",
+        "order_purchase_timestamp": "datetime64[ns]",
+        "order_approved_at": "datetime64[ns]",
+        "order_delivered_timestamp": "datetime64[ns]",
         "lead_time_days": "int64",
         "approval_lag_days": "int64",
         "delivery_delay_days": "int64",
+        "order_year": "int64",
     }
+
+    missing_cols = set(ENFORCED_SCHEMA) - set(df.columns)
+    if missing_cols:
+        raise RuntimeError(f"missing required columns: {sorted(missing_cols)}")
 
     df_contract = df[ENFORCED_SCHEMA].copy()
     df_contract = df_contract.astype(ENFORCED_DTYPES)

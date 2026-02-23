@@ -4,7 +4,6 @@
 
 import pandas as pd
 import pytest
-from shutil import copytree
 
 from data_pipeline.shared.run_context import RunContext
 from data_pipeline.stages.apply_raw_data_contract import (
@@ -181,9 +180,6 @@ def test_remove_impossible_timestamps_drops_invalid_rows(invalid_temporal_order_
 
 def test_apply_contract_event_fact_success(tmp_path):
 
-    raw_dir = tmp_path / "raw"
-    raw_dir.mkdir()
-
     df = pd.DataFrame(
         {
             "order_id": [1, 2, 3, 4],
@@ -214,12 +210,10 @@ def test_apply_contract_event_fact_success(tmp_path):
         }
     )
 
-    df.to_csv(raw_dir / "df_orders_2026_01.csv", index=False)
-
     run_context = RunContext.create(base_path=tmp_path)
     run_context.initialize_directories()
 
-    copytree(raw_dir, run_context.raw_snapshot_path, dirs_exist_ok=True)
+    df.to_csv(run_context.raw_snapshot_path / "df_orders_2026_01.csv", index=False)
 
     report, _ = apply_contract(run_context, "df_orders")
 
@@ -246,9 +240,6 @@ def test_apply_contract_unknown_table(tmp_path):
 
 def test_apply_contract_duplicate_on_entity_reference(tmp_path):
 
-    raw_dir = tmp_path / "raw"
-    raw_dir.mkdir()
-
     df = pd.DataFrame(
         {
             "customer_id": [1, 1, 3],  # 1 exact duplicate
@@ -258,12 +249,10 @@ def test_apply_contract_duplicate_on_entity_reference(tmp_path):
         }
     )
 
-    df.to_csv(raw_dir / "df_customers_2026_01.csv", index=False)
-
     run_context = RunContext.create(base_path=tmp_path)
     run_context.initialize_directories()
 
-    copytree(raw_dir, run_context.raw_snapshot_path, dirs_exist_ok=True)
+    df.to_csv(run_context.raw_snapshot_path / "df_customers_2026_01.csv", index=False)
 
     report, _ = apply_contract(run_context, "df_customers")
 
@@ -273,9 +262,6 @@ def test_apply_contract_duplicate_on_entity_reference(tmp_path):
 
 
 def test_apply_contract_duplicate_on_transactional_detail(tmp_path):
-
-    raw_dir = tmp_path / "raw"
-    raw_dir.mkdir()
 
     df = pd.DataFrame(
         {
@@ -292,12 +278,10 @@ def test_apply_contract_duplicate_on_transactional_detail(tmp_path):
         }
     )
 
-    df.to_csv(raw_dir / "df_payments_2026_01.csv", index=False)
-
     run_context = RunContext.create(base_path=tmp_path)
     run_context.initialize_directories()
 
-    copytree(raw_dir, run_context.raw_snapshot_path, dirs_exist_ok=True)
+    df.to_csv(run_context.raw_snapshot_path / "df_payments_2026_01.csv", index=False)
 
     report, _ = apply_contract(run_context, "df_payments")
 
@@ -307,9 +291,6 @@ def test_apply_contract_duplicate_on_transactional_detail(tmp_path):
 
 
 def test_apply_contract_cascade_drop_with_order_id(tmp_path):
-
-    raw_dir = tmp_path / "raw"
-    raw_dir.mkdir()
 
     df_order = pd.DataFrame(
         {
@@ -355,14 +336,21 @@ def test_apply_contract_cascade_drop_with_order_id(tmp_path):
         }
     )
 
-    df_order.to_csv(raw_dir / "df_orders_2026_01.csv", index=False)
-    df_payments.to_csv(raw_dir / "df_payments_2026_01.csv", index=False)
-    df_order_items.to_csv(raw_dir / "df_order_items_2026_01.csv", index=False)
-
     run_context = RunContext.create(base_path=tmp_path)
     run_context.initialize_directories()
 
-    copytree(raw_dir, run_context.raw_snapshot_path, dirs_exist_ok=True)
+    df_order.to_csv(
+        run_context.raw_snapshot_path / "df_orders_2026_01.csv",
+        index=False,
+    )
+    df_payments.to_csv(
+        run_context.raw_snapshot_path / "df_payments_2026_01.csv",
+        index=False,
+    )
+    df_order_items.to_csv(
+        run_context.raw_snapshot_path / "df_order_items_2026_01.csv",
+        index=False,
+    )
 
     invalid_ids = set()
 
