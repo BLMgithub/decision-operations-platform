@@ -217,11 +217,14 @@ def assemble_events(run_context: RunContext) -> Dict:
     for table_name in EVENT_TABLES:
 
         df = load_logical_table(
-            contracted_path, table_name, log_info=info, log_error=error
+            contracted_path,
+            table_name,
+            log_info=info,
+            log_error=error,
         )
 
         if df is None:
-            log_error(f"{table_name}: dataset is empty", report)
+            error(f"{table_name}: dataset is empty")
             report["status"] = "failed"
 
             return report
@@ -234,7 +237,7 @@ def assemble_events(run_context: RunContext) -> Dict:
         df_contract = freeze_schema(df_assembled)
 
     except Exception as e:
-        log_error(str(e), report)
+        error(str(e))
         report["status"] = "failed"
 
         return report
@@ -242,9 +245,10 @@ def assemble_events(run_context: RunContext) -> Dict:
     output_path = run_context.assembled_path / "assembled_events.parquet"
 
     if not export_file(df_contract, output_path):
-        log_error("Export failed", report)
+        error("Export failed")
         report["status"] = "failed"
 
+    info(f"Export success: assembled_events.parquet ({len(df_contract)} rows)")
     return report
 
 
