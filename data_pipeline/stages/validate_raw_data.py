@@ -364,7 +364,7 @@ def apply_validation(run_context: RunContext, base_path: Path | None = None) -> 
         df = load_logical_table(base_path, table_name, log_info=info, log_error=error)
 
         if df is None:
-            log_error(f"{table_name} logical table is missing", report)
+            error(f"{table_name} logical table is missing")
             continue
 
         loaded_table_names.add(table_name)
@@ -385,7 +385,7 @@ def apply_validation(run_context: RunContext, base_path: Path | None = None) -> 
 
     missing_tables = sorted(expected_tables - loaded_table_names)
     if missing_tables:
-        log_error(f"missing expected table(s) {missing_tables}", report)
+        error(f"missing expected table(s) {missing_tables}")
 
     run_cross_table_validations(tables, report)
 
