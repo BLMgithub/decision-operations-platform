@@ -254,7 +254,7 @@ def test_freeze_schema_enforces_strict_schema_success(valid_derived_df):
         "lead_time_days": "int64",
         "approval_lag_days": "int64",
         "delivery_delay_days": "int64",
-        "order_date": "object",
+        "order_date": "datetime64[ns]",
         "order_year": "int64",
     }
 
@@ -300,11 +300,16 @@ def test_assemble_data_success(
         index=False,
     )
 
+    year = run_context.run_id[:4]
+    month = run_context.run_id[4:6]
+
     report = assemble_events(run_context)
 
     assert report["status"] == "success"
 
-    output_file = run_context.assembled_path / "assembled_events.parquet"
+    output_file = (
+        run_context.assembled_path / f"assembled_events_{year}_{month}.parquet"
+    )
 
     assert output_file.exists()
 

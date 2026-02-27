@@ -166,6 +166,7 @@ def freeze_schema(df: pd.DataFrame) -> pd.DataFrame:
         "lead_time_days": "int64",
         "approval_lag_days": "int64",
         "delivery_delay_days": "int64",
+        "order_date": "datetime64[ns]",
         "order_year": "int64",
     }
 
@@ -242,13 +243,20 @@ def assemble_events(run_context: RunContext) -> Dict:
 
         return report
 
-    output_path = run_context.assembled_path / "assembled_events.parquet"
+    year = run_context.run_id[:4]
+    month = run_context.run_id[4:6]
+
+    output_path = (
+        run_context.assembled_path / f"assembled_events_{year}_{month}.parquet"
+    )
 
     if not export_file(df_contract, output_path):
         error("Export failed")
         report["status"] = "failed"
 
-    info(f"Export success: assembled_events.parquet ({len(df_contract)} rows)")
+    info(
+        f"Export success: assembled_events_{year}_{month}.parquet ({len(df_contract)} rows)"
+    )
     return report
 
 
