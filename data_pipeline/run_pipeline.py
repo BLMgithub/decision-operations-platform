@@ -12,6 +12,7 @@ from data_pipeline.shared.run_context import RunContext
 from data_pipeline.stages.validate_raw_data import apply_validation
 from data_pipeline.stages.apply_raw_data_contract import apply_contract
 from data_pipeline.stages.assemble_validated_events import assemble_events
+from data_pipeline.stages.build_bi_semantic_layer import build_semantic_layer
 
 
 def snapshot_raw(run_context: RunContext) -> None:
@@ -45,22 +46,22 @@ def main() -> None:
     # Create raw snapshot at runtime
     snapshot_raw(run_context)
 
-    report_validation_1 = []
+    report_validation_initial = []
 
     # Initial validation
-    validation_1 = apply_validation(run_context)
-    report_validation_1.append(validation_1)
+    validation_initial = apply_validation(run_context)
+    report_validation_initial.append(validation_initial)
 
     persist_json(
-        run_context.logs_path / "validation_1.json",
+        run_context.logs_path / "validation_initial.json",
         {
             "run_id": run_context.run_id,
-            "report": report_validation_1,
+            "report": report_validation_initial,
         },
     )
 
     # Early exit for structural errors else apply contract
-    if validation_1["errors"]:
+    if validation_initial["errors"]:
         sys.exit(1)
 
     report_contract = []
@@ -89,26 +90,26 @@ def main() -> None:
         },
     )
 
-    report_validation_2 = []
+    report_validation_post_contract = []
 
     # Rerun validation on CONTRACTED data
-    validation_2 = apply_validation(
+    validation_post_contract = apply_validation(
         run_context,
         base_path=run_context.contracted_path,
     )
 
-    report_validation_2.append(validation_2)
+    report_validation_post_contract.append(validation_post_contract)
 
     persist_json(
-        run_context.logs_path / "validation_2.json",
+        run_context.logs_path / "validation_post_contract.json",
         {
             "run_id": run_context.run_id,
-            "report": report_validation_2,
+            "report": report_validation_post_contract,
         },
     )
 
     # Intervention: Either manual fixing or escalate the data to source owner
-    if validation_2["errors"] or validation_2["warnings"]:
+    if validation_post_contract["errors"] or validation_post_contract["warnings"]:
         sys.exit(1)
 
     report_assemble = []
@@ -126,6 +127,23 @@ def main() -> None:
     )
 
     if assemble["status"] == "failed":
+        sys.exit(1)
+
+    report_semantic = []
+
+    # Semantic modeling
+    semantic = build_semantic_layer(run_context)
+    report_semantic.append(semantic)
+
+    persist_json(
+        run_context.logs_path / "semantic_report.json",
+        {
+            "run_id": run_context.run_id,
+            "report": report_semantic,
+        },
+    )
+
+    if semantic["status"] == "failed":
         sys.exit(1)
 
     sys.exit(0)

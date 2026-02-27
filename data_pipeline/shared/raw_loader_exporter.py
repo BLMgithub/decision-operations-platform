@@ -70,13 +70,13 @@ def load_logical_table(
             df = loader(file_path)
 
             if log_info:
-                log_info(f"loaded {file_path.name} ({len(df)} rows)")
+                log_info(f"Loaded: {file_path.name} ({len(df)} rows)")
 
             dfs.append(df)
 
         except Exception as e:
             if log_error:
-                log_error(f"failed loading {file_path.name}: {e}")
+                log_error(f"Failed loading: {file_path.name}: {e}")
 
     if not dfs:
         if log_error:

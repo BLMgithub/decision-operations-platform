@@ -41,7 +41,7 @@ def test_main_exits_on_validation_1_errors(monkeypatch, tmp_path):
         main()
 
     assert e.value.code == 1
-    assert (fake_ctx.logs_path / "validation_1.json").exists()
+    assert (fake_ctx.logs_path / "validation_initial.json").exists()
 
 
 def test_main_exits_on_validation_2_issues(monkeypatch, tmp_path):
@@ -91,7 +91,7 @@ def test_main_exits_on_validation_2_issues(monkeypatch, tmp_path):
         main()
 
     assert e.value.code == 1
-    assert (fake_ctx.logs_path / "validation_2.json").exists()
+    assert (fake_ctx.logs_path / "validation_post_contract.json").exists()
 
 
 def test_main_success(monkeypatch, tmp_path):
@@ -120,7 +120,20 @@ def test_main_success(monkeypatch, tmp_path):
 
     monkeypatch.setattr(
         "data_pipeline.run_pipeline.assemble_events",
-        lambda *a, **k: {"status": "success", "error": [], "info": []},
+        lambda *a, **k: {
+            "status": "success",
+            "error": [],
+            "info": [],
+        },  # Pass, status success
+    )
+
+    monkeypatch.setattr(
+        "data_pipeline.run_pipeline.build_semantic_layer",
+        lambda *a, **k: {
+            "status": "success",
+            "error": [],
+            "info": [],
+        },  # Pass, status success
     )
 
     monkeypatch.setattr(
@@ -132,10 +145,11 @@ def test_main_success(monkeypatch, tmp_path):
         main()
 
     assert e.value.code == 0
-    assert (fake_ctx.logs_path / "validation_1.json").exists()
+    assert (fake_ctx.logs_path / "validation_initial.json").exists()
     assert (fake_ctx.logs_path / "contract_report.json").exists()
-    assert (fake_ctx.logs_path / "validation_2.json").exists()
+    assert (fake_ctx.logs_path / "validation_post_contract.json").exists()
     assert (fake_ctx.logs_path / "assemble_report.json").exists()
+    assert (fake_ctx.logs_path / "semantic_report.json").exists()
 
 
 # =============================================================================
