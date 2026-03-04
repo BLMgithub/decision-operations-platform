@@ -5,6 +5,7 @@
 import pandas as pd
 import shutil
 from datetime import datetime as dt
+from contextlib import suppress
 import json
 import os
 
@@ -229,13 +230,9 @@ def activate_published_version(run_context: RunContext) -> Dict:
         report["status"] = "failed"
         log_error(str(e), report)
 
-        # Clean up for tmp_path
-        if tmp_path.exists():
-            try:
-                tmp_path.unlink()
-
-            except Exception:
-                pass
+        # Cleanup  tmp_path
+        with suppress(Exception):
+            tmp_path.unlink()
 
     return report
 
