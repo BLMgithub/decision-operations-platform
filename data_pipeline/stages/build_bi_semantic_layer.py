@@ -170,44 +170,75 @@ def build_semantic_layer(run_context: RunContext) -> Dict:
     - Any module failure halts semantic stage
     """
 
-    report = init_report()
+    report = {
+        "status": "success",
+        "steps": {
+            "load_tables": init_report(),
+        },
+        "modules": {},
+    }
 
-    def info(msg):
-        log_info(msg, report)
+    def fail_module(module_name, table_name=None):
+        report["status"] = "failed"
+        report["failed_module"] = module_name
 
-    def error(msg):
-        log_error(msg, report)
+        if table_name:
+            report["failed_table"] = table_name
+
+        return report
 
     assembled_path = run_context.assembled_path
+
+    # Load table
+    load_report = report["steps"]["load_tables"]
 
     df_assembled = load_logical_table(
         assembled_path,
         "assembled_events",
-        log_info=info,
-        log_error=error,
+        log_info=lambda msg: log_info(msg, load_report),
+        log_error=lambda msg: log_error(msg, load_report),
     )
 
     if df_assembled is None or df_assembled.empty:
-        error("assembled_events logical table missing or empty")
+        log_error("assembled_events logical table missing or empty", load_report)
+
         report["status"] = "failed"
+        report["failed_step"] = "load_tables"
 
         return report
 
     for module_name, module in SEMANTIC_MODULES.items():
 
+        # Module level report
+        module_report = init_report()
+        module_report["tables"] = {}
+
+        report["modules"][module_name] = module_report
+
+        # Execute module builder
         try:
             builder_output = module["builder"](df_assembled)
 
         except Exception as e:
-            error(str(e))
-            report["status"] = "failed"
+            log_error(str(e), module_report)
 
-            continue
+            module_report["status"] = "failed"
+            return fail_module(module_name)
 
         semantic_module_path = run_context.semantic_path / module_name
 
         # builders return dict {table_name: df}
         for table_name, df in builder_output.items():
+
+            table_report = init_report()
+            module_report["tables"][table_name] = table_report
+
+            # Validate builder output
+            if table_name not in module["tables"]:
+                log_error(f"Unexpected table returned: {table_name}", module_report)
+                module_report["status"] = "failed"
+
+                return fail_module(module_name, table_name)
 
             meta = module["tables"][table_name]
 
@@ -222,8 +253,12 @@ def build_semantic_layer(run_context: RunContext) -> Dict:
                     raise RuntimeError(f"Missing required columns: {missing}")
 
             except Exception as e:
-                error(str(e))
-                report["status"] = "failed"
+                log_error(str(e), table_report)
+
+                table_report["status"] = "failed"
+                module_report["status"] = "failed"
+
+                return fail_module(module_name, table_name)
 
             # Enforce dtypes
             df = df[meta["schema"]].astype(meta["dtypes"])
@@ -238,11 +273,22 @@ def build_semantic_layer(run_context: RunContext) -> Dict:
             output_path = semantic_module_path / filename
 
             if not export_file(df, output_path):
-                error(f"{table_name}: Export failed")
-                report["status"] = "failed"
-                break
+                log_error("Export failed", table_report)
 
-            info(f"Export success: {module_name}/{filename} ({len(df)} rows)")
+                table_report["status"] = "failed"
+                module_report["status"] = "failed"
+
+                return fail_module(module_name, table_name)
+
+            log_info(
+                f"Export success: {module_name}/{filename} ({len(df)} rows)",
+                table_report,
+            )
+
+        log_info(
+            f"Semantic module built successfully: {module_name}",
+            module_report,
+        )
 
     return report
 

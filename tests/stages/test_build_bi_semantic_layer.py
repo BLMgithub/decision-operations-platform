@@ -213,7 +213,11 @@ def test_build_semantic_layer_fails_on_multiple_ids(tmp_path, valid_assembled_df
     report = build_semantic_layer(run_context)
 
     assert report["status"] == "failed"
-    assert "Multiple run_ids detected" in report["errors"]
+    assert report["failed_module"] == "seller_semantic"
+
+    module_error = report["modules"]["seller_semantic"]["errors"]
+
+    assert any("Multiple run_ids detected" in error for error in module_error)
 
 
 def test_build_semantic_layer_fails_on_missing_columns(tmp_path, valid_assembled_df):
@@ -231,7 +235,11 @@ def test_build_semantic_layer_fails_on_missing_columns(tmp_path, valid_assembled
     report = build_semantic_layer(run_context)
 
     assert report["status"] == "failed"
-    assert any("approval_lag_days" in error for error in report["errors"])
+    assert report["failed_module"] == "seller_semantic"
+
+    module_error = report["modules"]["seller_semantic"]["errors"]
+
+    assert any("approval_lag_days" in error for error in module_error)
 
 
 # =============================================================================

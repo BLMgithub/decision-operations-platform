@@ -423,7 +423,11 @@ def test_execute_publish_lifecycle_fails_on_gate(
     report = execute_publish_lifecycle(run_context)
 
     assert report["status"] == "failed"
-    assert "Semantic file set mismatch" in report["errors"]
+    assert report["failed_step"] == "integrity_gate"
+
+    step_errors = report["steps"]["integrity_gate"]["errors"]
+
+    assert any("Semantic file set mismatch" in error for error in step_errors)
 
 
 def test_execute_publish_lifecycle_fails_on_promotion(
@@ -466,9 +470,11 @@ def test_execute_publish_lifecycle_fails_on_promotion(
     report = execute_publish_lifecycle(run_context)
 
     assert report["status"] == "failed"
-    assert any(
-        "File exists" in error or "exists" in error for error in report["errors"]
-    )
+    assert report["failed_step"] == "promotion"
+
+    step_errors = report["steps"]["promotion"]["errors"]
+
+    assert any("directory already exists" in error for error in step_errors)
 
 
 # =============================================================================

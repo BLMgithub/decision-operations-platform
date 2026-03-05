@@ -344,10 +344,12 @@ def test_assemble_data_fails_on_missing_column(
     output_file = run_context.assembled_path / "assembled_events.parquet"
 
     assert report["status"] == "failed"
+    assert report["failed_step"] == "freeze_schema"
     assert output_file.exists() == False
-    assert any(
-        "missing required columns: ['seller_id']" in error for error in report["errors"]
-    )
+
+    errors = report["steps"]["freeze_schema"]["errors"]
+
+    assert any("missing required columns: ['seller_id']" in error for error in errors)
 
 
 def test_assemble_data_fails_on_cardinality(
@@ -387,10 +389,14 @@ def test_assemble_data_fails_on_cardinality(
     output_file = run_context.assembled_path / "assembled_events.parquet"
 
     assert report["status"] == "failed"
+    assert report["failed_step"] == "merge_events"
     assert output_file.exists() == False
+
+    errors = report["steps"]["merge_events"]["errors"]
+
     assert any(
         "Cardinality violation detected: expected 1 row per order" in error
-        for error in report["errors"]
+        for error in errors
     )
 
 
