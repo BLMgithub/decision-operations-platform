@@ -93,7 +93,7 @@ def run_integrity_gate(run_context: RunContext) -> Dict:
         actual_files = {file.name for file in module_path.glob("*.parquet")}
 
         if actual_files != expected_files:
-            log_error("Semantic file set mismatch", report)
+            log_error(f"Semantic file set mismatch on {module_name}", report)
             report["status"] = "failed"
 
             return report
@@ -214,9 +214,14 @@ def activate_published_version(run_context: RunContext) -> Dict:
 
     tmp_path = latest_path.with_suffix(".tmp")
 
+    run_dt = dt.strptime(run_context.run_id[:15], "%Y%m%dT%H%M%S")
+
     payload = {
         "run_id": run_context.run_id,
         "version": f"v{run_context.run_id}",
+        "run_year": run_dt.year,
+        "run_month": run_dt.month,
+        "run_week_of_month": (run_dt.day - 1) // 7 + 1,
         "published_at": dt.utcnow().isoformat(),
     }
 

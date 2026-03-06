@@ -107,7 +107,7 @@ def build_seller_semantic(df: pd.DataFrame, run_context: RunContext) -> Dict:
     )
 
     seller_semantic = {
-        "seller_week_performance_fact": seller_weekly_fact,
+        "seller_weekly_fact": seller_weekly_fact,
         "seller_dim": seller_dim,
     }
 
@@ -232,7 +232,8 @@ def build_product_semantic(df: pd.DataFrame, run_context: RunContext) -> Dict:
     read_assembled["is_cancelled"] = read_assembled["order_status"].eq("cancelled")
 
     product_weekly_fact = read_assembled.groupby(
-        ["product_id", "order_year_week"], as_index=False
+        ["product_id", "order_year_week"],
+        as_index=False,
     ).agg(
         week_start_date=("week_start_date", "min"),
         run_id=("run_id", "first"),
@@ -284,7 +285,7 @@ SEMANTIC_MODULES = {
     "seller_semantic": {
         "builder": build_seller_semantic,
         "tables": {
-            "seller_week_performance_fact": {
+            "seller_weekly_fact": {
                 "type": "fact",
                 "grain": ["seller_id", "order_year_week"],
                 "schema": SELLER_FACT_SCHEMA,
