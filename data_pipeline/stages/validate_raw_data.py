@@ -108,29 +108,24 @@ def run_base_validations(
 
         duplicate_rows = df[duplicate_mask]
 
-        # Groups duplicate rows by primary key
-        # returns tuple (pk_value and group_df "duplicated rows")
-        pk_group = duplicate_rows.groupby(primary_key, dropna=False)
+        # Count of rows per PK
+        pk_group_size = duplicate_rows.groupby(primary_key, dropna=False).size()
 
-        conflicting = False
-        repairable_count = 0
+        # number of unique rows per PK (full row comparison)
+        pk_unique_rows = (
+            duplicate_rows.drop_duplicates().groupby(primary_key, dropna=False).size()
+        )
 
-        for _, group in pk_group:
-
-            # PK group must collapse to 1 unique row
-            if len(group.drop_duplicates()) == 1:
-                repairable_count += len(group) - 1  # Exclude 1st occurrence
-
-            else:
-                conflicting = True
+        conflicting = (pk_unique_rows > 1).any()
 
         if conflicting:
             log_error(
                 f"{table_name}: conflicting duplicate primary key records detected",
                 report,
             )
-
             return False
+
+        repairable_count = int((pk_group_size - 1).sum())  # Exclude 1st PK occurrence
 
         if repairable_count > 0:
             log_warning(

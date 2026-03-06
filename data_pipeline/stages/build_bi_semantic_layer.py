@@ -343,8 +343,6 @@ SEMANTIC_MODULES = {
 
 def build_semantic_layer(run_context: RunContext) -> Dict:
     """
-    Semantic layer orchestrator.
-
     Builds semantic modules from the assembled event layer and
     exports contract-compliant BI artifacts.
 
