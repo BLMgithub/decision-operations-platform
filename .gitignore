@@ -6,6 +6,7 @@ __pycache__/
 # Runtime Directory
 runtime/
 data/published/
+data/run_artifact
 
 # local editor configs
 pyrightconfig.json
