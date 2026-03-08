@@ -38,12 +38,6 @@ class RunContext:
     workspace_root: Path
     workspace_run_path: Path
 
-    # Storage paths
-    storage_raw_path: Path
-    storage_published_path: Path
-    version_path: Path
-    latest_pointer_path: Path
-
     # Run scope paths
     raw_snapshot_path: Path
     contracted_path: Path
@@ -51,6 +45,13 @@ class RunContext:
     semantic_path: Path
     logs_path: Path
     metadata_path: Path
+
+    # Storage paths
+    storage_raw_path: str
+    storage_published_path: str
+    version_path: str
+    latest_pointer_path: str
+    storage_runs_path: str
 
     # TODO: replace ./runtime to /tmp and ./data with gs://pipeline-bucket
     # before creating docker image.
@@ -64,7 +65,6 @@ class RunContext:
     ) -> "RunContext":
 
         base_path = Path(base)
-        storage_path = Path(storage)
 
         if run_id is None:
             generator = run_id_factory or _generate_run_id
@@ -74,20 +74,20 @@ class RunContext:
         workspace_root = base_path / "workspace"
         workspace_run_path = workspace_root / "runs" / run_id
 
-        # Storage paths
-        storage_root = storage_path
-        storage_raw_path = storage_root / "raw"
-        storage_published_path = storage_root / "published"
-        version_path = storage_published_path / f"v{run_id}"
-        latest_pointer_path = storage_published_path / "_latest.json"
-
-        # Run scope paths
         raw_snapshot_path = workspace_run_path / "raw_snapshot"
         contracted_path = workspace_run_path / "contracted"
         assembled_path = workspace_run_path / "assembled"
         semantic_path = workspace_run_path / "semantic"
         logs_path = workspace_run_path / "logs"
         metadata_path = workspace_run_path / "metadata.json"
+
+        # Storage paths
+        storage_root = str(storage)
+        storage_raw_path = f"{storage_root}/raw"
+        storage_published_path = f"{storage_root}/published"
+        version_path = f"{storage_published_path}/v{run_id}"
+        latest_pointer_path = f"{storage_published_path}/_latest.json"
+        storage_runs_path = f"{storage_root}/run_artifact/{run_id}"
 
         return cls(
             run_id=run_id,
@@ -104,6 +104,7 @@ class RunContext:
             metadata_path=metadata_path,
             version_path=version_path,
             latest_pointer_path=latest_pointer_path,
+            storage_runs_path=storage_runs_path,
         )
 
     def initialize_directories(self) -> None:
