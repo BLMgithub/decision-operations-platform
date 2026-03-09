@@ -53,13 +53,12 @@ class RunContext:
     latest_pointer_path: str
     storage_runs_path: str
 
-    # TODO: replace ./runtime to /tmp and ./data with gs://pipeline-bucket
-    # before creating docker image.
+    # NOTE: base =./runtime and storage= ./data were for local testing paths
     @classmethod
     def create(
         cls,
-        base: str | Path = "./runtime",
-        storage: str | Path = "./data",
+        base: str | Path = "/tmp",  # "./runtime",
+        storage: str | Path = "gs://operations-pipeline-bucket",  # "./data",
         run_id: str | None = None,
         run_id_factory: Callable[[], str] | None = None,
     ) -> "RunContext":
