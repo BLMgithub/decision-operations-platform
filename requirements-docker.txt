@@ -1,2 +1,3 @@
 pandas==2.1.4
 pyarrow==19.0.0
+google-cloud-storage

@@ -3,24 +3,57 @@
 # =============================================================================
 
 from data_pipeline.shared.run_context import RunContext
-from data_pipeline.run_pipeline import snapshot_raw_storage, main
+from data_pipeline.run_pipeline import (
+    main,
+    download_raw_snapshot,
+    initiliaze_metadata,
+    finalize_metadata,
+)
 import pytest
+import json
 
 
 def test_snapshot_raw_storage_raises_when_source_missing(tmp_path):
 
-    run_context = RunContext.create(storage=tmp_path, run_id="20230101T000000_abc123")
+    run_context = RunContext.create(
+        base=tmp_path, storage=tmp_path, run_id="20230101T000000_abc123"
+    )
 
     with pytest.raises(FileNotFoundError):
-        snapshot_raw_storage(run_context)
+        download_raw_snapshot(run_context)
+
+
+def test_metadata_helpers(tmp_path):
+    run_context = RunContext.create(
+        base=tmp_path, storage=tmp_path, run_id="20230101T000000_abc123"
+    )
+
+    # test status: RUNNING and published: False
+    initiliaze_metadata(run_context)
+
+    assert run_context.metadata_path.exists()
+    with open(run_context.metadata_path) as f:
+        payload = json.load(f)
+    assert payload["status"] == "RUNNING"
+    assert payload["published"] is False
+
+    # test status: SUCCESS and published: True
+    finalize_metadata(run_context, status="SUCCESS")
+
+    with open(run_context.metadata_path) as f:
+        payload = json.load(f)
+    assert payload["status"] == "SUCCESS"
+    assert payload["published"] is True
 
 
 def test_main_fails_on_initial_validation(monkeypatch, tmp_path):
 
-    run_context = RunContext.create(base=tmp_path, run_id="20230101T000000_abc123")
+    run_context = RunContext.create(
+        base=tmp_path, storage=tmp_path, run_id="20230101T000000_abc123"
+    )
 
     monkeypatch.setattr(
-        "data_pipeline.run_pipeline.snapshot_raw_storage",
+        "data_pipeline.run_pipeline.download_raw_snapshot",
         lambda *_: None,
     )
 
@@ -37,19 +70,26 @@ def test_main_fails_on_initial_validation(monkeypatch, tmp_path):
         },
     )
 
-    with pytest.raises(SystemExit) as e:
+    with pytest.raises(RuntimeError):
         main()
 
-    assert e.value.code == 1
-    assert (run_context.logs_path / "validation_initial.json").exists()
+    with open(run_context.metadata_path) as f:
+        payload = json.load(f)
+    assert payload["status"] == "FAILED"
+    assert payload["published"] is False
+
+    for logs in ("validation_initial.json",):
+        assert (run_context.logs_path / logs).exists()
 
 
 def test_main_fails_on_post_contract_validation(monkeypatch, tmp_path):
 
-    run_context = RunContext.create(base=tmp_path, run_id="20230101T000000_abc123")
+    run_context = RunContext.create(
+        base=tmp_path, storage=tmp_path, run_id="20230101T000000_abc123"
+    )
 
     monkeypatch.setattr(
-        "data_pipeline.run_pipeline.snapshot_raw_storage",
+        "data_pipeline.run_pipeline.download_raw_snapshot",
         lambda *_: None,
     )
 
@@ -85,19 +125,30 @@ def test_main_fails_on_post_contract_validation(monkeypatch, tmp_path):
         lambda *a, **k: ({}, set()),
     )
 
-    with pytest.raises(SystemExit) as e:
+    with pytest.raises(RuntimeError):
         main()
 
-    assert e.value.code == 1
-    assert (run_context.logs_path / "validation_post_contract.json").exists()
+    with open(run_context.metadata_path) as f:
+        payload = json.load(f)
+    assert payload["status"] == "FAILED"
+    assert payload["published"] is False
+
+    for logs in (
+        "validation_initial.json",
+        "contract_report.json",
+        "validation_post_contract.json",
+    ):
+        assert (run_context.logs_path / logs).exists()
 
 
 def test_main_fails_on_assemble_events(monkeypatch, tmp_path):
 
-    run_context = RunContext.create(base=tmp_path, run_id="20230101T000000_abc123")
+    run_context = RunContext.create(
+        base=tmp_path, storage=tmp_path, run_id="20230101T000000_abc123"
+    )
 
     monkeypatch.setattr(
-        "data_pipeline.run_pipeline.snapshot_raw_storage",
+        "data_pipeline.run_pipeline.download_raw_snapshot",
         lambda *_: None,
     )
 
@@ -133,22 +184,30 @@ def test_main_fails_on_assemble_events(monkeypatch, tmp_path):
         },  # Force to fail on assemble events
     )
 
-    with pytest.raises(SystemExit) as e:
+    with pytest.raises(RuntimeError):
         main()
 
-    assert e.value.code == 1
-    assert (run_context.logs_path / "validation_initial.json").exists()
-    assert (run_context.logs_path / "contract_report.json").exists()
-    assert (run_context.logs_path / "validation_post_contract.json").exists()
-    assert (run_context.logs_path / "assemble_report.json").exists()
+    with open(run_context.metadata_path) as f:
+        payload = json.load(f)
+    assert payload["status"] == "FAILED"
+    assert payload["published"] is False
+
+    for logs in (
+        "validation_initial.json",
+        "contract_report.json",
+        "validation_post_contract.json",
+    ):
+        assert (run_context.logs_path / logs).exists()
 
 
 def test_main_fails_on_build_semantic_layer(monkeypatch, tmp_path):
 
-    run_context = RunContext.create(base=tmp_path, run_id="20230101T000000_abc123")
+    run_context = RunContext.create(
+        base=tmp_path, storage=tmp_path, run_id="20230101T000000_abc123"
+    )
 
     monkeypatch.setattr(
-        "data_pipeline.run_pipeline.snapshot_raw_storage",
+        "data_pipeline.run_pipeline.download_raw_snapshot",
         lambda *_: None,
     )
 
@@ -193,23 +252,31 @@ def test_main_fails_on_build_semantic_layer(monkeypatch, tmp_path):
         },  # Force to fail on build semantic layer
     )
 
-    with pytest.raises(SystemExit) as e:
+    with pytest.raises(RuntimeError):
         main()
 
-    assert e.value.code == 1
-    assert (run_context.logs_path / "validation_initial.json").exists()
-    assert (run_context.logs_path / "contract_report.json").exists()
-    assert (run_context.logs_path / "validation_post_contract.json").exists()
-    assert (run_context.logs_path / "assemble_report.json").exists()
-    assert (run_context.logs_path / "semantic_report.json").exists()
+    with open(run_context.metadata_path) as f:
+        payload = json.load(f)
+    assert payload["status"] == "FAILED"
+    assert payload["published"] is False
+
+    for logs in (
+        "validation_initial.json",
+        "contract_report.json",
+        "validation_post_contract.json",
+        "assemble_report.json",
+    ):
+        assert (run_context.logs_path / logs).exists()
 
 
 def test_main_fails_on_execute_publish_lifecycle(monkeypatch, tmp_path):
 
-    run_context = RunContext.create(base=tmp_path, run_id="20230101T000000_abc123")
+    run_context = RunContext.create(
+        base=tmp_path, storage=tmp_path, run_id="20230101T000000_abc123"
+    )
 
     monkeypatch.setattr(
-        "data_pipeline.run_pipeline.snapshot_raw_storage",
+        "data_pipeline.run_pipeline.download_raw_snapshot",
         lambda *_: None,
     )
 
@@ -263,24 +330,32 @@ def test_main_fails_on_execute_publish_lifecycle(monkeypatch, tmp_path):
         },  # Force to fail on publish lifecyle
     )
 
-    with pytest.raises(SystemExit) as e:
+    with pytest.raises(RuntimeError):
         main()
 
-    assert e.value.code == 1
-    assert (run_context.logs_path / "validation_initial.json").exists()
-    assert (run_context.logs_path / "contract_report.json").exists()
-    assert (run_context.logs_path / "validation_post_contract.json").exists()
-    assert (run_context.logs_path / "assemble_report.json").exists()
-    assert (run_context.logs_path / "semantic_report.json").exists()
-    assert (run_context.logs_path / "publish_report.json").exists()
+    with open(run_context.metadata_path) as f:
+        payload = json.load(f)
+    assert payload["status"] == "FAILED"
+    assert payload["published"] is False
+
+    for logs in (
+        "validation_initial.json",
+        "contract_report.json",
+        "validation_post_contract.json",
+        "assemble_report.json",
+        "semantic_report.json",
+    ):
+        assert (run_context.logs_path / logs).exists()
 
 
 def test_main_success(monkeypatch, tmp_path):
 
-    run_context = RunContext.create(base=tmp_path, run_id="20230101T000000_abc123")
+    run_context = RunContext.create(
+        base=tmp_path, storage=tmp_path, run_id="20230101T000000_abc123"
+    )
 
     monkeypatch.setattr(
-        "data_pipeline.run_pipeline.snapshot_raw_storage",
+        "data_pipeline.run_pipeline.download_raw_snapshot",
         lambda *_: None,
     )
 
@@ -334,16 +409,22 @@ def test_main_success(monkeypatch, tmp_path):
         },  # Pass, status success
     )
 
-    with pytest.raises(SystemExit) as e:
-        main()
+    main()
 
-    assert e.value.code == 0
-    assert (run_context.logs_path / "validation_initial.json").exists()
-    assert (run_context.logs_path / "contract_report.json").exists()
-    assert (run_context.logs_path / "validation_post_contract.json").exists()
-    assert (run_context.logs_path / "assemble_report.json").exists()
-    assert (run_context.logs_path / "semantic_report.json").exists()
-    assert (run_context.logs_path / "publish_report.json").exists()
+    with open(run_context.metadata_path) as f:
+        payload = json.load(f)
+    assert payload["status"] == "SUCCESS"
+    assert payload["published"] is True
+
+    for logs in (
+        "validation_initial.json",
+        "contract_report.json",
+        "validation_post_contract.json",
+        "assemble_report.json",
+        "semantic_report.json",
+        "publish_report.json",
+    ):
+        assert (run_context.logs_path / logs).exists()
 
 
 # =============================================================================

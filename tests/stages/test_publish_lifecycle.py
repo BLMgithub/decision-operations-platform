@@ -5,6 +5,7 @@
 import pandas as pd
 import pytest
 import shutil
+from pathlib import Path
 
 from data_pipeline.shared.run_context import RunContext
 from data_pipeline.stages.build_bi_semantic_layer import SEMANTIC_MODULES
@@ -433,7 +434,7 @@ def test_promote_semantic_version_fails_on_making_directory(tmp_path):
     run_context.initialize_directories()
 
     for module in SEMANTIC_MODULES:
-        published_version_path = run_context.version_path / module
+        published_version_path = Path(run_context.version_path) / module
         published_version_path.mkdir(parents=True)
 
     report = promote_semantic_version(run_context)

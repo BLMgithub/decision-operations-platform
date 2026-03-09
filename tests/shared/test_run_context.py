@@ -15,7 +15,7 @@ def test_run_context_paths_with_explicit_run_id(tmp_path):
     assert ctx.run_id == "test123"
     assert ctx.workspace_run_path == tmp_path / "workspace" / "runs" / "test123"
     assert ctx.raw_snapshot_path == ctx.workspace_run_path / "raw_snapshot"
-    assert ctx.version_path == ctx.storage_published_path / "vtest123"
+    assert ctx.version_path == f"{ctx.storage_published_path}/vtest123"
 
 
 def test_run_context_generates_run_id(tmp_path):
@@ -27,14 +27,17 @@ def test_run_context_generates_run_id(tmp_path):
     assert len(ctx.run_id.split("_")[1]) == 6
 
 
+from pathlib import Path
+
+
 def test_initialize_directories_does_not_create_publish_dirs(tmp_path):
 
     ctx = RunContext.create(base=tmp_path, storage=tmp_path, run_id="abc123")
 
     ctx.initialize_directories()
 
-    assert not ctx.storage_published_path.exists()
-    assert not ctx.version_path.exists()
+    assert not Path(ctx.storage_published_path).exists()
+    assert not Path(ctx.version_path).exists()
 
 
 def test_initialize_directories_is_idempotent(tmp_path):
