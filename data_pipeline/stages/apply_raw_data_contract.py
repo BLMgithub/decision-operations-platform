@@ -14,6 +14,7 @@ from data_pipeline.shared.table_configs import (
     TIMESTAMP_FORMATS,
 )
 from data_pipeline.shared.run_context import RunContext
+from typing import List
 
 
 # ------------------------------------------------------------
@@ -109,6 +110,30 @@ def remove_impossible_timestamps(df: pd.DataFrame) -> tuple[pd.DataFrame, int, s
     return df, remove_count, invalid_order_ids
 
 
+def remove_rows_with_null_values(
+    df: pd.DataFrame, non_nullable_column: List[str]
+) -> tuple[pd.DataFrame, int]:
+    """
+    Null values row-wide removal.
+
+    Removes rows where null values are present in non-nullable columns.<br>
+    returns the cleaned dataframe along with the number of rows removed.
+    """
+
+    initial_count = len(df)
+
+    column_nulls = df[non_nullable_column].isna().sum()
+
+    if column_nulls.any():
+        df = df.dropna(subset=non_nullable_column)
+        removed_count = initial_count - len(df)
+
+    else:
+        removed_count = 0
+
+    return df, removed_count
+
+
 def cascade_drop_by_order_id(
     df: pd.DataFrame, invalid_order_ids: set
 ) -> tuple[pd.DataFrame, int]:
@@ -168,9 +193,34 @@ def apply_contract(
         "removed_unparsable_timestamps": 0,
         "removed_cascade_rows": 0,
         "removed_impossible_timestamps": 0,
+        "removed_null_values": 0,
         "status": "success",
         "errors": [],
         "info": [],
+    }
+
+    steps = {
+        "event_fact": {
+            "step": {
+                deduplicate_exact_events,
+                remove_unparsable_timestamps,
+                remove_impossible_timestamps,
+                remove_rows_with_null_values,
+            }
+        },
+        "transaction_detail": {
+            "step": {
+                deduplicate_exact_events,
+                remove_rows_with_null_values,
+                cascade_drop_by_order_id,
+            }
+        },
+        "entity_reference": {
+            "step": {
+                deduplicate_exact_events,
+                remove_rows_with_null_values,
+            }
+        },
     }
 
     invalid_ids = set()
@@ -186,6 +236,7 @@ def apply_contract(
 
     base_path = run_context.raw_snapshot_path
     config = TABLE_CONFIG[table_name]
+    non_nullable = config.get("non_nullable_column", [])
 
     df = load_logical_table(base_path, table_name)
 
@@ -196,32 +247,46 @@ def apply_contract(
 
     report["initial_rows"] = len(df)
 
-    if config["role"] == "event_fact":
+    for step, build in steps.items():
+        if step != remove_rows_with_null_values:
+            df, removed = step[build](df, non_nullable)
+        df, removed = step(df)
 
-        df, removed = deduplicate_exact_events(df)
-        report["deduplicated_rows"] += removed
+    # if config["role"] == "event_fact":
 
-        df, removed, invalid_1 = remove_unparsable_timestamps(df)
-        report["removed_unparsable_timestamps"] += removed
+    #     df, removed = deduplicate_exact_events(df)
+    #     report["deduplicated_rows"] += removed
 
-        df, removed, invalid_2 = remove_impossible_timestamps(df)
-        report["removed_impossible_timestamps"] += removed
+    #     df, removed, invalid_1 = remove_unparsable_timestamps(df)
+    #     report["removed_unparsable_timestamps"] += removed
 
-        invalid_ids = invalid_1.union(invalid_2)
+    #     df, removed, invalid_2 = remove_impossible_timestamps(df)
+    #     report["removed_impossible_timestamps"] += removed
 
-    elif config["role"] == "transaction_detail":
+    #     df, removed = remove_rows_with_null_values(df, non_nullable)
+    #     report["removed_null_values"] += removed
 
-        df, removed = deduplicate_exact_events(df)
-        report["deduplicated_rows"] += removed
+    #     invalid_ids = invalid_1.union(invalid_2)
 
-        if invalid_order_ids:
-            df, removed = cascade_drop_by_order_id(df, invalid_order_ids)
-            report["removed_cascade_rows"] += removed
+    # elif config["role"] == "transaction_detail":
 
-    elif config["role"] == "entity_reference":
+    #     df, removed = deduplicate_exact_events(df)
+    #     report["deduplicated_rows"] += removed
 
-        df, removed = deduplicate_exact_events(df)
-        report["deduplicated_rows"] += removed
+    #     df, removed = remove_rows_with_null_values(df, non_nullable)
+    #     report["removed_null_values"] += removed
+
+    #     if invalid_order_ids:
+    #         df, removed = cascade_drop_by_order_id(df, invalid_order_ids)
+    #         report["removed_cascade_rows"] += removed
+
+    # elif config["role"] == "entity_reference":
+
+    #     df, removed = deduplicate_exact_events(df)
+    #     report["deduplicated_rows"] += removed
+
+    #     df, removed = remove_rows_with_null_values(df, non_nullable)
+    #     report["removed_null_values"] += removed
 
     report["final_rows"] = len(df)
 

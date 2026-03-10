@@ -63,6 +63,7 @@ def initiliaze_metadata(run_context: RunContext) -> None:
 
     payload = {
         "run_id": run_context.run_id,
+        "pipeline_version": "v3.1",
         "status": "RUNNING",
         "started_at": dt.utcnow().isoformat(),
         "run_year": run_dt.year,
