@@ -14,6 +14,7 @@ from data_pipeline.shared.table_configs import (
     TIMESTAMP_FORMATS,
 )
 from data_pipeline.shared.run_context import RunContext
+from typing import List
 
 
 # ------------------------------------------------------------
@@ -25,8 +26,8 @@ def deduplicate_exact_events(df: pd.DataFrame) -> tuple[pd.DataFrame, int]:
     """
     Exact event deduplication.
 
-    Removes fully identical rows representing the same logical event and <br>
-    returns the cleaned dataframe along with the number of rows removed.
+    Removes fully identical rows representing the same logical event.
+    Returns the cleaned dataframe along with the number of rows removed.
     """
 
     initial_count = len(df)
@@ -47,9 +48,8 @@ def remove_unparsable_timestamps(df: pd.DataFrame) -> tuple[pd.DataFrame, int, s
     """
     Timestamp parse enforcement.
 
-    Removes rows where any required timestamp field cannot be parsed under
-    the declared formats. <br>
-    Also returns the affected `order_ids` to support downstream cascade cleanup.
+    Removes rows where any required timestamp field cannot be parsed under the declared formats.
+    Returns the affected `order_ids` for downstream cascade cleanup.
     """
 
     initial_count = len(df)
@@ -83,9 +83,9 @@ def remove_impossible_timestamps(df: pd.DataFrame) -> tuple[pd.DataFrame, int, s
     """
     Temporal invariant enforcement.
 
-    Removes rows that violate required chronological ordering between
-    purchase, approval, and delivery timestamps. <br>
-    Also returns the affected `order_ids` for downstream cascade cleanup.
+    Removes rows that violate required chronological ordering between purchase, approval, and delivery timestamps.
+
+    Returns the affected `order_ids` for downstream cascade cleanup.
     """
 
     purchase_ts = pd.to_datetime(df["order_purchase_timestamp"])
@@ -109,6 +109,30 @@ def remove_impossible_timestamps(df: pd.DataFrame) -> tuple[pd.DataFrame, int, s
     return df, remove_count, invalid_order_ids
 
 
+def remove_rows_with_null_values(
+    df: pd.DataFrame, non_nullable_column: List[str]
+) -> tuple[pd.DataFrame, int]:
+    """
+    Null constraint enforcement.
+
+    Removes rows where any column declared as non-nullable contains null values.
+    Returns the cleaned dataframe along with the number of rows removed.
+    """
+
+    initial_count = len(df)
+
+    column_nulls = df[non_nullable_column].isna().sum()
+
+    if column_nulls.any():
+        df = df.dropna(subset=non_nullable_column)
+        removed_count = initial_count - len(df)
+
+    else:
+        removed_count = 0
+
+    return df, removed_count
+
+
 def cascade_drop_by_order_id(
     df: pd.DataFrame, invalid_order_ids: set
 ) -> tuple[pd.DataFrame, int]:
@@ -128,12 +152,81 @@ def cascade_drop_by_order_id(
 
 
 # ------------------------------------------------------------
+# TABLE ROLE CONTRACTS
+# ------------------------------------------------------------
+
+ROLE_STEPS = {
+    "event_fact": [
+        {
+            "contract": deduplicate_exact_events,
+            "metric": "deduplicated_rows",
+            "args": [],
+            "return_invalid_ids": False,
+        },
+        {
+            "contract": remove_unparsable_timestamps,
+            "metric": "removed_unparsable_timestamps",
+            "args": [],
+            "return_invalid_ids": True,
+        },
+        {
+            "contract": remove_impossible_timestamps,
+            "metric": "removed_impossible_timestamps",
+            "args": [],
+            "return_invalid_ids": True,
+        },
+        {
+            "contract": remove_rows_with_null_values,
+            "metric": "removed_null_values",
+            "args": ["non_nullable"],
+            "return_invalid_ids": False,
+        },
+    ],
+    "transaction_detail": [
+        {
+            "contract": deduplicate_exact_events,
+            "metric": "deduplicated_rows",
+            "args": [],
+            "return_invalid_ids": False,
+        },
+        {
+            "contract": remove_rows_with_null_values,
+            "metric": "removed_null_values",
+            "args": ["non_nullable"],
+            "return_invalid_ids": False,
+        },
+        {
+            "contract": cascade_drop_by_order_id,
+            "metric": "removed_cascade_rows",
+            "args": ["invalid_order_ids"],
+            "return_invalid_ids": False,
+        },
+    ],
+    "entity_reference": [
+        {
+            "contract": deduplicate_exact_events,
+            "metric": "deduplicated_rows",
+            "args": [],
+            "return_invalid_ids": False,
+        },
+        {
+            "contract": remove_rows_with_null_values,
+            "metric": "removed_null_values",
+            "args": ["non_nullable"],
+            "return_invalid_ids": False,
+        },
+    ],
+}
+
+# ------------------------------------------------------------
 # CONTRACT APPLICATION
 # ------------------------------------------------------------
 
 
 def apply_contract(
-    run_context: RunContext, table_name: str, invalid_order_ids: set | None = None
+    run_context: RunContext,
+    table_name: str,
+    invalid_order_ids: set | None = None,
 ) -> tuple[dict, set]:
     """
     Enforce structural contract on a single logical table.
@@ -144,11 +237,14 @@ def apply_contract(
         - remove unparsable timestamps
         - remove temporal violations
         - emit invalid order_ids
+        - remove null rows
     - transaction_detail:
         - deduplicate
         - cascade drop invalid order_ids
+        - remove null rows
     - entity_reference:
-        - deduplicate only
+        - deduplicate
+        - remove null rows
 
     Guarantees:
     - Deterministic row removal
@@ -168,7 +264,8 @@ def apply_contract(
         "removed_unparsable_timestamps": 0,
         "removed_cascade_rows": 0,
         "removed_impossible_timestamps": 0,
-        "status": "success",
+        "removed_null_values": 0,
+        "status": "running",
         "errors": [],
         "info": [],
     }
@@ -186,6 +283,7 @@ def apply_contract(
 
     base_path = run_context.raw_snapshot_path
     config = TABLE_CONFIG[table_name]
+    non_nullable = config.get("non_nullable_column", [])
 
     df = load_logical_table(base_path, table_name)
 
@@ -196,32 +294,36 @@ def apply_contract(
 
     report["initial_rows"] = len(df)
 
-    if config["role"] == "event_fact":
+    role = config["role"]
 
-        df, removed = deduplicate_exact_events(df)
-        report["deduplicated_rows"] += removed
+    for step in ROLE_STEPS[role]:
 
-        df, removed, invalid_1 = remove_unparsable_timestamps(df)
-        report["removed_unparsable_timestamps"] += removed
+        contract = step["contract"]
+        args = []
 
-        df, removed, invalid_2 = remove_impossible_timestamps(df)
-        report["removed_impossible_timestamps"] += removed
+        if "non_nullable" in step["args"]:
+            args.append(non_nullable)
 
-        invalid_ids = invalid_1.union(invalid_2)
+        if "invalid_order_ids" in step["args"]:
+            args.append(invalid_order_ids)
 
-    elif config["role"] == "transaction_detail":
+        try:
 
-        df, removed = deduplicate_exact_events(df)
-        report["deduplicated_rows"] += removed
+            if step["return_invalid_ids"]:
+                df, removed, new_invalid = contract(df)
+                invalid_ids |= new_invalid
 
-        if invalid_order_ids:
-            df, removed = cascade_drop_by_order_id(df, invalid_order_ids)
-            report["removed_cascade_rows"] += removed
+            else:
+                df, removed = contract(df, *args)
 
-    elif config["role"] == "entity_reference":
+            report[step["metric"]] += removed
 
-        df, removed = deduplicate_exact_events(df)
-        report["deduplicated_rows"] += removed
+        except Exception as e:
+            report["status"] = "failed"
+            report["errors"].append(f"{contract.__name__}: Failed at {e}")
+            report["final_rows"] = len(df)
+
+            return report, invalid_ids
 
     report["final_rows"] = len(df)
 
@@ -230,6 +332,8 @@ def apply_contract(
     if not export_file(df, output_path):
         report["status"] = "failed"
         report["errors"].append("Export failed")
+
+    report["status"] = "success"
 
     return report, invalid_ids
 

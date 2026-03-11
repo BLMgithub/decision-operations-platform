@@ -19,11 +19,23 @@ TABLE_CONFIG = {
             "order_delivered_timestamp",
             "order_estimated_delivery_date",
         ],
+        "non_nullable_column": [
+            "order_id",
+            "customer_id",
+            "order_status",
+            "order_purchase_timestamp",
+        ],
     },
     "df_order_items": {
         "role": "transaction_detail",
         "primary_key": ["order_id"],
         "required_column": [
+            "order_id",
+            "product_id",
+            "seller_id",
+            "price",
+        ],
+        "non_nullable_column": [
             "order_id",
             "product_id",
             "seller_id",
@@ -37,6 +49,10 @@ TABLE_CONFIG = {
             "customer_id",
             "customer_state",
         ],
+        "non_nullable_column": [
+            "customer_id",
+            "customer_state",
+        ],
     },
     "df_payments": {
         "role": "transaction_detail",
@@ -45,11 +61,20 @@ TABLE_CONFIG = {
             "order_id",
             "payment_value",
         ],
+        "non_nullable_column": [
+            "order_id",
+            "payment_value",
+        ],
     },
     "df_products": {
         "role": "entity_reference",
         "primary_key": ["product_id"],
         "required_column": [
+            "product_id",
+            "product_category_name",
+            "product_weight_g",
+        ],
+        "non_nullable_column": [
             "product_id",
             "product_category_name",
             "product_weight_g",

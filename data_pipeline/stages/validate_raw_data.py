@@ -57,6 +57,7 @@ def run_base_validations(
     table_name: str,
     primary_key: List[str],
     required_column: List[str],
+    non_nullable_column: List[str],
     report: Dict[str, List[str]],
 ) -> bool:
     """
@@ -73,6 +74,7 @@ def run_base_validations(
     - conflicting duplicate primary keys
 
     warnings:
+    - null rows in non-nullable column(s)
     - duplicate columns
     - null primary key values
     - identical duplicates
@@ -145,6 +147,16 @@ def run_base_validations(
         log_warning(
             f"{table_name}: {pk_null_count} row(s) with null primary key values", report
         )
+
+    # Null rows in non nullable columns
+    column_nulls = df[non_nullable_column].isna().sum()
+
+    for col, count in column_nulls.items():
+        if count > 0:
+            log_warning(
+                f"{table_name}: {count} null values in non-nullable column {col}",
+                report,
+            )
 
     return True
 
@@ -360,7 +372,12 @@ def apply_validation(run_context: RunContext, base_path: Path | None = None) -> 
         tables[table_name] = df
 
         if not run_base_validations(
-            df, table_name, config["primary_key"], config["required_column"], report
+            df,
+            table_name,
+            config["primary_key"],
+            config["required_column"],
+            config["non_nullable_column"],
+            report,
         ):
             continue
 

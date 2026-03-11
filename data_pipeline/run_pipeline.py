@@ -63,6 +63,7 @@ def initiliaze_metadata(run_context: RunContext) -> None:
 
     payload = {
         "run_id": run_context.run_id,
+        "pipeline_version": "v3.1",
         "status": "RUNNING",
         "started_at": dt.utcnow().isoformat(),
         "run_year": run_dt.year,
@@ -158,7 +159,7 @@ def main() -> None:
 
         # Early exit for structural errors else apply contract
         if validation_initial["errors"]:
-            raise RuntimeError("stage failure")
+            raise RuntimeError("Stage failure: Initial Validation")
 
         report_contract = []
 
@@ -202,7 +203,7 @@ def main() -> None:
 
         # Intervention: Either manual fixing or escalate the data to source owner
         if validation_post_contract["errors"] or validation_post_contract["warnings"]:
-            raise RuntimeError("stage failure")
+            raise RuntimeError("Stage failure: Post Contract Validation")
 
         # Assemble event table
         assemble = assemble_events(run_context)
@@ -216,7 +217,7 @@ def main() -> None:
         )
 
         if assemble["status"] == "failed":
-            raise RuntimeError("stage failure")
+            raise RuntimeError("Stage failure: Assemble Events")
 
         # Semantic modeling
         semantic = build_semantic_layer(run_context)
@@ -230,7 +231,7 @@ def main() -> None:
         )
 
         if semantic["status"] == "failed":
-            raise RuntimeError("stage failure")
+            raise RuntimeError("Stage failure: Semantic Modeling")
 
         # Pre-publish semantic validation
         publish = execute_publish_lifecycle(run_context)
@@ -244,7 +245,7 @@ def main() -> None:
         )
 
         if publish["status"] == "failed":
-            raise RuntimeError("stage failure")
+            raise RuntimeError("Stage failure: Semantic Publishing")
 
         finalize_metadata(run_context, status="SUCCESS")
 
