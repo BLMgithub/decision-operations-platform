@@ -55,6 +55,7 @@ def run_extraction(target_child_folder):
 
     # Deduplication Check
     if check_gcs_marking(ARCHIVAL_BUCKET, marking_path):
+        print(f"[INFO]: {target_child_folder} already processed.")
 
         return 0
 
