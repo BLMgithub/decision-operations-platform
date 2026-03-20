@@ -3,8 +3,6 @@
 # =============================================================================
 
 import sys
-from datetime import datetime as dt
-from zoneinfo import ZoneInfo
 import json
 import uuid
 from data_extract.shared.utils import (
@@ -13,6 +11,7 @@ from data_extract.shared.utils import (
     get_drive_service,
     check_gcs_marking,
     upload_to_gcs,
+    get_target_folder_name,
 )
 
 ARCHIVAL_BUCKET = "gs://operations-archival-bucket"
@@ -25,7 +24,7 @@ def run_extraction(target_child_folder):
 
     service = get_drive_service()
     metadata_path = f"logs/{target_child_folder}_metadata.json"
-    marking_path = f"status/{target_child_folder}.success"
+    archival_marking_path = f"status/{target_child_folder}.success"
 
     # Root Folder
     parent_query = f"name = '{PARENT_FOLDER}' and mimeType = '{MIME_TYPE}'"
@@ -54,7 +53,7 @@ def run_extraction(target_child_folder):
     folder_id = children[0]["id"]
 
     # Deduplication Check
-    if check_gcs_marking(ARCHIVAL_BUCKET, marking_path):
+    if check_gcs_marking(ARCHIVAL_BUCKET, archival_marking_path):
         print(f"[INFO]: {target_child_folder} already processed.")
 
         return 0
@@ -137,21 +136,13 @@ def run_extraction(target_child_folder):
             return 1
 
     upload_to_gcs(ARCHIVAL_BUCKET, metadata_path, json.dumps(metadata))
-    upload_to_gcs(ARCHIVAL_BUCKET, marking_path, "")
+    upload_to_gcs(ARCHIVAL_BUCKET, archival_marking_path, "")
     return 0
-
-
-def get_target_folder_name():
-
-    # Uploaded folder name pattern: "operations_YYYY_MM_DD"
-    pht_now = dt.now(ZoneInfo("Asia/Manila"))
-    today = pht_now.strftime("%Y_%m_%d")
-    return f"operations_{today}"
 
 
 def main():
 
-    target_folder = get_target_folder_name()
+    target_folder = get_target_folder_name("operations")
     print(f"[INFO]: Starting extraction for {target_folder}")
 
     exit_code = run_extraction(target_folder)
