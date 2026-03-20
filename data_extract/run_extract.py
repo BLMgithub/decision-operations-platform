@@ -25,7 +25,6 @@ def run_extraction(target_child_folder):
     service = get_drive_service()
     metadata_path = f"logs/{target_child_folder}_metadata.json"
     archival_marking_path = f"status/{target_child_folder}.success"
-    pipeline_marking_path = f"raw/marking/{target_child_folder}.success"
 
     # Root Folder
     parent_query = f"name = '{PARENT_FOLDER}' and mimeType = '{MIME_TYPE}'"
