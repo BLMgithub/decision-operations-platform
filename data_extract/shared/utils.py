@@ -22,16 +22,6 @@ GoogleDriveService: TypeAlias = Any
 # ------------------------------------------------------------
 
 
-def get_target_folder_name():
-    """
-    Creates target folder name with recent date as suffix (e.g. operations_YYYY_MM_DD).
-    """
-
-    pht_now = dt.now(ZoneInfo("Asia/Manila"))
-    today = pht_now.strftime("%Y_%m_%d")
-    return f"operations_{today}"
-
-
 def extract_file_content(
     service: GoogleDriveService,
     file_id: str,
@@ -93,6 +83,16 @@ def check_handshake(service: GoogleDriveService, folder_id: str) -> bool:
         "utf-8"
     )
     return "file-upload=safe" in content
+
+
+def get_target_folder_name(folder_name: str):
+    """
+    Creates target folder name with recent date as suffix (e.g. operations_YYYY_MM_DD).
+    """
+
+    pht_now = dt.now(ZoneInfo("Asia/Manila"))
+    today = pht_now.strftime("%Y_%m_%d")
+    return f"{folder_name}_{today}"
 
 
 # ------------------------------------------------------------

@@ -12,7 +12,6 @@ from data_extract.shared.utils import (
     check_gcs_marking,
     upload_to_gcs,
     get_target_folder_name,
-    plant_success_flag,
 )
 
 ARCHIVAL_BUCKET = "gs://operations-archival-bucket"
@@ -137,7 +136,6 @@ def run_extraction(target_child_folder):
             print(f"[ERROR]: Execution halted {str(e)}")
             return 1
 
-    plant_success_flag(PIPELINE_BUCKET, pipeline_marking_path)
     upload_to_gcs(ARCHIVAL_BUCKET, metadata_path, json.dumps(metadata))
     upload_to_gcs(ARCHIVAL_BUCKET, archival_marking_path, "")
     return 0
@@ -145,7 +143,7 @@ def run_extraction(target_child_folder):
 
 def main():
 
-    target_folder = get_target_folder_name()
+    target_folder = get_target_folder_name("operations")
     print(f"[INFO]: Starting extraction for {target_folder}")
 
     exit_code = run_extraction(target_folder)
