@@ -6,9 +6,14 @@
 # - Enforce referential integrity between fact and dimension tables
 
 import pandas as pd
+from pathlib import Path
 from typing import Dict, List
 from data_pipeline.shared.run_context import RunContext
-from data_pipeline.shared.loader_exporter import load_logical_table, export_file
+from data_pipeline.shared.loader_exporter import (
+    load_historical_table,
+    load_single_delta,
+    export_file,
+)
 from data_pipeline.shared.modeling_configs import (
     SELLER_FACT_SCHEMA,
     SELLER_FACT_DTYPES,
@@ -167,23 +172,7 @@ def build_customer_semantic(df: pd.DataFrame, run_context: RunContext) -> Dict:
         weekly_avg_approval_lag=("approval_lag_days", "mean"),
     )
 
-    df_customer = load_logical_table(run_context.contracted_path, "df_customers")
-
-    if df_customer is None or df_customer.empty:
-        raise RuntimeError(
-            "build_customer_semantic: df_customers logical table missing or empty"
-        )
-
-    customer_dim = (
-        df_customer[["customer_id", "customer_state"]]
-        .drop_duplicates(subset=["customer_id"])
-        .copy()
-    )
-
-    if customer_dim["customer_id"].duplicated().any():
-        raise RuntimeError(
-            "build_customer_semantic: Duplicate customer_id detected in customer_dim"
-        )
+    customer_dim, _ = load_single_delta(run_context.assembled_path, "df_customers")
 
     customer_dim["run_id"] = read_assembled["run_id"].iloc[0]
 
@@ -248,24 +237,7 @@ def build_product_semantic(df: pd.DataFrame, run_context: RunContext) -> Dict:
         weekly_avg_approval_lag=("approval_lag_days", "mean"),
     )
 
-    df_products = load_logical_table(run_context.contracted_path, "df_products")
-
-    if df_products is None or df_products.empty:
-        raise RuntimeError(
-            "build_product_semantic: df_products logical table missing or empty"
-        )
-
-    product_dim = (
-        df_products[
-            [
-                "product_id",
-                "product_category_name",
-                "product_weight_g",
-            ]
-        ]
-        .drop_duplicates(subset=["product_id"])
-        .copy()
-    )
+    product_dim, _ = load_single_delta(run_context.assembled_path, "df_products")
 
     product_dim["run_id"] = read_assembled["run_id"].iloc[0]
 
@@ -385,15 +357,12 @@ def build_semantic_layer(run_context: RunContext) -> Dict:
         return report
 
     assembled_path = run_context.assembled_path
-
-    # Load table
     load_report = report["steps"]["load_tables"]
 
-    df_assembled = load_logical_table(
+    df_assembled = load_historical_table(
         assembled_path,
         "assembled_events",
         log_info=lambda msg: log_info(msg, load_report),
-        log_error=lambda msg: log_error(msg, load_report),
     )
 
     if df_assembled is None or df_assembled.empty:
@@ -464,8 +433,9 @@ def build_semantic_layer(run_context: RunContext) -> Dict:
 
             year = run_context.run_id[:4]
             month = run_context.run_id[4:6]
+            day = run_context.run_id[6:8]
 
-            filename = f"{table_name}_{year}_{month}.parquet"
+            filename = f"{table_name}_{year}_{month}_{day}.parquet"
             output_path = semantic_module_path / filename
 
             if not export_file(df, output_path):

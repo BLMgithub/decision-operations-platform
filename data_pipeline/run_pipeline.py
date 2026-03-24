@@ -5,7 +5,10 @@
 from pathlib import Path
 from datetime import datetime as dt
 import json
-
+import os
+import shutil
+import gc
+from memory_profiler import profile
 
 from data_pipeline.shared.table_configs import TABLE_CONFIG
 from data_pipeline.shared.run_context import RunContext
@@ -18,6 +21,8 @@ from data_pipeline.stages.publish_lifecycle import execute_publish_lifecycle
 from data_pipeline.shared.storage_adapter import (
     download_raw_snapshot,
     upload_run_artifacts,
+    upload_contracted_directory,
+    download_contracted_datasets,
 )
 
 
@@ -107,6 +112,7 @@ def finalize_metadata(run_context: RunContext, status: str) -> None:
 # ------------------------------------------------------------
 
 
+@profile
 def main() -> None:
     """
     Pipeline orchestrator.
@@ -137,111 +143,126 @@ def main() -> None:
     """
 
     run_context = RunContext.create()
-    run_context.initialize_directories()
 
-    ## snapshot_raw_storage(run_context) : replaced with GCS adapter
-
-    # Create raw snapshot at runtime
-    download_raw_snapshot(run_context)
-    initiliaze_metadata(run_context)
+    # Clean any leftover from previous run
+    # if os.path.exists(run_context.workspace_root):
+    #     shutil.rmtree(run_context.workspace_root, ignore_errors=True)
 
     try:
-        # Initial validation
+
+        download_raw_snapshot(run_context)
+        initiliaze_metadata(run_context)
+
+        # ------------------------------------------------------------
+        # VALIDATIONS AND CONTRACT APPLICATION STAGES
+        # ------------------------------------------------------------
+
+        # INITIAL VALIDATION
         validation_initial = apply_validation(run_context)
 
         persist_json(
-            run_context.logs_path / "validation_initial.json",
-            {
-                "run_id": run_context.run_id,
-                "report": validation_initial,
-            },
+            path=run_context.logs_path / "validation_initial.json",
+            payload={"run_id": run_context.run_id, "report": validation_initial},
         )
 
-        # Early exit for structural errors else apply contract
         if validation_initial["errors"]:
             raise RuntimeError("Stage failure: Initial Validation")
 
         report_contract = []
 
-        # Accumulates invalid order_ids produced by parent (event_fact) tables and
-        # applies them to child (transaction_detail) tables during the same run for cascading.
+        # Accumulates set of invalid order_ids and valid order_ids, and apply to child tables.
         invalid_order_ids = set()
+        valid_order_ids = set()
 
-        # TABLE_CONFIG order must list parent tables before their children.
+        # NOTE: TABLE_CONFIG order must list parent first before its children.
         for table_name in TABLE_CONFIG:
 
-            contract, new_invalid_ids = apply_contract(
+            # CONTRACT APPLICATION
+            contract, new_invalid_ids, new_valid_ids = apply_contract(
                 run_context,
                 table_name,
                 invalid_order_ids,
+                valid_order_ids,
             )
 
+            # Cascade invalid ids in parent to child
             invalid_order_ids |= new_invalid_ids
+
+            # Remove ghost ids on child tables
+            if new_valid_ids:
+                valid_order_ids = new_valid_ids
+
             report_contract.append(contract)
 
         persist_json(
-            run_context.logs_path / "contract_report.json",
-            {
-                "run_id": run_context.run_id,
-                "report": report_contract,
-            },
+            path=run_context.logs_path / "contract_report.json",
+            payload={"run_id": run_context.run_id, "report": report_contract},
         )
 
-        # Rerun validation on CONTRACTED data
+        # VALIDATE CONTRACT OUPUT
         validation_post_contract = apply_validation(
             run_context,
             base_path=run_context.contracted_path,
         )
 
         persist_json(
-            run_context.logs_path / "validation_post_contract.json",
-            {
-                "run_id": run_context.run_id,
-                "report": validation_post_contract,
-            },
+            path=run_context.logs_path / "validation_post_contract.json",
+            payload={"run_id": run_context.run_id, "report": validation_post_contract},
         )
 
-        # Intervention: Either manual fixing or escalate the data to source owner
         if validation_post_contract["errors"] or validation_post_contract["warnings"]:
             raise RuntimeError("Stage failure: Post Contract Validation")
 
-        # Assemble event table
+        # ------------------------------------------------------------
+        # ASSEMBLE EVENTS, SEMANTIC MODELING, PUBLISHING STAGES
+        # ------------------------------------------------------------
+
+        # Persist contracted datasets
+        upload_contracted_directory(run_context)
+
+        # Clear RAM memory from previous stages
+        if os.path.exists(run_context.raw_snapshot_path):
+            shutil.rmtree(run_context.raw_snapshot_path)
+            shutil.rmtree(run_context.contracted_path)
+            gc.collect()
+
+        # Recreate path and download contracted dataset from storage
+        run_context.contracted_path.mkdir(parents=True, exist_ok=True)
+        download_contracted_datasets(run_context)
+
+        # ASSEMBLE EVENTS
         assemble = assemble_events(run_context)
 
         persist_json(
-            run_context.logs_path / "assemble_report.json",
-            {
-                "run_id": run_context.run_id,
-                "report": assemble,
-            },
+            path=run_context.logs_path / "assemble_report.json",
+            payload={"run_id": run_context.run_id, "report": assemble},
         )
 
         if assemble["status"] == "failed":
             raise RuntimeError("Stage failure: Assemble Events")
 
-        # Semantic modeling
+        # Clear RAM memory after merging
+        if os.path.exists(run_context.contracted_path):
+            shutil.rmtree(run_context.contracted_path)
+            gc.collect()
+
+        # SEMANTIC MODELING
         semantic = build_semantic_layer(run_context)
 
         persist_json(
-            run_context.logs_path / "semantic_report.json",
-            {
-                "run_id": run_context.run_id,
-                "report": semantic,
-            },
+            path=run_context.logs_path / "semantic_report.json",
+            payload={"run_id": run_context.run_id, "report": semantic},
         )
 
         if semantic["status"] == "failed":
             raise RuntimeError("Stage failure: Semantic Modeling")
 
-        # Pre-publish semantic validation
+        # PRE-PUBLISHING VALIDATION
         publish = execute_publish_lifecycle(run_context)
 
         persist_json(
-            run_context.logs_path / "publish_report.json",
-            {
-                "run_id": run_context.run_id,
-                "report": publish,
-            },
+            path=run_context.logs_path / "publish_report.json",
+            payload={"run_id": run_context.run_id, "report": publish},
         )
 
         if publish["status"] == "failed":
@@ -254,8 +275,14 @@ def main() -> None:
         finalize_metadata(run_context, status="FAILED")
         raise
 
+    # PERSIST RUN ARTIFACTS PASS or FAIL
     finally:
         upload_run_artifacts(run_context)
+
+        # Clean RAM memory for next run
+        if os.path.exists(run_context.workspace_root):
+            shutil.rmtree(run_context.workspace_root)
+            gc.collect()
 
 
 if __name__ == "__main__":

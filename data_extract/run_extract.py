@@ -99,7 +99,7 @@ def run_extraction(target_child_folder):
 
     for file in files_in_drive:
 
-        archival_path = f"{target_child_folder}/{file['name']}.csv"
+        archival_path = f"archive/{target_child_folder}/{file['name']}.csv"
         pipeline_raw_path = f"raw/{file['name']}.csv"
 
         try:

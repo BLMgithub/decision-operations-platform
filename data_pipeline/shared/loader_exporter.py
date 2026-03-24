@@ -4,86 +4,158 @@
 
 from pathlib import Path
 import pandas as pd
-from typing import Optional, Callable
-
-
-def load_csv_file(path: Path) -> pd.DataFrame:
-
-    return pd.read_csv(path)
-
-
-def load_parquet_file(
-    parquet_path: Path,
-) -> pd.DataFrame:
-
-    return pd.read_parquet(parquet_path, engine="pyarrow")
+from typing import Optional, Callable, Tuple
 
 
 FILE_LOADERS = {
-    ".csv": load_csv_file,
-    ".parquet": load_parquet_file,
+    ".csv": lambda path: pd.read_csv(path),
+    ".parquet": lambda path: pd.read_parquet(path, engine="pyarrow"),
 }
 
 
-def load_logical_table(
-    base_path: Path,
+def load_single_delta(
+    base_path: Path | str,
     table_name: str,
     log_info: Optional[Callable[[str], None]] = None,
-    log_error: Optional[Callable[[str], None]] = None,
-) -> Optional[pd.DataFrame]:
+) -> Tuple[pd.DataFrame, str]:
     """
-    Load and concatenate all CSV/Parquet files belonging to a logical table.
-
-    Files are identified by filename prefix: <table_name>*.csv or <table_name>*.parquet
+    Loads the MOST RECENT delta file for a specific logical table.
+    Relies on YYYY_MM_DD suffix for chronological sorting.
     """
-
     base_path = Path(base_path)
 
-    # List valid files and check format with FILE_LOADERS
+    # Find files matching the table prefix
+    files = [
+        file
+        for file in base_path.iterdir()
+        if file.is_file()
+        and (file.stem == table_name or file.name.startswith(f"{table_name}_"))
+        and file.suffix.lower() in FILE_LOADERS
+    ]
+
+    if not files:
+        raise FileNotFoundError(f" No file found for {table_name} in {base_path}")
+
+    # Read only recent date suffix
+    files = sorted(files)
+    target_file = files[-1]
+
+    file_name = target_file.stem
+    loader = FILE_LOADERS[target_file.suffix.lower()]
+
+    df = loader(target_file)
+
+    if log_info:
+        log_info(f"Loaded: {target_file.name} ({len(df)} rows)")
+
+    return df, file_name
+
+
+def load_historical_table(
+    base_path: Path | str,
+    table_name: str,
+    log_info: Optional[Callable[[str], None]] = None,
+) -> pd.DataFrame:
+    """
+    Loads and concatenates ALL Parquet files for a logical table.
+    """
+    base_path = Path(base_path)
+
     files = [
         f
         for f in base_path.iterdir()
         if f.is_file()
-        and f.name.startswith(f"{table_name}_")
-        and f.suffix.lower() in FILE_LOADERS
+        and (f.stem == table_name or f.name.startswith(f"{table_name}_"))
+        and f.suffix.lower() == ".parquet"
     ]
 
     if not files:
-        if log_error:
-            log_error(f"{table_name}: no files found in {base_path}")
-
-        return None
-
-    # Prevent mixed file formats
-    extensions = {f.suffix.lower() for f in files}
-    if len(extensions) > 1:
-        raise RuntimeError(f"Mixed file formats detected for {table_name}")
+        raise FileNotFoundError(f"No historical Parquet files found for {table_name}")
 
     dfs = []
-    files = sorted(files)
 
-    # Route each file using it's format to its registered loader
-    for file_path in files:
-        loader = FILE_LOADERS[file_path.suffix.lower()]
+    for file_path in sorted(files):
+        df = pd.read_parquet(file_path, engine="pyarrow")
+        dfs.append(df)
 
-        try:
-            df = loader(file_path)
-
-            if log_info:
-                log_info(f"Loaded: {file_path.name} ({len(df)} rows)")
-
-            dfs.append(df)
-
-        except Exception as e:
-            if log_error:
-                log_error(f"Failed loading: {file_path.name}: {e}")
-
-    if not dfs:
-        if log_error:
-            log_error(f"{table_name}: all matching files failed to load")
-        return None
+        if log_info:
+            log_info(f"Assembling: {file_path.name} ({len(df)} rows)")
 
     return pd.concat(dfs, ignore_index=True)
+
+
+##
+
+# def load_logical_table(
+#     base_path: Path | str,
+#     table_name: str,
+#     log_info: Optional[Callable[[str], None]] = None,
+#     log_error: Optional[Callable[[str], None]] = None,
+# ) -> Tuple[pd.DataFrame, str]:
+#     """
+#     Load and concatenate all CSV/Parquet files belonging to a logical table.
+
+#     Files are identified by filename prefix: <table_name>*.csv or <table_name>*.parquet
+
+#     Returns:
+#     - Concatinated Dataframes
+#     - File name
+#     """
+
+#     base_path = Path(base_path)
+
+#     # List valid files and check format with FILE_LOADERS
+#     files = [
+#         f
+#         for f in base_path.iterdir()
+#         if f.is_file()
+#         and (f.stem == table_name or f.name.startswith(f"{table_name}_"))
+#         and f.suffix.lower() in FILE_LOADERS
+#     ]
+
+#     if not files:
+#         if log_error:
+#             log_error(f"{table_name}: no files found in {base_path}")
+
+#         raise FileNotFoundError(f"No files found for {table_name}")
+
+#     # Prevent mixed file formats
+#     extensions = {f.suffix.lower() for f in files}
+#     if len(extensions) > 1:
+#         if log_error:
+#             log_error(f"Mixed file formats detected for {table_name}")
+
+#         raise RuntimeError("Mixed or incorrect file format")
+
+#     dfs = []
+#     files = sorted(files)
+#     file_name = None
+
+#     # Route each file using it's format to its registered loader
+#     for file_path in files:
+
+#         file_name = file_path.stem
+#         loader = FILE_LOADERS[file_path.suffix.lower()]
+
+#         try:
+#             df = loader(file_path)
+
+#             if log_info:
+#                 log_info(f"Loaded: {file_path.name} ({len(df)} rows)")
+
+#             dfs.append(df)
+
+#         except Exception as e:
+#             if log_error:
+#                 log_error(f"Failed loading: {file_path.name}: {e}")
+
+#     if not dfs:
+#         if log_error:
+#             log_error(f"{table_name}: all matching files failed to load")
+
+#         raise RuntimeError(f"Failed to load {table_name}")
+
+#     return pd.concat(dfs, ignore_index=True), file_name
 
 
 def export_file(

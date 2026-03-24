@@ -47,7 +47,9 @@ TABLE_CONFIG = {
         "primary_key": ["customer_id"],
         "required_column": [
             "customer_id",
-            "customer_state",
+            "customer_city",
+            "customer_segment",
+            "account_creation_date",
         ],
         "non_nullable_column": [
             "customer_id",
@@ -72,7 +74,12 @@ TABLE_CONFIG = {
         "required_column": [
             "product_id",
             "product_category_name",
+            "product_length_cm",
+            "product_height_cm",
+            "product_width_cm",
+            "product_fragility_index",
             "product_weight_g",
+            "supplier_tier",
         ],
         "non_nullable_column": [
             "product_id",

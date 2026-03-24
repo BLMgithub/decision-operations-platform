@@ -8,7 +8,7 @@
 
 from typing import Dict, List
 import pandas as pd
-from data_pipeline.shared.loader_exporter import load_logical_table
+from data_pipeline.shared.loader_exporter import load_single_delta
 from data_pipeline.shared.table_configs import (
     TABLE_CONFIG,
     REQUIRED_TIMESTAMPS,
@@ -350,22 +350,20 @@ def apply_validation(run_context: RunContext, base_path: Path | None = None) -> 
 
     report = init_report()
 
-    def info(msg: str):
-        log_info(msg, report)
-
-    def error(msg: str):
-        log_error(msg, report)
-
     tables: Dict[str, pd.DataFrame] = {}
     loaded_table_names = set()
 
     # Get assigned table configs
     for table_name, config in TABLE_CONFIG.items():
 
-        df = load_logical_table(base_path, table_name, log_info=info, log_error=error)
+        df, _ = load_single_delta(
+            base_path,
+            table_name,
+            log_info=lambda msg: log_info(msg, report),
+        )
 
         if df is None:
-            error(f"{table_name} logical table is missing")
+            log_error(f"{table_name} logical table is missing", report)
             continue
 
         loaded_table_names.add(table_name)
@@ -391,7 +389,7 @@ def apply_validation(run_context: RunContext, base_path: Path | None = None) -> 
 
     missing_tables = sorted(expected_tables - loaded_table_names)
     if missing_tables:
-        error(f"missing expected table(s) {missing_tables}")
+        log_error(f"missing expected table(s) {missing_tables}", report)
 
     run_cross_table_validations(tables, report)
 

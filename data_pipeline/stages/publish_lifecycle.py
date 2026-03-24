@@ -66,6 +66,7 @@ def run_integrity_gate(run_context: RunContext) -> Dict:
 
     year = run_context.run_id[:4]
     month = run_context.run_id[4:6]
+    day = run_context.run_id[6:8]
 
     # Validate semantic directory
     if not semantic_path.exists():
@@ -91,7 +92,8 @@ def run_integrity_gate(run_context: RunContext) -> Dict:
         module_path = semantic_path / module_name
 
         expected_files = {
-            f"{table_name}_{year}_{month}.parquet" for table_name in module["tables"]
+            f"{table_name}_{year}_{month}_{day}.parquet"
+            for table_name in module["tables"]
         }
 
         actual_files = {file.name for file in module_path.glob("*.parquet")}
@@ -105,7 +107,7 @@ def run_integrity_gate(run_context: RunContext) -> Dict:
         # Validate required parquet files exist
         for table_name, meta in module["tables"].items():
 
-            file_name = f"{table_name}_{year}_{month}.parquet"
+            file_name = f"{table_name}_{year}_{month}_{day}.parquet"
             file_path = module_path / file_name
 
             try:

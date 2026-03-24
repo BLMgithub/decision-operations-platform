@@ -7,7 +7,7 @@
 
 
 import pandas as pd
-from data_pipeline.shared.loader_exporter import load_logical_table, export_file
+from data_pipeline.shared.loader_exporter import load_single_delta, export_file
 from data_pipeline.shared.table_configs import (
     TABLE_CONFIG,
     REQUIRED_TIMESTAMPS,
@@ -15,7 +15,6 @@ from data_pipeline.shared.table_configs import (
 )
 from data_pipeline.shared.run_context import RunContext
 from typing import List
-
 
 # ------------------------------------------------------------
 # CONTRACT ENFORCEMENT
@@ -111,7 +110,7 @@ def remove_impossible_timestamps(df: pd.DataFrame) -> tuple[pd.DataFrame, int, s
 
 def remove_rows_with_null_values(
     df: pd.DataFrame, non_nullable_column: List[str]
-) -> tuple[pd.DataFrame, int]:
+) -> tuple[pd.DataFrame, int, set]:
     """
     Null constraint enforcement.
 
@@ -120,17 +119,21 @@ def remove_rows_with_null_values(
     """
 
     initial_count = len(df)
+    invalid_ids = set()
 
-    column_nulls = df[non_nullable_column].isna().sum()
+    column_nulls = df[non_nullable_column].isna().any(axis=1)
 
     if column_nulls.any():
-        df = df.dropna(subset=non_nullable_column)
+        if "order_id" in df.columns:
+            invalid_ids = set(df.loc[column_nulls, "order_id"])
+
+        df = df[~column_nulls]
         removed_count = initial_count - len(df)
 
     else:
         removed_count = 0
 
-    return df, removed_count
+    return df, removed_count, invalid_ids
 
 
 def cascade_drop_by_order_id(
@@ -146,6 +149,27 @@ def cascade_drop_by_order_id(
     initial_count = len(df)
 
     df = df[~df["order_id"].isin(invalid_order_ids)]
+    removed = initial_count - len(df)
+
+    return df, removed
+
+
+def enforce_parent_reference(
+    df: pd.DataFrame, valid_order_ids: set
+) -> tuple[pd.DataFrame, int]:
+    """
+    Referential cleanup using an In-Memory Whitelist.
+
+    Drops any child rows referencing an `order_id` that does not exist
+    in the finalized parent dataset.
+    """
+    initial_count = len(df)
+
+    # If the set is empty (e.g., pipeline just started), do nothing to prevent accidental nuking
+    if not valid_order_ids:
+        return df, 0
+
+    df = df[df["order_id"].isin(valid_order_ids)]
     removed = initial_count - len(df)
 
     return df, removed
@@ -179,7 +203,7 @@ ROLE_STEPS = {
             "contract": remove_rows_with_null_values,
             "metric": "removed_null_values",
             "args": ["non_nullable"],
-            "return_invalid_ids": False,
+            "return_invalid_ids": True,
         },
     ],
     "transaction_detail": [
@@ -193,12 +217,18 @@ ROLE_STEPS = {
             "contract": remove_rows_with_null_values,
             "metric": "removed_null_values",
             "args": ["non_nullable"],
-            "return_invalid_ids": False,
+            "return_invalid_ids": True,
         },
         {
             "contract": cascade_drop_by_order_id,
             "metric": "removed_cascade_rows",
             "args": ["invalid_order_ids"],
+            "return_invalid_ids": False,
+        },
+        {
+            "contract": enforce_parent_reference,
+            "metric": "removed_ghost_orphan_rows",
+            "args": ["valid_order_ids"],
             "return_invalid_ids": False,
         },
     ],
@@ -213,7 +243,7 @@ ROLE_STEPS = {
             "contract": remove_rows_with_null_values,
             "metric": "removed_null_values",
             "args": ["non_nullable"],
-            "return_invalid_ids": False,
+            "return_invalid_ids": True,
         },
     ],
 }
@@ -227,7 +257,8 @@ def apply_contract(
     run_context: RunContext,
     table_name: str,
     invalid_order_ids: set | None = None,
-) -> tuple[dict, set]:
+    valid_order_ids: set | None = None,
+) -> tuple[dict, set, set]:
     """
     Enforce structural contract on a single logical table.
 
@@ -263,6 +294,7 @@ def apply_contract(
         "deduplicated_rows": 0,
         "removed_unparsable_timestamps": 0,
         "removed_cascade_rows": 0,
+        "removed_ghost_orphan_rows": 0,
         "removed_impossible_timestamps": 0,
         "removed_null_values": 0,
         "status": "running",
@@ -271,26 +303,29 @@ def apply_contract(
     }
 
     invalid_ids = set()
+    valid_ids = set()
 
     if invalid_order_ids is None:
         invalid_order_ids = set()
+    if valid_order_ids is None:
+        valid_order_ids = set()
 
     if table_name not in TABLE_CONFIG:
         report["status"] = "failed"
         report["errors"].append(f"Unknown table: {table_name}")
 
-        return report, invalid_ids
+        return report, invalid_ids, valid_ids
 
     base_path = run_context.raw_snapshot_path
     config = TABLE_CONFIG[table_name]
     non_nullable = config.get("non_nullable_column", [])
 
-    df = load_logical_table(base_path, table_name)
+    df, filename = load_single_delta(base_path, table_name)
 
     if df is None:
         report["status"] = "failed"
         report["errors"].append("Failed to load logical table")
-        return report, invalid_ids
+        return report, invalid_ids, valid_ids
 
     report["initial_rows"] = len(df)
 
@@ -307,10 +342,13 @@ def apply_contract(
         if "invalid_order_ids" in step["args"]:
             args.append(invalid_order_ids)
 
+        if "valid_order_ids" in step["args"]:
+            args.append(valid_order_ids)
+
         try:
 
             if step["return_invalid_ids"]:
-                df, removed, new_invalid = contract(df)
+                df, removed, new_invalid = contract(df, *args)
                 invalid_ids |= new_invalid
 
             else:
@@ -323,11 +361,14 @@ def apply_contract(
             report["errors"].append(f"{contract.__name__}: Failed at {e}")
             report["final_rows"] = len(df)
 
-            return report, invalid_ids
+            return report, invalid_ids, valid_ids
 
     report["final_rows"] = len(df)
 
-    output_path = run_context.contracted_path / f"{table_name}_contracted.parquet"
+    if table_name == "df_orders":
+        valid_ids = set(df["order_id"])
+
+    output_path = run_context.contracted_path / f"{filename}.parquet"
 
     if not export_file(df, output_path):
         report["status"] = "failed"
@@ -335,7 +376,7 @@ def apply_contract(
 
     report["status"] = "success"
 
-    return report, invalid_ids
+    return report, invalid_ids, valid_ids
 
 
 # =============================================================================

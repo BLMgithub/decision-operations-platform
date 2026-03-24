@@ -8,12 +8,31 @@
 
 
 import pandas as pd
+from pathlib import Path
 from typing import Dict, List
 from data_pipeline.shared.run_context import RunContext
 from data_pipeline.shared.modeling_configs import ASSEMBLE_SCHEMA, ASSEMBLE_DTYPES
-from data_pipeline.shared.loader_exporter import load_logical_table, export_file
+from data_pipeline.shared.loader_exporter import load_historical_table, export_file
 
 EVENT_TABLES = ["df_orders", "df_order_items", "df_payments"]
+
+DIMENSION_REFERENCES = {
+    "df_customers": {
+        "primary_key": ["customer_id"],
+        "required_column": [
+            "customer_id",
+            "customer_state",
+        ],
+    },
+    "df_products": {
+        "primary_key": ["product_id"],
+        "required_column": [
+            "product_id",
+            "product_category_name",
+            "product_weight_g",
+        ],
+    },
+}
 
 # ------------------------------------------------------------
 # ASSEMBLE REPORT & LOGS
@@ -56,14 +75,24 @@ def merge_data(tables: dict) -> pd.DataFrame:
     df_order_items = tables["df_order_items"]
     df_payments = tables["df_payments"]
 
+    initial_orders = len(df_orders)
+
     df_merged = df_orders.merge(df_order_items, on="order_id", how="inner").merge(
         df_payments, on="order_id", how="left"
     )
 
     df_merged = df_merged.rename(columns={"payment_value": "order_revenue"})
 
-    if len(df_merged) != len(df_orders):
-        raise RuntimeError("Cardinality violation detected: expected 1 row per order")
+    if df_merged["order_id"].duplicated().any():
+        raise RuntimeError(
+            "Cardinality violation: 1-to-Many explosion detected (multiple items/payments per order)"
+        )
+
+    if len(df_merged) < initial_orders:
+        dropped_count = initial_orders - len(df_merged)
+        print(
+            f"[WARNING] Assembly: {dropped_count} orders dropped during inner join because they lacked valid order_items."
+        )
 
     return df_merged
 
@@ -149,6 +178,29 @@ def freeze_schema(df: pd.DataFrame) -> pd.DataFrame:
 
 
 # ------------------------------------------------------------
+# SEMANTIC DIMENSION REFERENCE
+# ------------------------------------------------------------
+
+
+def dimension_references(
+    df: pd.DataFrame,
+    table_name: str,
+    primary_key: list[str],
+    req_column: list[str],
+) -> pd.DataFrame:
+    """
+    docstring.... returns dimension references
+    """
+
+    df_dim = df[req_column].drop_duplicates(subset=primary_key).copy()
+
+    if df_dim[primary_key].duplicated().any():
+        raise RuntimeError(f"Duplicated {primary_key} detected in {table_name}")
+
+    return df_dim
+
+
+# ------------------------------------------------------------
 # DATA ASSEMBLING
 # ------------------------------------------------------------
 
@@ -176,6 +228,7 @@ def assemble_events(run_context: RunContext) -> Dict:
             "derive_fields": init_report(),
             "freeze_schema": init_report(),
             "export": init_report(),
+            "dim_ref_report": init_report(),
         },
     }
 
@@ -186,18 +239,16 @@ def assemble_events(run_context: RunContext) -> Dict:
         return report
 
     contracted_path = run_context.contracted_path
-    tables = {}
 
-    # Load Tables
+    tables = {}
     load_report = report["steps"]["load_tables"]
 
     for table_name in EVENT_TABLES:
 
-        df = load_logical_table(
+        df = load_historical_table(
             contracted_path,
             table_name,
             log_info=lambda msg: log_info(msg, load_report),
-            log_error=lambda msg: log_error(msg, load_report),
         )
 
         if df is None:
@@ -210,7 +261,7 @@ def assemble_events(run_context: RunContext) -> Dict:
 
     log_info("Tables loaded successfully", load_report)
 
-    # Merge dataframes
+    # MERGING DATAFRAMES
     merge_report = report["steps"]["merge_events"]
 
     try:
@@ -224,7 +275,7 @@ def assemble_events(run_context: RunContext) -> Dict:
 
     log_info(f"Merge completed successfully ({len(df_merged)} rows)", merge_report)
 
-    # Derived columns
+    # DERIVING COLUMNS
     derive_report = report["steps"]["derive_fields"]
 
     try:
@@ -238,7 +289,7 @@ def assemble_events(run_context: RunContext) -> Dict:
 
     log_info("Fields derived successfully", derive_report)
 
-    # Freeze Schema
+    # FREEZING SCHEMA
     freeze_report = report["steps"]["freeze_schema"]
 
     try:
@@ -252,14 +303,15 @@ def assemble_events(run_context: RunContext) -> Dict:
 
     log_info("Schema freeze completed successfully", freeze_report)
 
-    # Table Export
+    # EXPORTING ASSEMBLED DATA
     export_report = report["steps"]["export"]
 
     year = run_context.run_id[:4]
     month = run_context.run_id[4:6]
+    day = run_context.run_id[6:8]
 
     output_path = (
-        run_context.assembled_path / f"assembled_events_{year}_{month}.parquet"
+        run_context.assembled_path / f"assembled_events_{year}_{month}_{day}.parquet"
     )
 
     if not export_file(df_contract, output_path):
@@ -269,9 +321,42 @@ def assemble_events(run_context: RunContext) -> Dict:
         return fail_step("export")
 
     log_info(
-        f"Export success: assembled_events_{year}_{month}.parquet ({len(df_contract)} rows)",
+        f"Export success: assembled_events_{year}_{month}_{day}.parquet ({len(df_contract)} rows)",
         export_report,
     )
+
+    # DIMENSION REFERENCES
+    dim_report = report["steps"]["dim_ref_report"]
+
+    for table, config in DIMENSION_REFERENCES.items():
+
+        try:
+            df = load_historical_table(contracted_path, table)
+
+            df_dim = dimension_references(
+                df, table, config["primary_key"], config["required_column"]
+            )
+
+            dim_output = (
+                run_context.assembled_path / f"{table}_{year}_{month}_{day}.parquet"
+            )
+
+            if not export_file(df_dim, dim_output):
+                log_error(f"Export failed for {table}", dim_report)
+                dim_report["status"] = "failed"
+
+                return fail_step("dim_reference")
+
+            log_info(
+                f"Export success: Dimension reference {table} ({len(df_dim)} rows)",
+                dim_report,
+            )
+
+        except Exception as e:
+            log_error(str(e), dim_report)
+            dim_report["status"] = "failed"
+
+            return fail_step("dim_reference")
 
     return report
 
