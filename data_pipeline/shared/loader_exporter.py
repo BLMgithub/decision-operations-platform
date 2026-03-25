@@ -70,7 +70,7 @@ def load_historical_table(
     ]
 
     if not files:
-        raise FileNotFoundError(f"No historical Parquet files found for {table_name}")
+        raise FileNotFoundError(f"No Parquet files found for {table_name}")
 
     dfs = []
 
@@ -79,83 +79,9 @@ def load_historical_table(
         dfs.append(df)
 
         if log_info:
-            log_info(f"Assembling: {file_path.name} ({len(df)} rows)")
+            log_info(f"Loaded: {file_path.name} ({len(df)} rows)")
 
     return pd.concat(dfs, ignore_index=True)
-
-
-##
-
-# def load_logical_table(
-#     base_path: Path | str,
-#     table_name: str,
-#     log_info: Optional[Callable[[str], None]] = None,
-#     log_error: Optional[Callable[[str], None]] = None,
-# ) -> Tuple[pd.DataFrame, str]:
-#     """
-#     Load and concatenate all CSV/Parquet files belonging to a logical table.
-
-#     Files are identified by filename prefix: <table_name>*.csv or <table_name>*.parquet
-
-#     Returns:
-#     - Concatinated Dataframes
-#     - File name
-#     """
-
-#     base_path = Path(base_path)
-
-#     # List valid files and check format with FILE_LOADERS
-#     files = [
-#         f
-#         for f in base_path.iterdir()
-#         if f.is_file()
-#         and (f.stem == table_name or f.name.startswith(f"{table_name}_"))
-#         and f.suffix.lower() in FILE_LOADERS
-#     ]
-
-#     if not files:
-#         if log_error:
-#             log_error(f"{table_name}: no files found in {base_path}")
-
-#         raise FileNotFoundError(f"No files found for {table_name}")
-
-#     # Prevent mixed file formats
-#     extensions = {f.suffix.lower() for f in files}
-#     if len(extensions) > 1:
-#         if log_error:
-#             log_error(f"Mixed file formats detected for {table_name}")
-
-#         raise RuntimeError("Mixed or incorrect file format")
-
-#     dfs = []
-#     files = sorted(files)
-#     file_name = None
-
-#     # Route each file using it's format to its registered loader
-#     for file_path in files:
-
-#         file_name = file_path.stem
-#         loader = FILE_LOADERS[file_path.suffix.lower()]
-
-#         try:
-#             df = loader(file_path)
-
-#             if log_info:
-#                 log_info(f"Loaded: {file_path.name} ({len(df)} rows)")
-
-#             dfs.append(df)
-
-#         except Exception as e:
-#             if log_error:
-#                 log_error(f"Failed loading: {file_path.name}: {e}")
-
-#     if not dfs:
-#         if log_error:
-#             log_error(f"{table_name}: all matching files failed to load")
-
-#         raise RuntimeError(f"Failed to load {table_name}")
-
-#     return pd.concat(dfs, ignore_index=True), file_name
 
 
 def export_file(
