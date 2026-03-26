@@ -6,7 +6,7 @@ from data_pipeline.contract.contract_logic import (
     deduplicate_exact_events,
     remove_impossible_timestamps,
     remove_unparsable_timestamps,
-    remove_rows_with_null_values,
+    remove_rows_with_null_constraint,
     cascade_drop_by_order_id,
     enforce_parent_reference,
 )
@@ -32,7 +32,7 @@ ROLE_STEPS = {
             "return_invalid_ids": True,
         },
         {
-            "contract": remove_rows_with_null_values,
+            "contract": remove_rows_with_null_constraint,
             "metric": "removed_null_values",
             "args": ["non_nullable"],
             "return_invalid_ids": True,
@@ -46,7 +46,7 @@ ROLE_STEPS = {
             "return_invalid_ids": False,
         },
         {
-            "contract": remove_rows_with_null_values,
+            "contract": remove_rows_with_null_constraint,
             "metric": "removed_null_values",
             "args": ["non_nullable"],
             "return_invalid_ids": True,
@@ -72,7 +72,7 @@ ROLE_STEPS = {
             "return_invalid_ids": False,
         },
         {
-            "contract": remove_rows_with_null_values,
+            "contract": remove_rows_with_null_constraint,
             "metric": "removed_null_values",
             "args": ["non_nullable"],
             "return_invalid_ids": True,

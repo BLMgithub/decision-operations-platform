@@ -39,7 +39,23 @@ def init_stage_report():
 
 
 def orchestrate_event_assembly(run_context: RunContext, report: Dict) -> bool:
-    """Handles the heavy lifting of the Silver-to-Gold event merge."""
+    """
+    Coordinates the linear transformation pipeline for order-grain events.
+
+    Execution Flow:
+    1. Load: Fetch 'orders', 'items', and 'payments'.
+    2. Merge: Join into a single row-per-order grain.
+    3. Derive: Calculate analytical time-deltas and lineage.
+    4. Freeze: Enforce semantic schema and dtypes.
+    5. Export: Persist to the assembly zone.
+
+    Memory Management:
+    - Explicitly deletes intermediate DataFrames and triggers gc.collect()
+      after export to minimize peak memory footprint.
+
+    Failures:
+    - Returns False immediately (fail-fast) if any sub-task wrapper fails.
+    """
 
     tables = load_event_table(run_context, report["steps"]["load_tables"])
     if not tables:
@@ -78,7 +94,21 @@ def orchestrate_event_assembly(run_context: RunContext, report: Dict) -> bool:
 
 
 def orchestrate_dimension_refs(run_context: RunContext, report: Dict) -> bool:
-    """Handles the extraction and export of dimension reference tables."""
+    """
+    Iteratively extracts and exports dimension reference tables.
+
+    Contract:
+    - Processes every table defined in the DIMENSION_REFERENCES registry.
+    - Performs one-to-one extraction from Silver (contracted) to Gold (assembled).
+
+    Invariants:
+    - Fail-Fast: If a single dimension fails to load or validate, the
+      entire orchestration terminates and returns False.
+
+    Side Effects:
+    - Performs per-iteration memory cleanup (del/gc.collect) to prevent
+      accumulation of large dimension frames.
+    """
 
     for table, config in DIMENSION_REFERENCES.items():
         df_raw = load_historical_table(run_context.contracted_path, table)
@@ -116,22 +146,30 @@ def orchestrate_dimension_refs(run_context: RunContext, report: Dict) -> bool:
 
 def assemble_events(run_context: RunContext) -> dict:
     """
-    Assemble contract-compliant event dataset (order grain).
+    Main entry point for the Silver-to-Gold Assembly stage.
 
-    Event Assembly Steps:
-    - Load contracted event tables
-    - Merge with cardinality enforcement (1 row per order_id)
-    - Derive temporal metrics and lineage fields
-    - Freeze schema and enforce dtypes
-    - Export Assembly output
+    This component coordinates the transformation of normalized relational
+    tables into contract-compliant analytical datasets.
 
-    Dimension Reference Steps:
-    -
-    -
-    - Export dimension reference output
+    Workflow I: Event Assembly (Order Grain)
+    1. Load: Fetches core event tables (Orders, Items, Payments).
+    2. Merge: Join datasets with strict 1:1 order_id cardinality enforcement.
+    3. Derive: Calculate temporal metrics (lead times) and lineage attributes.
+    4. Freeze: Project final schema and enforce strictly defined dtypes.
+    5. Export: Persist the unified event table to the Gold zone.
 
-    Grain:
-    - One row per order_id (hard fail on violation)
+    Workflow II: Dimension Reference Extraction
+    1. Iterate: Process Customer and Product registries.
+    2. Extract: Select required columns and deduplicate by primary key.
+    3. Export: Persist independent reference tables to the Gold zone.
+
+    Operational Guarantees:
+    - Grain: Strictly one row per 'order_id' for the event dataset.
+    - Failure: Fail-fast; any task failure halts the stage and returns a 'failed' status.
+    - Context: Relies on 'run_context' for deterministic path resolution.
+
+    Returns:
+        dict: A stage report containing 'status' and step-level execution logs.
     """
 
     report = init_stage_report()

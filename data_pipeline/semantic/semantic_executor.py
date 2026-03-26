@@ -18,7 +18,27 @@ def task_wrapper(
     *args,
     **kwargs,
 ) -> tuple[bool, Any]:
-    """Unified task runner that handles logging, reporting, and execution."""
+    """
+    Unified task runner that handles logging, reporting, and execution.
+
+    Inputs:
+    - step_name: The lookup key in the report['steps'] dictionary.
+    - report: The shared state dictionary initialized by 'init_stage_report'.
+    - func: The logic/transformation function to be executed.
+    - *args: Positional arguments passed directly to 'func'.
+
+    Outputs:
+    - Returns a tuple of (Success Boolean, Result Data).
+    - Result Data is 'None' if the task fails or returns no data.
+
+    Invariants:
+    - Guaranteed return of (bool, Result|None).
+    - Ensures report[step_name] initialization and status updates.
+
+    Failures:
+    - Traps all exceptions; returns False/None and logs the error to telemetry.
+    - Returns False if the underlying function returns None (logical failure).
+    """
 
     if step_name not in report:
         report[step_name] = init_report()
@@ -44,7 +64,18 @@ def task_wrapper(
 
 
 def validate_and_freeze_table(df: pd.DataFrame, meta: dict) -> pd.DataFrame:
-    """Pure logic function for contract enforcement."""
+    """
+    Enforces the technical contract for a specific semantic table.
+
+    Contract:
+    - Grain: Validates uniqueness of columns defined in meta['grain'].
+    - Schema: Ensures 1:1 match with columns in meta['schema'].
+    - Types: Explicitly casts columns to types defined in meta['dtypes'].
+
+    Behavior:
+    - Deterministic Output: Performs a stable sort based on the grain.
+    - Fast-Fail: Raises RuntimeError on grain or schema violations.
+    """
 
     # Validate duplicates
     if df.duplicated(meta["grain"]).any():
@@ -76,12 +107,28 @@ def orchestrate_module(
     module_config: dict,
     report: dict,
 ) -> bool:
-    """Processes a single semantic module (e.g., seller_semantic)."""
+    """
+    Coordinates the construction, validation, and export of a semantic module.
+
+    Workflow:
+    1. Build: Executes the module-specific builder logic.
+    2. Loop: Iterates through each returned table in the builder output.
+    3. Validate: Enforces technical contracts (grain, schema, dtypes).
+    4. Export: Persists validated artifacts to the semantic zone.
+    5. Cleanup: Manages memory via explicit deletion and garbage collection.
+
+    Invariants:
+    - Fail-Fast: Any error in building or table-level processing halts the module.
+    - Strict Config: Builder output must match keys in 'module_config["tables"]'.
+
+    Returns:
+        bool: True if the module and all its tables were successfully processed.
+    """
 
     module_report = init_report()
     report["modules"][module_name] = module_report
 
-    # 1. Execute Module Builder
+    # Execute Module Builder
     ok, builder_output = task_wrapper(
         "build_stage",
         module_report,
@@ -138,8 +185,22 @@ def orchestrate_module(
 
 def build_semantic_layer(run_context: RunContext) -> Dict:
     """
-    Builds semantic modules from the assembled event layer.
+    Main entry point for the Gold-to-Semantic stage.
+
+    Workflow:
+    1. Source Verification: Loads 'assembled_events' and halts if empty/missing.
+    2. Registry Execution: Iterates through 'SEMANTIC_MODULES'.
+    3. Orchestration: Triggers builder logic followed by contract enforcement.
+    4. Cleanup: Purges memory after each module export.
+
+    Guarantees:
+    - Atomicity: Module failures are trapped but mark the entire stage as 'failed'.
+    - Lineage: Uses 'run_id' for deterministic output partitioning.
+
+    Returns:
+        Dict: A global report of module statuses and error logs.
     """
+
     report = {
         "status": "success",
         "steps": {"load_tables": init_report()},

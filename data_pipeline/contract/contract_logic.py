@@ -4,19 +4,20 @@
 
 
 import pandas as pd
-from data_pipeline.shared.table_configs import (
-    REQUIRED_TIMESTAMPS,
-    TIMESTAMP_FORMATS,
-)
 from typing import List
+from data_pipeline.shared.table_configs import REQUIRED_TIMESTAMPS, TIMESTAMP_FORMATS
 
 
 def deduplicate_exact_events(df: pd.DataFrame) -> tuple[pd.DataFrame, int]:
     """
-    Exact event deduplication.
+    Enforces record-level uniqueness across the entire row schema.
 
-    Removes fully identical rows representing the same logical event.
-    Returns the cleaned dataframe along with the number of rows removed.
+    Contract:
+    - Identifies and removes rows where every column value is an exact match.
+    - Retains the 'first' encountered instance of the record.
+
+    Returns:
+        tuple: (Filtered DataFrame, Integer count of dropped rows)
     """
 
     initial_count = len(df)
@@ -35,10 +36,18 @@ def deduplicate_exact_events(df: pd.DataFrame) -> tuple[pd.DataFrame, int]:
 
 def remove_unparsable_timestamps(df: pd.DataFrame) -> tuple[pd.DataFrame, int, set]:
     """
-    Timestamp parse enforcement.
+    Enforces parseability for system-critical temporal fields.
 
-    Removes rows where any required timestamp field cannot be parsed under the declared formats.
-    Returns the affected `order_ids` for downstream cascade cleanup.
+    Contract:
+    - Evaluates all columns defined in REQUIRED_TIMESTAMPS.
+    - Drops any row containing at least one NaT/unparsable value in these columns.
+
+    Invariants:
+    - Does not cast types permanently; performs internal validation only.
+    - Emits 'order_id' of failing rows to prevent orphan processing downstream.
+
+    Returns:
+        tuple: (Filtered DataFrame, Count of dropped rows, Set of invalid order_ids)
     """
 
     initial_count = len(df)
@@ -70,11 +79,15 @@ def remove_unparsable_timestamps(df: pd.DataFrame) -> tuple[pd.DataFrame, int, s
 
 def remove_impossible_timestamps(df: pd.DataFrame) -> tuple[pd.DataFrame, int, set]:
     """
-    Temporal invariant enforcement.
+    Enforces logical chronology for the order lifecycle.
 
-    Removes rows that violate required chronological ordering between purchase, approval, and delivery timestamps.
+    Contract:
+    - Invariant I: Order Approval Date >= Order Purchase Date.
+    - Invariant II: Order Delivery Date >= Order Purchase Date.
+    - Drops rows where the temporal sequence is physically impossible.
 
-    Returns the affected `order_ids` for downstream cascade cleanup.
+    Returns:
+        tuple: (Filtered DataFrame, Count of dropped rows, Set of invalid order_ids)
     """
 
     purchase_ts = pd.to_datetime(df["order_purchase_timestamp"])
@@ -98,14 +111,18 @@ def remove_impossible_timestamps(df: pd.DataFrame) -> tuple[pd.DataFrame, int, s
     return df, remove_count, invalid_order_ids
 
 
-def remove_rows_with_null_values(
+def remove_rows_with_null_constraint(
     df: pd.DataFrame, non_nullable_column: List[str]
 ) -> tuple[pd.DataFrame, int, set]:
     """
-    Null constraint enforcement.
+    Enforces mandatory data presence (NOT NULL) for a dynamic column list.
 
-    Removes rows where any column declared as non-nullable contains null values.
-    Returns the cleaned dataframe along with the number of rows removed.
+    Contract:
+    - Evaluates the subset of columns provided in 'non_nullable_column'.
+    - Drops any row where at least one target column contains a Null/NaN.
+
+    Returns:
+        tuple: (Filtered DataFrame, Count of dropped rows, Set of invalid order_ids)
     """
 
     initial_count = len(df)
@@ -130,10 +147,14 @@ def cascade_drop_by_order_id(
     df: pd.DataFrame, invalid_order_ids: set
 ) -> tuple[pd.DataFrame, int]:
     """
-    Referential cleanup by `order_id`.
+    Enforces referential cleanup based on a blacklist of compromised keys.
 
-    Removes rows whose `order_id` was previously invalidated by
-    upstream contract enforcement steps.
+    Contract:
+    - Drops any row whose 'order_id' exists in the 'invalid_order_ids' set.
+    - Purpose: Prunes child records (items/payments) whose parent orders failed validation.
+
+    Returns:
+        tuple: (Filtered DataFrame, Integer count of dropped rows)
     """
 
     initial_count = len(df)
@@ -148,14 +169,17 @@ def enforce_parent_reference(
     df: pd.DataFrame, valid_order_ids: set
 ) -> tuple[pd.DataFrame, int]:
     """
-    Referential cleanup using an In-Memory Whitelist.
+    Enforces referential integrity based on a whitelist of validated keys.
 
-    Drops any child rows referencing an `order_id` that does not exist
-    in the finalized parent dataset.
+    Contract:
+    - Drops any row whose 'order_id' is NOT present in the 'valid_order_ids' set.
+    - Purpose: Final referential gate to ensure total alignment with the 'orders' grain.
+
+    Returns:
+        tuple: (Filtered DataFrame, Integer count of dropped rows)
     """
     initial_count = len(df)
 
-    # If the set is empty (e.g., pipeline just started)
     if not valid_order_ids:
         return df, 0
 

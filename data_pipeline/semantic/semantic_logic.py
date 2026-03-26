@@ -34,22 +34,24 @@ def log_error(message: str, report: Dict[str, List[str]]) -> None:
 
 def build_seller_semantic(df: pd.DataFrame, run_context: RunContext) -> Dict:
     """
-    Build seller weekly semantic layer from assembled events.
+    Constructs the Seller-centric analytical layer from assembled events.
 
-    Fact grain:
-    - 1 row per (seller_id, order_year_week)
+    Contract:
+    - Transforms order-grain events into weekly seller performance snapshots.
+    - Aggregates metrics including revenue, lead times, and fulfillment lag.
+    - Produces a historical dimension table for seller attributes.
 
-    Dimension grain:
-    - 1 row per seller_id
+    Invariants:
+    - Lineage: Enforces a single 'run_id' across the input dataset.
+    - Fact Grain: Strictly 1 row per ('seller_id', 'order_year_week').
+    - Dimension Grain: Strictly 1 row per 'seller_id'.
+    - Temporal: Aligns all metrics to ISO-week start dates (Monday).
 
-    Behavior:
-    - Enforce single run_id lineage
-    - Derive ISO week alignment
-    - Aggregate event metrics to seller-week
+    Outputs:
+    - Returns a dictionary containing 'seller_weekly_fact' and 'seller_dim'.
 
-    Returns:
-    - Aggregated fact dataframe
-    - Seller dimension dataframe
+    Failures:
+    - Raises RuntimeError if the input contains data from multiple pipeline runs.
     """
 
     if df["run_id"].nunique() != 1:
@@ -100,22 +102,23 @@ def build_seller_semantic(df: pd.DataFrame, run_context: RunContext) -> Dict:
 
 def build_customer_semantic(df: pd.DataFrame, run_context: RunContext) -> Dict:
     """
-    Build customer weekly semantic layer from assembled events.
+    Constructs the Customer-centric analytical layer from assembled events.
 
-    Fact grain:
-    - 1 row per (customer_id, order_year_week)
+    Contract:
+    - Aggregates consumer behavior metrics into a weekly temporal grain.
+    - Calculates lifetime-to-date attributes and first-purchase markers.
+    - Summarizes spending patterns and locality-based attributes.
 
-    Dimension grain:
-    - 1 row per customer_id
+    Invariants:
+    - Lineage: Requires a unified 'run_id' for consistent partitioning.
+    - Fact Grain: Strictly 1 row per ('customer_id', 'order_year_week').
+    - Dimension Grain: Strictly 1 row per 'customer_id'.
 
-    Behavior:
-    - Enforce single run_id lineage
-    - Derive ISO week alignment
-    - Aggregate event metrics to customer-week
+    Outputs:
+    - Returns a dictionary containing 'customer_weekly_fact' and 'customer_dim'.
 
-    Returns:
-    - Aggregated fact dataframe
-    - customer dimension dataframe
+    Failures:
+    - Raises RuntimeError if 'run_id' cardinality is greater than 1.
     """
 
     if df["run_id"].nunique() != 1:
@@ -161,22 +164,23 @@ def build_customer_semantic(df: pd.DataFrame, run_context: RunContext) -> Dict:
 
 def build_product_semantic(df: pd.DataFrame, run_context: RunContext) -> Dict:
     """
-    Build product weekly semantic layer from assembled events.
+    Constructs the Product-centric analytical layer from assembled events.
 
-    Fact grain:
-    - 1 row per (product_id, order_year_week)
+    Contract:
+    - Aggregates sales velocity and fulfillment health per product.
+    - Merges category metadata with weekly transaction volumes.
+    - Calculates average lead times and cancellation rates per product week.
 
-    Dimension grain:
-    - 1 row per product_id
+    Invariants:
+    - Lineage: Validates input homogeneity via 'run_id' check.
+    - Fact Grain: Strictly 1 row per ('product_id', 'order_year_week').
+    - Dimension Grain: Strictly 1 row per 'product_id'.
 
-    Behavior:
-    - Enforce single run_id lineage
-    - Derive ISO week alignment
-    - Aggregate event metrics to product-week
+    Outputs:
+    - Returns a dictionary containing 'product_weekly_fact' and 'product_dim'.
 
-    Returns:
-    - Aggregated fact dataframe
-    - product dimension dataframe
+    Failures:
+    - Raises RuntimeError if cross-run data contamination is detected.
     """
 
     if df["run_id"].nunique() != 1:

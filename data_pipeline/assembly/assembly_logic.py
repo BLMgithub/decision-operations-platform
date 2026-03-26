@@ -55,15 +55,19 @@ def log_error(message: str, report: Dict[str, list[str]]) -> None:
 
 def merge_data(tables: Dict) -> pd.DataFrame:
     """
-    Core event assembly join.
+    Core event assembly join and grain enforcement.
 
-    Combines order header, order items, and payment tables into a
-    single event-grain dataset keyed at one row per order.
+    Contract:
+    - Inner joins 'df_orders' with 'df_order_items' to ensure analytical relevance.
+    - Left joins 'df_payments' to capture financial metadata.
+    - Projects 'payment_value' as 'order_revenue'.
 
-    Structural expectations:
-    - `df_orders` defines the base order grain
-    - `df_order_items` must maintain 1:1 relationship with order_id
-    - `df_payments` is left-joined, expected one payment per order
+    Invariants:
+    - Dataset Grain: Strictly one row per 'order_id'.
+    - Referential Integrity: Orders lacking corresponding item records are discarded.
+
+    Failures:
+    - Raises RuntimeError if a 1-to-Many cardinality explosion is detected (duplicate order_ids).
     """
 
     df_orders = tables["df_orders"]
@@ -94,21 +98,19 @@ def merge_data(tables: Dict) -> pd.DataFrame:
 
 def derive_fields(df: pd.DataFrame, run_id: str) -> pd.DataFrame:
     """
-    Event enrichment layer.
+    Analytical enrichment and temporal metric derivation layer.
 
-    Standardizes timestamp types and derives analytical time fields
-    required for downstream semantic modeling.
+    Contract:
+    - Standardizes core lifecycle timestamps to datetime objects.
+    - Calculates day-grain durations for fulfillment and approval latency.
+    - Stays compliant with ISO-8601 for week/year attributes.
 
-    Derived fields:
-    - `lead_time_days` - approval to delivery duration
-    - `approval_lag_days` - purchase to approval duration
-    - `delivery_delay_days` - actual vs estimated delivery gap
-    - `order_date`, `order_year`, ISO week attributes
-    - `run_id` lineage stamp for run traceability
+    Invariants:
+    - Lineage: Every row is stamped with the current 'run_id' for traceability.
+    - Temporal Grain: Metrics (lead_time, lags, delays) are represented as integer days.
 
-    Behavior:
-    - Casts required timestamp columns to datetime
-    - Performs duration calculations in day grain
+    Failures:
+    - [Undetermined] - Assumes source timestamps have passed the 'remove_unparsable_timestamps' contract.
     """
 
     df_derived = df.copy()
@@ -149,16 +151,19 @@ def derive_fields(df: pd.DataFrame, run_id: str) -> pd.DataFrame:
 
 def freeze_schema(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Final structural contract enforcement.
+    Final technical contract enforcement and semantic projection.
 
-    Projects the assembled dataset into the approved semantic schema,
-    enforces critical dtypes, and applies deterministic ordering.
+    Contract:
+    - Prunes all intermediate columns, retaining only the 'ASSEMBLE_SCHEMA' subset.
+    - Enforces strict type casting via 'ASSEMBLE_DTYPES'.
+    - Applies deterministic sorting and index resetting.
 
-    Enforcement actions:
-    - Selects only contract-approved columns
-    - Casts required fields to declared dtypes
-    - Sorts by `order_id` for stable downstream consumption
-    - Resets index to produce a clean output frame
+    Invariants:
+    - Sorting: Guaranteed ascending order by 'order_id'.
+    - Structure: Final frame exactly matches the modeling configuration spec.
+
+    Failures:
+    - Raises RuntimeError if the input frame lacks columns required by 'ASSEMBLE_SCHEMA'.
     """
 
     missing_cols = set(ASSEMBLE_SCHEMA) - set(df.columns)
@@ -184,7 +189,18 @@ def dimension_references(
     req_column: list[str],
 ) -> pd.DataFrame:
     """
-    docstring.... returns dimension references
+    Extracts a unique reference dataset from a historical source.
+
+    Contract:
+    - Filters input to specified 'req_column' set.
+    - Enforces uniqueness based on 'primary_key'.
+
+    Invariants:
+    - Dataset Grain: Strictly one row per 'primary_key'.
+    - Sorting: Inherits source order (deterministic behavior not guaranteed).
+
+    Failures:
+    - Raises RuntimeError if 'primary_key' duplicates persist after extraction.
     """
 
     df_dim = df[req_column].drop_duplicates(subset=primary_key).copy()
@@ -209,8 +225,23 @@ def task_wrapper(
     """
     Unified task runner that handles logging, reporting, and execution.
 
-    Returns:
-        Success Boolean, Result Data
+    Contract:
+    - Encapsulates execution of a logic function with standardized telemetry.
+    - Manages the state transition of the 'report' object for the specific 'step_name'.
+
+    Inputs:
+    - step_name: The lookup key in the report['steps'] dictionary.
+    - report: The shared state dictionary initialized by 'init_stage_report'.
+    - func: The logic/transformation function to be executed.
+    - *args: Positional arguments passed directly to 'func'.
+
+    Outputs:
+    - Returns a tuple of (Success Boolean, Result Data).
+    - Result Data is 'None' if the task fails or returns no data.
+
+    Invariants:
+    - Fail-Safe: Traps all exceptions to prevent pipeline termination, converting errors into 'failed' status reports.
+    - Integrity: Updates the 'status' field in the report for the given step to either 'success' or 'failed' regardless of outcome.
     """
     step_report = report["steps"][step_name]
 
@@ -233,6 +264,16 @@ def task_wrapper(
 
 
 def load_event_table(run_context: RunContext, report: Dict) -> Any:
+    """
+    Batch-loads core event tables required for assembly.
+
+    Contract:
+    - Iterates through the global EVENT_TABLES registry.
+    - Loads Parquet files from the provided 'contracted_path'.
+
+    Outputs:
+    - Returns a dictionary keyed by table name.
+    """
 
     contracted_path = run_context.contracted_path
     tables = {}
@@ -251,6 +292,17 @@ def load_event_table(run_context: RunContext, report: Dict) -> Any:
 
 
 def export_path(run_context: RunContext, file_name: str) -> Path:
+    """
+    Generates a deterministic destination path for assembled artifacts.
+
+    Contract:
+    - Parses the 'run_id' (format: YYYYMMDD...) to extract date partitions.
+    - Constructs a filename with the pattern: {file_name}_{YYYY}_{MM}_{DD}.parquet.
+
+    Invariants:
+    - Output location is always relative to 'run_context.assembled_path'.
+    """
+
     year = run_context.run_id[:4]
     month = run_context.run_id[4:6]
     day = run_context.run_id[6:8]

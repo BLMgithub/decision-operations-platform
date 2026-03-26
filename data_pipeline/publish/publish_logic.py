@@ -43,22 +43,18 @@ def log_error(message: str, report: Dict[str, list[str]]) -> None:
 
 def run_integrity_gate(run_context: RunContext) -> Dict:
     """
-    Pre-publish semantic integrity gate.
+    Enforces the pre-publication structural completeness contract.
 
-    Validations:
-    - Semantic directory exists
-    - Expected module set matches semantic module registry
-    - Expected file set matches semantic registry
-    - Parquet files load successfully
-    - Tables are non-empty
-    - Required schema columns present
+    Contract:
+    - Scans the runtime semantic directory for existence.
+    - Validates that every Module and Table defined in SEMANTIC_MODULES
+      exists as a physical artifact.
 
-    Intent:
-    - Prevent partial or corrupt publish
-    - Block schema drift into BI layer
+    Invariants:
+    - Failure is triggered if any expected Parquet file is missing.
 
-    Failure:
-    - Returns failed status; promotion and activation are skipped
+    Returns:
+        Dict: A report object containing the success status and findings.
     """
 
     report = init_report()
@@ -144,20 +140,18 @@ def run_integrity_gate(run_context: RunContext) -> Dict:
 
 def promote_semantic_version(run_context: RunContext) -> Dict:
     """
-    Promote validated semantic artifacts into immutable version folder.
+    Manages the archival of the current run into the publication zone.
 
-    Execution:
-    - Verify version directory does not already exist
-    - Create run-scoped version directory
-    - Copy semantic artifacts into version folder
+    Contract:
+    - Creates a permanent directory following the 'v{run_id}' convention.
+    - Transfers all semantic artifacts to the versioned destination.
 
-    Intent:
-    - Create immutable run-versioned snapshot
-    - Preserve lineage between run_id and published artifacts
-    - Prepare artifacts for atomic activation
+    Invariants:
+    - Destination is derived from run_context.published_path.
+    - Relies on the storage_adapter for Local/GCS transparency.
 
-    Failure:
-    - Returns failed status; no pointer update occurs
+    Returns:
+        Dict: A report object logging the promotion status.
     """
 
     report = init_report()
@@ -189,19 +183,19 @@ def promote_semantic_version(run_context: RunContext) -> Dict:
 
 def activate_published_version(run_context: RunContext) -> Dict:
     """
-    Atomically activate promoted version.
+    Atomically updates the system-wide 'latest' version pointer.
 
-    Execution:
-    - Write version payload to temporary file
-    - Replace _latest.json using os.replace (atomic swap)
+    Contract:
+    - Generates a JSON manifest containing run_id and publication metadata.
+    - Overwrites the root 'latest_version.json' in the published zone.
 
-    Guarantees:
-    - Dashboards resolve only fully promoted versions
-    - No partial pointer updates possible
+    Invariants:
+    - Atomic Update: Local updates use write-and-replace to prevent corruption.
+    - BI Consistency: Downstream consumers see the new version only after
+      this atomic swap is complete.
 
-    Assumes:
-    - Promotion succeeded
-    - Metadata finalized prior to activation
+    Returns:
+        Dict: A report object logging the activation status.
     """
 
     report = init_report()

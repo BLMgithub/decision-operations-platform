@@ -15,31 +15,27 @@ def apply_contract(
     valid_order_ids: set | None = None,
 ) -> tuple[dict, set, set]:
     """
-    Enforce structural contract on a single logical table.
+    Main entry point for the Raw-to-Contracted Stage.
 
-    Role-driven behavior:
-    - event_fact:
-        - exact deduplication
-        - remove unparsable timestamps
-        - remove temporal violations
-        - emit invalid order_ids
-        - remove null rows
-    - transaction_detail:
-        - deduplicate
-        - cascade drop invalid order_ids
-        - remove null rows
-    - entity_reference:
-        - deduplicate
-        - remove null rows
+    This component enforces structural data quality gates based on the logical
+    role of the table. It acts as a subtractive filter, ensuring only compliant
+    rows reach the Silver (contracted) layer.
 
-    Guarantees:
-    - Deterministic row removal
-    - No numeric or domain correction
-    - Output written to contracted layer
+    Workflow:
+    1. Resolve: Determines table configuration and role (event_fact, transaction_detail, etc.).
+    2. Load: Fetches the raw snapshot from the raw snapshot.
+    3. Sequence: Iteratively applies atomic logic rules defined in ROLE_STEPS.
+    4. Track: Captures row-level telemetry and identifies compromised 'order_id's.
+    5. Propagate: Returns validated/invalidated IDs to maintain referential integrity across the stage.
+    6. Export: Persists the structural-compliant dataset to the Silver zone (runtime "contracted/").
+
+    Operational Guarantees:
+    - Subtractive Only: Never mutates data values or performs domain correction.
+    - Deterministic: Rule execution order is strictly governed by the registry.
+    - Referential Integrity: Tables processed after 'df_orders' use its output for parent-check filtering.
 
     Returns:
-    - Contract execution report
-    - Newly invalidated order_ids (if any)
+        tuple: (Stage Report Dict, Newly Invalidated IDs Set, Validated Order IDs Set)
     """
 
     report = {

@@ -41,6 +41,7 @@ def log_error(message: str, report: Dict[str, List[str]]) -> None:
 # ------------------------------------------------------------
 # BASE VALIDATIONS (ALL TABLES)
 # ------------------------------------------------------------
+# TODO: Wrap base validation steps into functions
 
 
 def run_base_validations(
@@ -52,23 +53,17 @@ def run_base_validations(
     report: Dict[str, List[str]],
 ) -> bool:
     """
-    Baseline structural gate for all tables.
+    Enforces foundational structural integrity for a logical table.
 
-    Collects data quality findings and classifies severity:
-    - `errors` - dataset is structurally invalid; downstream validations should stop
-    - `warnings` - admissible data quality issues that may be repairable
+    Contract:
+    - Mandatory Schema: All 'required_column' names must exist in the DataFrame.
+    - Uniqueness: Values in 'primary_key' columns must be unique.
+    - Non-Nullability: Columns in 'non_nullable_column' must not contain NaN values.
+    - Presence: The table must contain at least one row.
 
-    errors:
-    - dataset is empty
-    - missing required column(s)
-    - missing primary key column(s)
-    - conflicting duplicate primary keys
-
-    warnings:
-    - null rows in non-nullable column(s)
-    - duplicate columns
-    - null primary key values
-    - identical duplicates
+    Failures:
+    - Logs findings to 'report["errors"]'.
+    - Returns False if any mandatory check fails, signaling that the table is unusable.
     """
 
     if df.empty:
@@ -153,7 +148,7 @@ def run_base_validations(
 
 
 # ------------------------------------------------------------
-# EVENT FACT VALIDATIONS
+# TABLE ROLE VALIDATIONS
 # ------------------------------------------------------------
 
 
@@ -161,19 +156,15 @@ def run_event_fact_validations(
     df: pd.DataFrame, table_name: str, report: Dict[str, List[str]]
 ) -> bool:
     """
-    Event fact validation layer.
+    Enforces business-logic chronology for Event-Role tables.
 
-    Collects data quality findings and classifies severity:
-    - `errors` - dataset is structurally invalid; downstream validations should stop
-    - `warnings` - admissible data quality issues that may be repairable
+    Contract:
+    - Evaluates temporal sequence: Purchase <= Approval <= Delivery.
+    - Validates that timestamps are logically situated in the past.
 
-    errors:
-    - missing required timestamp column(s)
-
-    warnings:
-    - unparsable timestamp values in required timestamp fields
-    - approval timestamp earlier than purchase timestamp
-    - delivery timestamp earlier than purchase timestamp
+    Failures:
+    - Logs violations to 'report["warnings"]'. These are non-fatal to the stage
+      but indicate data quality degradation.
     """
 
     missing_ts_columns = [col for col in REQUIRED_TIMESTAMPS if col not in df.columns]
@@ -187,7 +178,6 @@ def run_event_fact_validations(
 
     parsed = {}
 
-    # Required timestamps column and format
     for col in REQUIRED_TIMESTAMPS:
         ts = pd.to_datetime(
             df[col],
@@ -207,8 +197,7 @@ def run_event_fact_validations(
     approved_ts = parsed["order_approved_at"]
     delivered_ts = parsed["order_delivered_timestamp"]
 
-    # Check for invalid temporal ordering such as:
-    # Approval before Purchase or Delivery before Purchase
+    # Check for invalid temporal ordering
     invalid_approval = (approved_ts < purchase_ts).sum()
     if invalid_approval > 0:
         log_warning(
@@ -226,21 +215,18 @@ def run_event_fact_validations(
     return True
 
 
-# ------------------------------------------------------------
-# TRANSACTION DETAIL VALIDATIONS
-# ------------------------------------------------------------
-
-
 def run_transaction_detail_validations(
     df: pd.DataFrame, table_name: str, report: Dict[str, List[str]]
 ) -> bool:
     """
-    Transaction detail validation.
+    Enforces domain and range constraints for Transaction-Role tables.
 
-    Collects error-level data quality findings.
+    Contract:
+    - Values: Ensures 'price' and 'freight_value' are non-negative.
+    - Payments: Ensures 'payment_installments' and 'payment_value' are >= 0.
 
-    errors:
-    - negative values in numeric columns
+    Failures:
+    - Logs out-of-range values to 'report["warnings"]'.
     """
 
     numeric_columns = df.select_dtypes(include=["number"]).columns.tolist()
@@ -256,27 +242,23 @@ def run_transaction_detail_validations(
     return True
 
 
-# ------------------------------------------------------------
-# CROSS-TABLE VALIDATIONS
-# ------------------------------------------------------------
-
-
 def run_cross_table_validations(
     tables: Dict[str, pd.DataFrame], report: Dict[str, List[str]]
 ) -> bool:
     """
-    Cross-table integrity validation.
+    Enforces referential integrity (Foreign Key) across the dataset.
 
-    Collects data quality findings and classifies severity:
-    - `warnings` - admissible referential integrity issues
-    - `info` - validation skipped due to missing required tables
+    Contract:
+    - Orphan Detection: Ensures all Order Items and Payments have a valid parent
+      in the 'orders' table.
+    - Set Theory: Uses 'order_id' set intersection to identify disconnected children.
 
-    info:
-    - validation skipped when required tables are unavailable
+    Invariants:
+    - Skip-Safe: If 'df_orders' is missing from the input dict, the check is skipped
+      and logged as 'info'.
 
-    warnings:
-    - order items referencing non-existent order_id
-    - payments referencing non-existent order_id
+    Failures:
+    - Logs orphan counts to 'report["warnings"]'.
     """
 
     required_tables = ["df_orders", "df_order_items", "df_payments"]

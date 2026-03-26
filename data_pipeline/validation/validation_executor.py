@@ -8,7 +8,7 @@ from pathlib import Path
 from data_pipeline.shared.loader_exporter import load_single_delta
 from data_pipeline.shared.table_configs import TABLE_CONFIG
 from data_pipeline.shared.run_context import RunContext
-from data_pipeline.validation.logic import (
+from data_pipeline.validation.validation_logic import (
     init_report,
     log_info,
     log_error,
@@ -21,17 +21,25 @@ from data_pipeline.validation.logic import (
 
 def apply_validation(run_context: RunContext, base_path: Path | None = None) -> Dict:
     """
-    Run structural validation across all configured raw tables.
+    Main entry point for the Pipeline Validation Stage.
 
-    Behavior:
-    - Loads logical tables from snapshot or contracted layer
-    - Applies base structural checks (schema, PK, emptiness)
-    - Dispatches role-specific validators
-    - Executes cross-table integrity checks
+    This component serves as the primary diagnostic gate for the data pipeline,
+    ensuring that raw snapshots meet the structural requirements for the
+    subsequent Contract and Assembly stages.
 
-    Severity model:
-    - errors: structurally invalid → halt upstream
-    - warnings: admissible but repairable issues
+    Workflow:
+    1. Loading: Iteratively fetches logical tables from the snapshot zone.
+    2. Base Check: Enforces schema, uniqueness, and null constraints via 'run_base_validations'.
+    3. Role Dispatch: Executes specialized logic (Event/Transaction) based on 'TABLE_CONFIG'.
+    4. Referential Check: Evaluates inter-table integrity (orphans) via 'run_cross_table_validations'.
+
+    Operational Guarantees:
+    - Diagnostic Only: This function is read-only and will never mutate the source data.
+    - Comprehensive Reporting: Captures all failures across all tables before returning; does not fail-fast on the first table error.
+    - Severity: Structural issues are logged as 'errors' while referential issues are 'warnings'.
+
+    Returns:
+        Dict: A unified validation report containing 'status' and detailed finding lists.
     """
 
     if base_path is None:

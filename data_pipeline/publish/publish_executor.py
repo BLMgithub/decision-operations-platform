@@ -14,18 +14,27 @@ from data_pipeline.publish.publish_logic import (
 
 def execute_publish_lifecycle(run_context: RunContext) -> Dict:
     """
-    Execute full publish lifecycle for semantic artifacts.
+    Main entry point for the Pipeline Publish Stage.
 
-    Execution steps:
-    - Run semantic integrity gate
-    - Promote validated artifacts into version directory
-    - Atomically activate published pointer
+    This component manages the transition of analytical artifacts from
+    the internal assembly zones to the production-facing BI environment.
 
-    Guarantees:
-    - Only fully validated semantic versions become visible to BI.
+    Workflow:
+    1. Integrity Gate: Verifies that the current run has produced all
+       required semantic modules and tables defined in the registry.
+    2. Promotion: Moves/copies artifacts into a permanent, read-only
+       versioned directory (v{run_id}).
+    3. Activation: Performs an atomic update of the 'latest' pointer
+       to switch BI/Reporting traffic to the new version.
 
-    Failure behavior:
-    - Any step failure halts publish lifecycle and prevents activation.
+    Operational Guarantees:
+    - Atomicity: The 'latest' pointer is updated ONLY if all prior
+      validation and promotion steps succeed.
+    - Immutability: Promoted versions are treated as static snapshots.
+    - Fail-Fast: Any failure in the lifecycle prevents version activation.
+
+    Returns:
+        Dict: A global publish report containing status and step-level logs.
     """
 
     report = {
