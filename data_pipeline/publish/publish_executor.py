@@ -20,12 +20,12 @@ def execute_publish_lifecycle(run_context: RunContext) -> Dict:
     the internal assembly zones to the production-facing BI environment.
 
     Workflow:
-    1. Integrity Gate: Verifies that the current run has produced all
-       required semantic modules and tables defined in the registry.
-    2. Promotion: Moves/copies artifacts into a permanent, read-only
-       versioned directory (v{run_id}).
-    3. Activation: Performs an atomic update of the 'latest' pointer
-       to switch BI/Reporting traffic to the new version.
+        1. Integrity Gate: Verifies that the current run has produced all
+        required semantic modules and tables defined in the registry.
+        2. Promotion: Moves/copies artifacts into a permanent, read-only
+        versioned directory (v{run_id}).
+        3. Activation: Performs an atomic update of the 'latest' pointer
+        to switch BI/Reporting traffic to the new version.
 
     Operational Guarantees:
     - Atomicity: The 'latest' pointer is updated ONLY if all prior

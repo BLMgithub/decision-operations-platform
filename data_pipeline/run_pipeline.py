@@ -33,7 +33,11 @@ from data_pipeline.shared.storage_adapter import (
 
 def persist_json(path: Path, payload: dict) -> None:
     """
-    Writes the stage report to a JSON file.
+    Serializes state dictionaries to the local filesystem.
+
+    Contract:
+    - Creates parent directories if they do not exist.
+    - Performs standard JSON serialization with 2-space indentation.
     """
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w") as f:
@@ -41,6 +45,13 @@ def persist_json(path: Path, payload: dict) -> None:
 
 
 def stage_logger(run_context: RunContext, stage: str, report: dict | list):
+    """
+    Standardizes the persistence of stage-level telemetry.
+
+    Contract:
+    - Maps 'stage' identifiers to deterministic filenames (e.g., stage_report.json).
+    - Persists reports to the 'run_context.run_path'.
+    """
 
     persist_json(
         path=run_context.logs_path / f"{stage}.json",
@@ -48,12 +59,13 @@ def stage_logger(run_context: RunContext, stage: str, report: dict | list):
     )
 
 
-def initiliaze_metadata(run_context: RunContext) -> None:
+def initialize_metadata(run_context: RunContext) -> None:
     """
-    Run metadata initializer.
+    Registers the commencement of a pipeline run.
 
-    Creates the run-scoped metadata record at pipeline start to
-    establish lifecycle tracking and publish eligibility state.
+    Contract:
+    - Generates a 'run_metadata.json' artifact.
+    - Captures the initial 'run_id', 'start_time', and sets status to 'RUNNING'.
     """
 
     run_dt = dt.strptime(run_context.run_id[:15], "%Y%m%dT%H%M%S")
@@ -65,7 +77,7 @@ def initiliaze_metadata(run_context: RunContext) -> None:
         "started_at": dt.utcnow().isoformat(),
         "run_year": run_dt.year,
         "run_month": run_dt.month,
-        "run_week_of_month": (run_dt.day - 1) // 7 + 1,
+        "run_day": run_dt.day,
         "completed_at": None,
         "run_duration": None,
         "published": False,
@@ -76,10 +88,11 @@ def initiliaze_metadata(run_context: RunContext) -> None:
 
 def finalize_metadata(run_context: RunContext, status: str) -> None:
     """
-    Run metadata finalizer.
+    Updates the run metadata record with terminal status and completion timestamp.
 
-    Updates the run metadata record with terminal status and
-    completion timestamp.
+    Contract:
+    - Updates 'run_metadata.json' with the 'end_time' and final 'status'.
+    - Calculates the total run duration and display in '00m 00s' format.
     """
 
     if not run_context.metadata_path.exists():
@@ -88,18 +101,17 @@ def finalize_metadata(run_context: RunContext, status: str) -> None:
     with open(run_context.metadata_path, "r") as file:
         payload = json.load(file)
 
+    start_time = dt.fromisoformat(payload["started_at"])
     completion_time = dt.utcnow()
 
     payload["status"] = status
     payload["completed_at"] = completion_time.isoformat()
 
-    start_time = dt.fromisoformat(payload["started_at"])
     duration = completion_time - start_time
-
     mm, ss = divmod(int(duration.total_seconds()), 60)
-    payload["run_duration"] = f"{mm:02d}m {ss:02d}s"
 
-    payload["published"] = True if status == "SUCCESS" else False
+    payload["run_duration"] = f"{mm:02d}m {ss:02d}s"
+    payload["published"] = status == "SUCCESS"
 
     persist_json(run_context.metadata_path, payload)
 
@@ -186,32 +198,29 @@ def run_prepublishing_validation_stage(run_context) -> None:
 
 def main() -> None:
     """
-    Pipeline orchestrator.
+    Ultimate authority for the end-to-end data pipeline lifecycle.
 
-    Execution order:
-    1. Snapshot raw data
-    2. Initialize metadata (RUNNING)
-    3. Validation
-    4. Contract enforcement
-        - Apply role-driven repair
-        - Propagate invalid order_ids (parent → child)
-        - Propogate valida order_ids (parent → child)
-    5. Re-validation
-    6. Assemble event table
-    7. Build semantic layer
-    8. Pre-publish integrity gate
-    9. Promote version
-    10. Finalize metadata (SUCCESS)
-    11. Atomic activation
+    Workflow:
+        1.  Initialization: Resolve RunContext and instantiate global run metadata.
+        2.  Ingestion: Synchronize the raw data snapshot from Cloud Storage to local workspace.
+        3.  Gate I (Validation): Assert raw data sanity; fail-fast on fatal structural errors.
+        4.  Processing (Contract): Execute subtractive filtering and Silver-layer schema freezing.
+        5.  Gate II (Revalidation): Defensive check to ensure 'contracted' data is valid.
+        6.  Persistence (Sync Upload): Promote local contracted artifacts to the Cloud Silver Storage.
+        7.  Resource Reclamation: Purge transient directories (raw/contracted) to optimize memory.
+        8.  Hydration (Sync Download): Restore local environment with the full accumulated Silver state.
+        9.  Integration (Assembly): Flatten relational data into a unified Gold event layer.
+        10. Modeling (Semantic): Build entity-centric analytical modules (Fact/Dim).
+        11. Gate III (Pre-Publish): Final verification of semantic artifact completeness.
+        12. Activation (Publish): Atomic swap of the production 'latest' version pointer.
+        13. Finalization: Persist all telemetry/logs to Cloud and purge the local workspace.
 
-    Guarantees:
-    - Deterministic forward-only execution
-    - Single run isolation
-    - Only Contract stage mutates data
-    - Activation occurs only after SUCCESS
-
-    Failure behavior:
-    - Any stage failure → metadata FAILED → process exits
+    Operational Guarantees:
+    - Defensive Integrity: No data moves to 'Assembly' without passing 'Revalidation'.
+    - Silver Continuity: Uses a Cloud-Sync loop to ensure Assembly operates on the full delta state.
+    - Resource Stewardship: Mandatory local cleanup via global 'finally' block to prevent disk leaks.
+    - Traceability: Enforces atomic 'run_id' consistency across all 13 lifecycle steps.
+    - Visibility: Guarantees cloud-upload of stage reports even in partial failure scenarios.
     """
 
     run_context = RunContext.create()
@@ -223,7 +232,7 @@ def main() -> None:
     try:
 
         download_raw_snapshot(run_context)
-        initiliaze_metadata(run_context)
+        initialize_metadata(run_context)
 
         run_initial_validation_stage(run_context)
         run_contract_application_stage(run_context)

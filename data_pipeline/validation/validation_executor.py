@@ -28,10 +28,10 @@ def apply_validation(run_context: RunContext, base_path: Path | None = None) -> 
     subsequent Contract and Assembly stages.
 
     Workflow:
-    1. Loading: Iteratively fetches logical tables from the snapshot zone.
-    2. Base Check: Enforces schema, uniqueness, and null constraints via 'run_base_validations'.
-    3. Role Dispatch: Executes specialized logic (Event/Transaction) based on 'TABLE_CONFIG'.
-    4. Referential Check: Evaluates inter-table integrity (orphans) via 'run_cross_table_validations'.
+        1. Loading: Iteratively fetches logical tables from the snapshot zone.
+        2. Base Check: Enforces schema, uniqueness, and null constraints via 'run_base_validations'.
+        3. Role Dispatch: Executes specialized logic (Event/Transaction) based on 'TABLE_CONFIG'.
+        4. Referential Check: Evaluates inter-table integrity (orphans) via 'run_cross_table_validations'.
 
     Operational Guarantees:
     - Diagnostic Only: This function is read-only and will never mutate the source data.

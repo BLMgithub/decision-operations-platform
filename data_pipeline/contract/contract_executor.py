@@ -22,13 +22,13 @@ def apply_contract(
     ensuring only compliant rows and columns reach the Silver (contracted) layer.
 
     Workflow:
-    1. Resolve: Determines table configuration and role (event_fact, entity_reference, etc.).
-    2. Load: Fetches the raw snapshot from the lake's snapshot zone.
-    3. Sequence: Iteratively applies atomic filtering rules (Deduplication, Null-checks, etc.).
-    4. Track: Captures row-level telemetry and identifies compromised 'order_id's.
-    5. Propagate: Returns validated/invalidated IDs to maintain referential integrity.
-    6. Freeze: Executes 'enforce_schema' as the terminal step to project approved columns.
-    7. Export: Persists the contract-compliant dataset to the Silver zone.
+        1. Resolve: Determines table configuration and role (event_fact, entity_reference, etc.).
+        2. Load: Fetches the raw snapshot from the lake's snapshot zone.
+        3. Sequence: Iteratively applies atomic filtering rules (Deduplication, Null-checks, etc.).
+        4. Track: Captures row-level telemetry and identifies compromised 'order_id's.
+        5. Propagate: Returns validated/invalidated IDs to maintain referential integrity.
+        6. Freeze: Executes 'enforce_schema' as the terminal step to project approved columns.
+        7. Export: Persists the contract-compliant dataset to the Silver zone.
 
     Operational Guarantees:
     - Subtractive Only: Filters rows first; never mutates row values (only column types).

@@ -20,6 +20,7 @@ PARENT_FOLDER = "operations-upload-folder"
 MIME_TYPE = "application/vnd.google-apps.folder"
 
 
+# TODO: wrap steps into functions
 def run_extraction(target_child_folder):
 
     service = get_drive_service()

@@ -8,7 +8,7 @@ from typing import Dict, Any
 from data_pipeline.shared.run_context import RunContext
 from data_pipeline.shared.loader_exporter import load_historical_table, export_file
 from data_pipeline.semantic.semantic_logic import init_report, log_error, log_info
-from data_pipeline.semantic.registy import SEMANTIC_MODULES
+from data_pipeline.semantic.registry import SEMANTIC_MODULES
 
 
 def task_wrapper(
@@ -111,11 +111,11 @@ def orchestrate_module(
     Coordinates the construction, validation, and export of a semantic module.
 
     Workflow:
-    1. Build: Executes the module-specific builder logic.
-    2. Loop: Iterates through each returned table in the builder output.
-    3. Validate: Enforces technical contracts (grain, schema, dtypes).
-    4. Export: Persists validated artifacts to the semantic zone.
-    5. Cleanup: Manages memory via explicit deletion and garbage collection.
+        1. Build: Executes the module-specific builder logic.
+        2. Loop: Iterates through each returned table in the builder output.
+        3. Validate: Enforces technical contracts (grain, schema, dtypes).
+        4. Export: Persists validated artifacts to the semantic zone.
+        5. Cleanup: Manages memory via explicit deletion and garbage collection.
 
     Invariants:
     - Fail-Fast: Any error in building or table-level processing halts the module.
@@ -188,10 +188,10 @@ def build_semantic_layer(run_context: RunContext) -> Dict:
     Main entry point for the Gold-to-Semantic stage.
 
     Workflow:
-    1. Source Verification: Loads 'assembled_events' and halts if empty/missing.
-    2. Registry Execution: Iterates through 'SEMANTIC_MODULES'.
-    3. Orchestration: Triggers builder logic followed by contract enforcement.
-    4. Cleanup: Purges memory after each module export.
+        1. Source Verification: Loads 'assembled_events' and halts if empty/missing.
+        2. Registry Execution: Iterates through 'SEMANTIC_MODULES'.
+        3. Orchestration: Triggers builder logic followed by contract enforcement.
+        4. Cleanup: Purges memory after each module export.
 
     Guarantees:
     - Atomicity: Module failures are trapped but mark the entire stage as 'failed'.
