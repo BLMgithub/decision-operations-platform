@@ -4,86 +4,106 @@
 
 from pathlib import Path
 import pandas as pd
-from typing import Optional, Callable
-
-
-def load_csv_file(path: Path) -> pd.DataFrame:
-
-    return pd.read_csv(path)
-
-
-def load_parquet_file(
-    parquet_path: Path,
-) -> pd.DataFrame:
-
-    return pd.read_parquet(parquet_path, engine="pyarrow")
+from typing import Optional, Callable, Tuple
 
 
 FILE_LOADERS = {
-    ".csv": load_csv_file,
-    ".parquet": load_parquet_file,
+    ".csv": lambda path: pd.read_csv(path),
+    ".parquet": lambda path: pd.read_parquet(path, engine="pyarrow"),
 }
 
 
-def load_logical_table(
-    base_path: Path,
+def load_single_delta(
+    base_path: Path | str,
     table_name: str,
     log_info: Optional[Callable[[str], None]] = None,
-    log_error: Optional[Callable[[str], None]] = None,
-) -> Optional[pd.DataFrame]:
+) -> Tuple[pd.DataFrame, str]:
     """
-    Load and concatenate all CSV/Parquet files belonging to a logical table.
+    Loads the chronologically most recent delta for a logical table.
 
-    Files are identified by filename prefix: <table_name>*.csv or <table_name>*.parquet
+    Contract:
+    - Scans 'base_path' for files matching the 'table_name' prefix.
+    - Identifies the target file via alphanumeric sorting of the date suffix (YYYY_MM_DD).
+
+    Invariants:
+    - Recency: Only the latest snapshot is returned; historical deltas are ignored.
+    - Format Support: Handles .csv and .parquet (prioritizing Parquet).
+
+    Failures:
+    - Raises FileNotFoundError if no matching artifacts are found.
     """
 
     base_path = Path(base_path)
 
-    # List valid files and check format with FILE_LOADERS
+    # Find files matching the table prefix
+    files = [
+        file
+        for file in base_path.iterdir()
+        if file.is_file()
+        and (file.stem == table_name or file.name.startswith(f"{table_name}_"))
+        and file.suffix.lower() in FILE_LOADERS
+    ]
+
+    if not files:
+        raise FileNotFoundError(f" No file found for {table_name} in {base_path}")
+
+    # Read only recent date suffix
+    files = sorted(files)
+    target_file = files[-1]
+
+    file_name = target_file.stem
+    loader = FILE_LOADERS[target_file.suffix.lower()]
+
+    df = loader(target_file)
+
+    if log_info:
+        log_info(f"Loaded: {target_file.name} ({len(df)} rows)")
+
+    return df, file_name
+
+
+def load_historical_table(
+    base_path: Path | str,
+    table_name: str,
+    log_info: Optional[Callable[[str], None]] = None,
+) -> pd.DataFrame:
+    """
+    Aggregates all matching artifacts into a single cumulative DataFrame.
+
+    Contract:
+    - Performs a multi-file read of all artifacts matching the 'table_name'.
+    - Concatenates results into a single memory object with index resetting.
+
+    Outputs:
+    - Returns a unified DataFrame.
+    """
+    base_path = Path(base_path)
+
     files = [
         f
         for f in base_path.iterdir()
         if f.is_file()
-        and f.name.startswith(f"{table_name}_")
-        and f.suffix.lower() in FILE_LOADERS
+        and (f.stem == table_name or f.name.startswith(f"{table_name}_"))
+        and f.suffix.lower() == ".parquet"
     ]
 
     if not files:
-        if log_error:
-            log_error(f"{table_name}: no files found in {base_path}")
+        raise FileNotFoundError(f"No Parquet files found for {table_name}")
 
-        return None
+    def get_unified_data(file_list: list[Path]) -> pd.DataFrame:
+        temp_dfs = []
+        for file_path in sorted(file_list):
+            df = pd.read_parquet(file_path, engine="pyarrow")
+            temp_dfs.append(df)
 
-    # Prevent mixed file formats
-    extensions = {f.suffix.lower() for f in files}
-    if len(extensions) > 1:
-        raise RuntimeError(f"Mixed file formats detected for {table_name}")
+        return pd.concat(temp_dfs, ignore_index=True)
 
-    dfs = []
-    files = sorted(files)
+    df_unified = get_unified_data(files)
 
-    # Route each file using it's format to its registered loader
-    for file_path in files:
-        loader = FILE_LOADERS[file_path.suffix.lower()]
+    if log_info:
+        log_info(f"Loaded unified: {table_name} ({len(df_unified)} rows)")
 
-        try:
-            df = loader(file_path)
-
-            if log_info:
-                log_info(f"Loaded: {file_path.name} ({len(df)} rows)")
-
-            dfs.append(df)
-
-        except Exception as e:
-            if log_error:
-                log_error(f"Failed loading: {file_path.name}: {e}")
-
-    if not dfs:
-        if log_error:
-            log_error(f"{table_name}: all matching files failed to load")
-        return None
-
-    return pd.concat(dfs, ignore_index=True)
+    return df_unified
 
 
 def export_file(
@@ -94,11 +114,20 @@ def export_file(
     index: bool = False,
 ) -> bool:
     """
-    Export DataFrame based on file extension (.csv or .parquet).
+    Persists DataFrames to disk using system-standard technical formats.
 
-    Returns True if successful, False otherwise.
+    Contract:
+    - Automates directory creation for the target 'output_path'.
+    - Enforces Parquet with Brotli compression as the internal standard.
 
+    Invariants:
+    - Format Determinism: File extension (.csv vs .parquet) dictates the engine used.
+    - Compression: Parquet exports always utilize 'brotli' to optimize storage.
+
+    Returns:
+        bool: True if write succeeded, False on I/O exception.
     """
+
     output_path = Path(output_path)
 
     try:
@@ -110,7 +139,9 @@ def export_file(
             df.to_csv(output_path, index=index)
 
         elif ext == ".parquet":
-            df.to_parquet(output_path, index=index, engine="pyarrow")
+            df.to_parquet(
+                output_path, index=index, engine="pyarrow", compression="brotli"
+            )
 
         else:
             raise ValueError(

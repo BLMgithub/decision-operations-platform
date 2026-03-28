@@ -1,5 +1,5 @@
 # =============================================================================
-# EXTRACTOR UTILS
+# Google Drive Extractor Utils
 # =============================================================================
 
 
@@ -33,8 +33,7 @@ def extract_file_content(
     Args:
         service: Authorized Google Drive API service instance.
         file_id: Unique Drive file identifier.
-        mime_type: The MIME type of the source file used to determine
-                        the extraction method.
+        mime_type: The MIME type of the source file used to determine the extraction method.
 
     Behavior:
         - If Google Sheet: Uses files().export_media to perform a server-side
@@ -169,5 +168,3 @@ def plant_success_flag(bucket_name: str, folder_path: str):
 
     # Upload an empty string just to create the file
     blob.upload_from_string("")
-
-    print("[INFO] Flag planted successfully")

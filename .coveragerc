@@ -2,4 +2,6 @@
 omit =
     data_pipeline/prototypes/*
     data_pipeline/shared/table_configs.py
+    data_pipeline/shared/modeling_configs.py
+    data_pipeline/shared/storage_adapter.py
     */__init__.py
