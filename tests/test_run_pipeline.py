@@ -6,7 +6,7 @@ from data_pipeline.shared.run_context import RunContext
 from data_pipeline.run_pipeline import (
     main,
     download_raw_snapshot,
-    initiliaze_metadata,
+    initialize_metadata,
     finalize_metadata,
 )
 import pytest
@@ -29,7 +29,7 @@ def test_metadata_helpers(tmp_path):
     )
 
     # test status: RUNNING and published: False
-    initiliaze_metadata(run_context)
+    initialize_metadata(run_context)
 
     assert run_context.metadata_path.exists()
     with open(run_context.metadata_path) as f:
@@ -59,7 +59,7 @@ def test_main_fails_on_initial_validation(monkeypatch, tmp_path):
 
     monkeypatch.setattr(
         "data_pipeline.run_pipeline.RunContext.create",
-        lambda: run_context,
+        lambda **kwargs: run_context,
     )
 
     monkeypatch.setattr(
@@ -70,6 +70,11 @@ def test_main_fails_on_initial_validation(monkeypatch, tmp_path):
         },
     )
 
+    # Mocking cleanup to inspect artifacts
+    monkeypatch.setattr(
+        "data_pipeline.run_pipeline.shutil.rmtree", lambda *args, **kwargs: None
+    )
+
     with pytest.raises(RuntimeError):
         main()
 
@@ -78,7 +83,7 @@ def test_main_fails_on_initial_validation(monkeypatch, tmp_path):
     assert payload["status"] == "FAILED"
     assert payload["published"] is False
 
-    for logs in ("validation_initial.json",):
+    for logs in ("initial_validation.json",):
         assert (run_context.logs_path / logs).exists()
 
 
@@ -95,7 +100,7 @@ def test_main_fails_on_post_contract_validation(monkeypatch, tmp_path):
 
     monkeypatch.setattr(
         "data_pipeline.run_pipeline.RunContext.create",
-        lambda: run_context,
+        lambda **kwargs: run_context,
     )
 
     monkeypatch.setattr(
@@ -122,7 +127,12 @@ def test_main_fails_on_post_contract_validation(monkeypatch, tmp_path):
 
     monkeypatch.setattr(
         "data_pipeline.run_pipeline.apply_contract",
-        lambda *a, **k: ({}, set()),
+        lambda *a, **k: ({}, set(), set()),
+    )
+
+    # Mocking cleanup to inspect artifacts
+    monkeypatch.setattr(
+        "data_pipeline.run_pipeline.shutil.rmtree", lambda *args, **kwargs: None
     )
 
     with pytest.raises(RuntimeError):
@@ -134,9 +144,9 @@ def test_main_fails_on_post_contract_validation(monkeypatch, tmp_path):
     assert payload["published"] is False
 
     for logs in (
-        "validation_initial.json",
-        "contract_report.json",
-        "validation_post_contract.json",
+        "initial_validation.json",
+        "contract_application.json",
+        "post_contract_validation.json",
     ):
         assert (run_context.logs_path / logs).exists()
 
@@ -154,7 +164,7 @@ def test_main_fails_on_assemble_events(monkeypatch, tmp_path):
 
     monkeypatch.setattr(
         "data_pipeline.run_pipeline.RunContext.create",
-        lambda: run_context,
+        lambda **kwargs: run_context,
     )
 
     monkeypatch.setattr(
@@ -172,7 +182,15 @@ def test_main_fails_on_assemble_events(monkeypatch, tmp_path):
 
     monkeypatch.setattr(
         "data_pipeline.run_pipeline.apply_contract",
-        lambda *a, **k: ({}, set()),
+        lambda *a, **k: ({}, set(), set()),
+    )
+
+    # Mocking upload/download contracted directory to avoid real I/O
+    monkeypatch.setattr(
+        "data_pipeline.run_pipeline.upload_contracted_directory", lambda *_: None
+    )
+    monkeypatch.setattr(
+        "data_pipeline.run_pipeline.download_contracted_datasets", lambda *_: None
     )
 
     monkeypatch.setattr(
@@ -184,6 +202,11 @@ def test_main_fails_on_assemble_events(monkeypatch, tmp_path):
         },  # Force to fail on assemble events
     )
 
+    # Mocking cleanup to inspect artifacts
+    monkeypatch.setattr(
+        "data_pipeline.run_pipeline.shutil.rmtree", lambda *args, **kwargs: None
+    )
+
     with pytest.raises(RuntimeError):
         main()
 
@@ -193,9 +216,10 @@ def test_main_fails_on_assemble_events(monkeypatch, tmp_path):
     assert payload["published"] is False
 
     for logs in (
-        "validation_initial.json",
-        "contract_report.json",
-        "validation_post_contract.json",
+        "initial_validation.json",
+        "contract_application.json",
+        "post_contract_validation.json",
+        "assemble_events.json",
     ):
         assert (run_context.logs_path / logs).exists()
 
@@ -213,7 +237,7 @@ def test_main_fails_on_build_semantic_layer(monkeypatch, tmp_path):
 
     monkeypatch.setattr(
         "data_pipeline.run_pipeline.RunContext.create",
-        lambda: run_context,
+        lambda **kwargs: run_context,
     )
 
     monkeypatch.setattr(
@@ -231,7 +255,15 @@ def test_main_fails_on_build_semantic_layer(monkeypatch, tmp_path):
 
     monkeypatch.setattr(
         "data_pipeline.run_pipeline.apply_contract",
-        lambda *a, **k: ({}, set()),
+        lambda *a, **k: ({}, set(), set()),
+    )
+
+    # Mocking upload/download contracted directory to avoid real I/O
+    monkeypatch.setattr(
+        "data_pipeline.run_pipeline.upload_contracted_directory", lambda *_: None
+    )
+    monkeypatch.setattr(
+        "data_pipeline.run_pipeline.download_contracted_datasets", lambda *_: None
     )
 
     monkeypatch.setattr(
@@ -252,6 +284,11 @@ def test_main_fails_on_build_semantic_layer(monkeypatch, tmp_path):
         },  # Force to fail on build semantic layer
     )
 
+    # Mocking cleanup to inspect artifacts
+    monkeypatch.setattr(
+        "data_pipeline.run_pipeline.shutil.rmtree", lambda *args, **kwargs: None
+    )
+
     with pytest.raises(RuntimeError):
         main()
 
@@ -261,10 +298,11 @@ def test_main_fails_on_build_semantic_layer(monkeypatch, tmp_path):
     assert payload["published"] is False
 
     for logs in (
-        "validation_initial.json",
-        "contract_report.json",
-        "validation_post_contract.json",
-        "assemble_report.json",
+        "initial_validation.json",
+        "contract_application.json",
+        "post_contract_validation.json",
+        "assemble_events.json",
+        "semantic_modeling.json",
     ):
         assert (run_context.logs_path / logs).exists()
 
@@ -282,7 +320,7 @@ def test_main_fails_on_execute_publish_lifecycle(monkeypatch, tmp_path):
 
     monkeypatch.setattr(
         "data_pipeline.run_pipeline.RunContext.create",
-        lambda: run_context,
+        lambda **kwargs: run_context,
     )
 
     monkeypatch.setattr(
@@ -300,7 +338,15 @@ def test_main_fails_on_execute_publish_lifecycle(monkeypatch, tmp_path):
 
     monkeypatch.setattr(
         "data_pipeline.run_pipeline.apply_contract",
-        lambda *a, **k: ({}, set()),
+        lambda *a, **k: ({}, set(), set()),
+    )
+
+    # Mocking upload/download contracted directory to avoid real I/O
+    monkeypatch.setattr(
+        "data_pipeline.run_pipeline.upload_contracted_directory", lambda *_: None
+    )
+    monkeypatch.setattr(
+        "data_pipeline.run_pipeline.download_contracted_datasets", lambda *_: None
     )
 
     monkeypatch.setattr(
@@ -330,6 +376,11 @@ def test_main_fails_on_execute_publish_lifecycle(monkeypatch, tmp_path):
         },  # Force to fail on publish lifecyle
     )
 
+    # Mocking cleanup to inspect artifacts
+    monkeypatch.setattr(
+        "data_pipeline.run_pipeline.shutil.rmtree", lambda *args, **kwargs: None
+    )
+
     with pytest.raises(RuntimeError):
         main()
 
@@ -339,11 +390,12 @@ def test_main_fails_on_execute_publish_lifecycle(monkeypatch, tmp_path):
     assert payload["published"] is False
 
     for logs in (
-        "validation_initial.json",
-        "contract_report.json",
-        "validation_post_contract.json",
-        "assemble_report.json",
-        "semantic_report.json",
+        "initial_validation.json",
+        "contract_application.json",
+        "post_contract_validation.json",
+        "assemble_events.json",
+        "semantic_modeling.json",
+        "prepublishing_validation.json",
     ):
         assert (run_context.logs_path / logs).exists()
 
@@ -361,7 +413,7 @@ def test_main_success(monkeypatch, tmp_path):
 
     monkeypatch.setattr(
         "data_pipeline.run_pipeline.RunContext.create",
-        lambda: run_context,
+        lambda **kwargs: run_context,
     )
 
     monkeypatch.setattr(
@@ -379,7 +431,15 @@ def test_main_success(monkeypatch, tmp_path):
 
     monkeypatch.setattr(
         "data_pipeline.run_pipeline.apply_contract",
-        lambda *a, **k: ({}, set()),
+        lambda *a, **k: ({}, set(), set()),
+    )
+
+    # Mocking upload/download contracted directory to avoid real I/O
+    monkeypatch.setattr(
+        "data_pipeline.run_pipeline.upload_contracted_directory", lambda *_: None
+    )
+    monkeypatch.setattr(
+        "data_pipeline.run_pipeline.download_contracted_datasets", lambda *_: None
     )
 
     monkeypatch.setattr(
@@ -409,6 +469,16 @@ def test_main_success(monkeypatch, tmp_path):
         },  # Pass, status success
     )
 
+    # Mocking upload_run_artifacts
+    monkeypatch.setattr(
+        "data_pipeline.run_pipeline.upload_run_artifacts", lambda *_: None
+    )
+
+    # Mocking cleanup to inspect artifacts
+    monkeypatch.setattr(
+        "data_pipeline.run_pipeline.shutil.rmtree", lambda *args, **kwargs: None
+    )
+
     main()
 
     with open(run_context.metadata_path) as f:
@@ -417,16 +487,11 @@ def test_main_success(monkeypatch, tmp_path):
     assert payload["published"] is True
 
     for logs in (
-        "validation_initial.json",
-        "contract_report.json",
-        "validation_post_contract.json",
-        "assemble_report.json",
-        "semantic_report.json",
-        "publish_report.json",
+        "initial_validation.json",
+        "contract_application.json",
+        "post_contract_validation.json",
+        "assemble_events.json",
+        "semantic_modeling.json",
+        "prepublishing_validation.json",
     ):
         assert (run_context.logs_path / logs).exists()
-
-
-# =============================================================================
-# UNIT TESTS END
-# =============================================================================

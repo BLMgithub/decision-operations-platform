@@ -75,7 +75,7 @@ def load_historical_table(
     - Concatenates results into a single memory object with index resetting.
 
     Outputs:
-    - Returns a unified DataFrame. Returns None if no files exist.
+    - Returns a unified DataFrame.
     """
     base_path = Path(base_path)
 
@@ -90,16 +90,20 @@ def load_historical_table(
     if not files:
         raise FileNotFoundError(f"No Parquet files found for {table_name}")
 
-    dfs = []
+    def get_unified_data(file_list: list[Path]) -> pd.DataFrame:
+        temp_dfs = []
+        for file_path in sorted(file_list):
+            df = pd.read_parquet(file_path, engine="pyarrow")
+            temp_dfs.append(df)
 
-    for file_path in sorted(files):
-        df = pd.read_parquet(file_path, engine="pyarrow")
-        dfs.append(df)
+        return pd.concat(temp_dfs, ignore_index=True)
 
-        if log_info:
-            log_info(f"Loaded: {file_path.name} ({len(df)} rows)")
+    df_unified = get_unified_data(files)
 
-    return pd.concat(dfs, ignore_index=True)
+    if log_info:
+        log_info(f"Loaded unified: {table_name} ({len(df_unified)} rows)")
+
+    return df_unified
 
 
 def export_file(

@@ -1,5 +1,5 @@
 # =============================================================================
-# RUN CONTEXT (PATH CONSTRUCTION)
+# Runtime path and directory context
 # =============================================================================
 
 from dataclasses import dataclass
@@ -18,27 +18,27 @@ def _generate_run_id() -> str:
 @dataclass
 class RunContext:
     """
-    Run-scoped execution context.
+    Central authority for path resolution and execution isolation.
 
-    Responsibilities:
-    - Generate and hold run_id
-    - Define all stage directory paths
-    - Provide consistent path resolution across stages
-    - Enforce run isolation via run-scoped folders
+    Contract:
+    - Generates a globally unique 'run_id' using timestamp-hex entropy.
+    - Defines a deterministic, run-scoped directory tree in the local workspace.
+    - Maps local runtime paths to persistent Cloud Storage prefixes.
 
-    Guarantees:
-    - Each run writes only within its own directory tree
-    - Published artifacts are resolved deterministically from run_id
+    Invariants:
+    - Isolation: Every run instance operates in a private, unique folder tree.
+    - Determinism: Stage-specific paths (raw, contracted, semantic) are
+      derived consistently from the 'run_id'.
+    - Immutability: Once instantiated, path mappings do not change.
     """
 
     run_id: str
     base_path: str | Path
 
-    # Workspace execution paths
+    # Workspace paths
     workspace_root: Path
     workspace_run_path: Path
 
-    # Run scope paths
     raw_snapshot_path: Path
     contracted_path: Path
     assembled_path: Path
@@ -48,12 +48,13 @@ class RunContext:
 
     # Storage paths
     storage_raw_path: str
+    storage_contracted_path: str
     storage_published_path: str
     version_path: str
     latest_pointer_path: str
     storage_runs_path: str
 
-    # NOTE: base =./runtime and storage= ./data were for local testing paths
+    # NOTE: base =./runtime and storage= ./data were local test paths
     @classmethod
     def create(
         cls,
@@ -62,6 +63,16 @@ class RunContext:
         run_id: str | None = None,
         run_id_factory: Callable[[], str] | None = None,
     ) -> "RunContext":
+        """
+        Factory method for instantiating a fresh execution context.
+
+        Inputs:
+        - base_path: The local root directory for the pipeline workspace.
+        - storage_root: The cloud root (GCS bucket or local persistent path).
+
+        Returns:
+            RunContext: An initialized context with all path mappings resolved.
+        """
 
         base_path = Path(base)
 
@@ -83,6 +94,7 @@ class RunContext:
         # Storage paths
         storage_root = str(storage)
         storage_raw_path = f"{storage_root}/raw"
+        storage_contracted_path = f"{storage_root}/contracted"
         storage_published_path = f"{storage_root}/published"
         version_path = f"{storage_published_path}/v{run_id}"
         latest_pointer_path = f"{storage_published_path}/_latest.json"
@@ -90,17 +102,20 @@ class RunContext:
 
         return cls(
             run_id=run_id,
+            # Workspace paths
             base_path=base_path,
             workspace_root=workspace_root,
             workspace_run_path=workspace_run_path,
-            storage_raw_path=storage_raw_path,
-            storage_published_path=storage_published_path,
             raw_snapshot_path=raw_snapshot_path,
             contracted_path=contracted_path,
             assembled_path=assembled_path,
             semantic_path=semantic_path,
             logs_path=logs_path,
             metadata_path=metadata_path,
+            # Storage paths
+            storage_raw_path=storage_raw_path,
+            storage_contracted_path=storage_contracted_path,
+            storage_published_path=storage_published_path,
             version_path=version_path,
             latest_pointer_path=latest_pointer_path,
             storage_runs_path=storage_runs_path,
@@ -108,9 +123,14 @@ class RunContext:
 
     def initialize_directories(self) -> None:
         """
-        Create run-scoped directories.
+        Physically instantiates the local workspace directory tree.
 
-        Does not create published/version folders.
+        Contract:
+        - Creates the run-scoped folder structure on the local filesystem.
+        - Idempotent: Does not raise errors if directories already exist.
+
+        Side Effects:
+        - Performs recursive directory creation (mkdir -p).
         """
 
         self.raw_snapshot_path.mkdir(parents=True, exist_ok=True)

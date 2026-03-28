@@ -80,21 +80,18 @@ TABLE_CONFIG = {
     },
     "df_payments": {
         "role": "transaction_detail",
-        "primary_key": ["order_id", "payment_sequential"],
+        "primary_key": ["order_id"],
         "required_column": [
             "order_id",
             "payment_value",
-            "payment_sequential",
         ],
         "non_nullable_column": [
             "order_id",
             "payment_value",
-            "payment_sequential",
         ],
         "dtypes": {
             "order_id": "string",
             "payment_value": "float32",
-            "payment_sequential": "int8",
         },
     },
     "df_products": {

@@ -41,7 +41,6 @@ def log_error(message: str, report: Dict[str, List[str]]) -> None:
 # ------------------------------------------------------------
 # BASE VALIDATIONS (ALL TABLES)
 # ------------------------------------------------------------
-# TODO: Wrap base validation steps into functions
 
 
 def run_base_validations(
@@ -163,6 +162,7 @@ def run_event_fact_validations(
     Failures:
     - Logs violations to 'report["warnings"]'. These are non-fatal to the stage
       but indicate data quality degradation.
+    - Logs 'report["errors"]' if required timestamp columns are missing.
     """
 
     missing_ts_columns = [col for col in REQUIRED_TIMESTAMPS if col not in df.columns]
@@ -224,7 +224,7 @@ def run_transaction_detail_validations(
     - Payments: Ensures 'payment_installments' and 'payment_value' are >= 0.
 
     Failures:
-    - Logs out-of-range values to 'report["warnings"]'.
+    - Logs out-of-range values to 'report["errors"]'.
     """
 
     numeric_columns = df.select_dtypes(include=["number"]).columns.tolist()

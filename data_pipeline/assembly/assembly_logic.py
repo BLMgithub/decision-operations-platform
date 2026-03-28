@@ -144,12 +144,12 @@ def derive_fields(df: pd.DataFrame, run_id: str) -> pd.DataFrame:
 
 def freeze_schema(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Final technical contract enforcement and semantic projection.
+    Finalizes the structural contract via schema projection, type casting, and sorting.
 
     Contract:
-    - Prunes all intermediate columns, retaining only the 'ASSEMBLE_SCHEMA' subset.
-    - Enforces strict type casting via 'ASSEMBLE_DTYPES'.
-    - Applies deterministic sorting and index resetting.
+    - Schema Projection: Drops all columns not explicitly defined in 'ASSEMBLE_SCHEMA'.
+    - Type Enforcement: Casts remaining columns to the formats defined in 'ASSEMBLE_DTYPES'.
+    - Deterministic Order: Performs an ascending sort by 'order_id' and resets the index.
 
     Invariants:
     - Sorting: Guaranteed ascending order by 'order_id'.

@@ -40,6 +40,7 @@ def build_seller_semantic(df: pd.DataFrame, run_context: RunContext) -> Dict:
     - Transforms order-grain events into weekly seller performance snapshots.
     - Aggregates metrics including revenue, lead times, and fulfillment lag.
     - Produces a historical dimension table for seller attributes.
+    - Derives helper columns (week_start_date, is_delivered, is_cancelled) for aggregation.
 
     Invariants:
     - Lineage: Enforces a single 'run_id' across the input dataset.
@@ -110,6 +111,7 @@ def build_customer_semantic(df: pd.DataFrame, run_context: RunContext) -> Dict:
     - Aggregates consumer behavior metrics into a weekly temporal grain.
     - Calculates lifetime-to-date attributes and first-purchase markers.
     - Summarizes spending patterns and locality-based attributes.
+    - Derives helper columns (week_start_date, is_delivered, is_cancelled) for aggregation.
 
     Invariants:
     - Lineage: Requires a unified 'run_id' for consistent partitioning.
@@ -173,6 +175,7 @@ def build_product_semantic(df: pd.DataFrame, run_context: RunContext) -> Dict:
     - Aggregates sales velocity and fulfillment health per product.
     - Merges category metadata with weekly transaction volumes.
     - Calculates average lead times and cancellation rates per product week.
+    - Derives helper columns (week_start_date, is_delivered, is_cancelled) for aggregation.
 
     Invariants:
     - Lineage: Validates input homogeneity via 'run_id' check.

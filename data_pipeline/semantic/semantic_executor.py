@@ -6,7 +6,7 @@ import gc
 import pandas as pd
 from typing import Dict, Any
 from data_pipeline.shared.run_context import RunContext
-from data_pipeline.shared.loader_exporter import load_historical_table, export_file
+from data_pipeline.shared.loader_exporter import load_single_delta, export_file
 from data_pipeline.semantic.semantic_logic import init_report, log_error, log_info
 from data_pipeline.semantic.registry import SEMANTIC_MODULES
 
@@ -209,7 +209,7 @@ def build_semantic_layer(run_context: RunContext) -> Dict:
 
     load_report = report["steps"]["load_tables"]
 
-    df_assembled = load_historical_table(
+    df_assembled, _ = load_single_delta(
         run_context.assembled_path,
         "assembled_events",
         log_info=lambda msg: log_info(msg, load_report),

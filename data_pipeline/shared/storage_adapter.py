@@ -61,11 +61,11 @@ def download_raw_snapshot(run_context: RunContext) -> None:
 
 def upload_publish_artifacts(run_context: RunContext) -> None:
     """
-    Promotes local Silver-layer artifacts to persistent cloud storage.
+    Promotes validated Semantic artifacts to the versioned production zone.
 
     Contract:
-    - Synchronizes the local 'contracted/' directory to 'storage_contracted_path'.
-    - Purpose: Ensures newly cleaned data is archived for delta accumulation.
+    - Synchronizes the local 'semantic/' directory to the versioned 'published/v{run_id}' path.
+    - Purpose: Archives final analytical modules for production activation.
     """
 
     source = run_context.semantic_path
@@ -91,11 +91,11 @@ def upload_publish_artifacts(run_context: RunContext) -> None:
 
 def upload_run_artifacts(run_context: RunContext) -> None:
     """
-    Final promotion of semantic artifacts to the production zone.
+    Uploads execution telemetry (logs and metadata) to the run artifact zone.
 
     Contract:
-    - Mirrors the 'semantic/' directory structure into the 'published/v{run_id}/' zone.
-    - Purpose: Makes validated analytical modules available for production activation.
+    - Persists 'metadata.json' and the 'logs/' directory to 'storage_runs_path'.
+    - Purpose: Provides visibility and traceability for both successful and failed runs.
     """
 
     destination = run_context.storage_runs_path
