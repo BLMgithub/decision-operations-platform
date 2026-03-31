@@ -222,7 +222,7 @@ def build_semantic_layer(run_context: RunContext) -> Dict:
 
     source_file = list(run_context.assembled_path.glob("*.parquet"))
 
-    if source_file is None:
+    if not source_file:
         log_error("assembled_events logical table missing or empty", load_report)
         report["status"] = "failed"
         return report
