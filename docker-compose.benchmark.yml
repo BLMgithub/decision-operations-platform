@@ -15,3 +15,6 @@ services:
           # Provision Specs Test
           memory: 4G
           cpus: '2.0'
+          # Simulate 2 virtual cpus
+    environment:
+      - POLARS_MAX_THREADS=2

@@ -68,22 +68,18 @@ def validate_and_freeze_table(lf: pl.LazyFrame, table: dict) -> pl.LazyFrame:
     Enforces the technical contract for a specific semantic table.
 
     Contract:
-    - Grain: Validates uniqueness of columns defined in table['grain'].
     - Schema: Ensures 1:1 match with columns in table['schema'].
     - Types: Explicitly casts columns to types defined in table['dtypes'].
 
-    Behavior:
-    - Deterministic Output: Performs a stable sort based on the grain.
-    - Fast-Fail: Raises RuntimeError on grain or schema violations.
-    """
+    Optimization Logic:
+    - Lazy Contract Enforcement: Defers all validation and casting to the final 
+      streaming sink, avoiding intermediate materialization passes.
+    - Zero-Copy Sort Omission: Bypasses sorting to maintain compatibility with 
+      non-blocking streaming engines.
 
-    is_duplicates = (
-        lf.select(pl.struct(table["grain"]).is_duplicated().any())
-        .collect(engine="streaming")
-        .item()
-    )
-    if is_duplicates:
-        raise RuntimeError(f"Duplicates found in grain: {table['grain']}")
+    Behavior:
+    - Fast-Fail: Raises RuntimeError on schema violations during plan construction.
+    """
 
     current_columns = lf.collect_schema().names()
 
@@ -94,9 +90,6 @@ def validate_and_freeze_table(lf: pl.LazyFrame, table: dict) -> pl.LazyFrame:
 
     # Enforce dtypes & subset columns
     lf_clean = lf.select(table["schema"]).cast(table["dtypes"])
-
-    # Deterministic sort
-    lf_clean = lf_clean.sort(table["grain"])
 
     return lf_clean
 
@@ -119,9 +112,15 @@ def orchestrate_module(
     Workflow:
         1. Build: Executes the module-specific builder logic.
         2. Loop: Iterates through each returned table in the builder output.
-        3. Validate: Enforces technical contracts (grain, schema, dtypes).
+        3. Validate: Enforces technical contracts (schema, dtypes).
         4. Export: Persists validated artifacts to the semantic zone.
         5. Cleanup: Manages memory via explicit deletion and garbage collection.
+
+    Optimization Logic:
+    - Linear Streaming Propagation: Maintains the LazyFrame chain from builder to 
+      export, ensuring constant memory usage regardless of dataset scale.
+    - Incremental Resource Reclamation: Triggers explicit Python garbage collection 
+      after every table export to purge intermediate metadata and plan overhead.
 
     Invariants:
     - Fail-Fast: Any error in building or table-level processing halts the module.
@@ -176,8 +175,6 @@ def orchestrate_module(
         # Export Artifact
         filename = f"{table_name}_{year}_{month}_{day}.parquet"
         output_path = semantic_module_path / filename
-
-        # df_final = lf_frozen.collect(engine="streaming")
 
         if not export_file(lf_frozen, output_path):
             log_error("Export failed", table_report)

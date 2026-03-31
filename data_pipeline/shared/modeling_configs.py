@@ -46,7 +46,7 @@ ASSEMBLE_DTYPES: Mapping[str, pl.DataType] = {
     "order_date": pl.Datetime(),
     "order_year": pl.Int16(),
     "order_year_week": pl.String(),
-    "run_id": pl.String(),
+    "run_id": pl.Categorical(),
 }
 
 #
@@ -79,7 +79,7 @@ SELLER_DIM_DTYPES: Mapping[str, pl.DataType] = {
     "seller_id": pl.String(),
     "first_order_date": pl.Datetime(),
     "first_order_year_week": pl.String(),
-    "run_id": pl.String(),
+    "run_id": pl.Categorical(),
 }
 
 
@@ -104,7 +104,7 @@ SELLER_FACT_DTYPES: Mapping[str, pl.DataType] = {
     "seller_id": pl.String(),
     "order_year_week": pl.String(),
     "week_start_date": pl.Datetime(),
-    "run_id": pl.String(),
+    "run_id": pl.Categorical(),
     "weekly_order_count": pl.Int16(),
     "weekly_delivered_orders": pl.Int16(),
     "weekly_cancelled_orders": pl.Int16(),
@@ -159,7 +159,7 @@ CUSTOMER_FACT_DTYPES: Mapping[str, pl.DataType] = {
     "customer_id": pl.String(),
     "order_year_week": pl.String(),
     "week_start_date": pl.Datetime(),
-    "run_id": pl.String(),
+    "run_id": pl.Categorical(),
     "weekly_order_count": pl.Int16(),
     "weekly_delivered_orders": pl.Int16(),
     "weekly_cancelled_orders": pl.Int16(),
@@ -222,7 +222,7 @@ PRODUCT_FACT_DTYPES: Mapping[str, pl.DataType] = {
     "product_id": pl.String(),
     "order_year_week": pl.String(),
     "week_start_date": pl.Datetime(),
-    "run_id": pl.String(),
+    "run_id": pl.Categorical(),
     "weekly_order_count": pl.Int16(),
     "weekly_delivered_orders": pl.Int16(),
     "weekly_cancelled_orders": pl.Int16(),

@@ -6,9 +6,11 @@ import gc
 from typing import Dict
 from data_pipeline.shared.run_context import RunContext
 from data_pipeline.shared.loader_exporter import load_historical_table, export_file
+from data_pipeline.shared.modeling_configs import DIMENSION_REFERENCES
 from data_pipeline.assembly.assembly_logic import (
     init_report,
-    DIMENSION_REFERENCES,
+    log_info,
+    log_error,
     dimension_references,
     merge_data,
     derive_fields,
@@ -21,7 +23,7 @@ from data_pipeline.assembly.assembly_logic import (
 
 def init_stage_report():
     return {
-        "status": "success",
+        "status": "running",
         "steps": {
             "load_tables": init_report(),
             "merge_events": init_report(),
@@ -62,26 +64,41 @@ def orchestrate_event_assembly(run_context: RunContext, report: Dict) -> bool:
         return False
 
     # Merging data
-    ok, df = task_wrapper("merge_events", report, merge_data, tables)
+    ok, lf_merged = task_wrapper(
+        step_name="merge_events", report=report, func=merge_data, tables=tables
+    )
     if not ok:
         return False
     del tables
 
     # Derive fields
-    ok, df = task_wrapper(
-        "derive_fields", report, derive_fields, df, run_context.run_id
+    ok, lf_derived = task_wrapper(
+        step_name="derive_fields",
+        report=report,
+        func=derive_fields,
+        lf=lf_merged,
+        run_id=run_context.run_id,
     )
     if not ok:
         return False
 
     # Freeze schema
-    ok, df = task_wrapper("freeze_schema", report, freeze_schema, df)
+    ok, lf_freezed = task_wrapper(
+        step_name="freeze_schema", report=report, func=freeze_schema, lf=lf_derived
+    )
     if not ok:
         return False
 
     # Export Assembled events
     path = export_path(run_context, "assembled_events")
-    if not export_file(df, path):
+    export_report = report["steps"]["export"]
+
+    if not export_file(
+        df=lf_freezed,
+        output_path=path,
+        log_info=lambda msg, report=export_report: log_info(msg, report),
+        log_error=lambda msg, report=export_report: log_error(msg, report),
+    ):
         return False
 
     gc.collect()
@@ -111,18 +128,22 @@ def orchestrate_dimension_refs(run_context: RunContext, report: Dict) -> bool:
     """
 
     for table, config in DIMENSION_REFERENCES.items():
-        df_raw = load_historical_table(run_context.contracted_path, table)
-        if df_raw is None:
+
+        lf_raw = load_historical_table(run_context.contracted_path, table)
+        if lf_raw is None:
             return False
 
+        primary_key = config.get("primary_key", [])
+        require_col = config.get("required_column", [])
+
         ok, df_dim = task_wrapper(
-            "dim_reference",
-            report,
-            dimension_references,
-            df_raw,
-            table,
-            config["primary_key"],
-            config["required_column"],
+            step_name="dim_reference",
+            report=report,
+            func=dimension_references,
+            lf=lf_raw,
+            table_name=table,
+            primary_key=primary_key,
+            req_column=require_col,
         )
 
         if not ok:
@@ -130,10 +151,18 @@ def orchestrate_dimension_refs(run_context: RunContext, report: Dict) -> bool:
 
         # Export
         path = export_path(run_context, table)
-        if not export_file(df_dim, path):
+        export_report = report["steps"]["export"]
+
+        if not export_file(
+            df_dim,
+            path,
+            log_info=lambda msg, report=export_report: log_info(msg, report),
+            log_error=lambda msg, report=export_report: log_error(msg, report),
+        ):
             return False
 
-        del df_raw, df_dim
+        export_report["status"] = "success"
+        del lf_raw, df_dim
         gc.collect()
 
     return True

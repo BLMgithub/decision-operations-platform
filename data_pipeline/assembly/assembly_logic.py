@@ -2,7 +2,6 @@
 # Assembly Events Stage logic
 # =============================================================================
 
-# import pandas as pd
 import polars as pl
 from pathlib import Path
 from typing import Dict, Callable, Any, List
@@ -12,39 +11,13 @@ from data_pipeline.shared.modeling_configs import ASSEMBLE_SCHEMA, ASSEMBLE_DTYP
 
 EVENT_TABLES = ["df_orders", "df_order_items", "df_payments"]
 
-DIMENSION_REFERENCES = {
-    "df_customers": {
-        "primary_key": ["customer_id"],
-        "required_column": [
-            "customer_id",
-            "customer_state",
-            "customer_city",
-            "customer_segment",
-            "account_creation_date",
-        ],
-    },
-    "df_products": {
-        "primary_key": ["product_id"],
-        "required_column": [
-            "product_id",
-            "product_category_name",
-            "product_length_cm",
-            "product_height_cm",
-            "product_width_cm",
-            "product_fragility_index",
-            "product_weight_g",
-            "supplier_tier",
-        ],
-    },
-}
-
 # ------------------------------------------------------------
 # ASSEMBLE REPORT & LOGS
 # ------------------------------------------------------------
 
 
 def init_report():
-    return {"status": "success", "errors": [], "info": []}
+    return {"status": "", "errors": [], "info": []}
 
 
 def log_info(message: str, report: Dict[str, List[str]]) -> None:
@@ -62,66 +35,78 @@ def log_error(message: str, report: Dict[str, list[str]]) -> None:
 # ------------------------------------------------------------
 
 
-def merge_data(tables: Dict) -> pl.DataFrame:
+def merge_data(tables: Dict) -> pl.LazyFrame:
     """
-    Core event assembly join and grain enforcement.
+    Core event assembly join and grain enforcement using Hash-Join optimization.
 
     Contract:
     - Inner joins 'df_orders' with 'df_order_items' to ensure analytical relevance.
     - Left joins 'df_payments' to capture financial metadata.
-    - Projects 'payment_value' as 'order_revenue'.
+
+    Optimization Logic:
+    - Hash-Join: Maps high-cardinality UUIDs to UInt64 hashes to reduce Join Hash Table memory.
+    - Pre-aggregation: Sums payments and deduplicates items BEFORE joining to guarantee 
+      a strict 1:1 grain and prevent Cartesian row explosions.
+    - Early Projection: Selects required columns at the source to minimize join width.
 
     Invariants:
     - Dataset Grain: Strictly one row per 'order_id'.
     - Referential Integrity: Orders lacking corresponding item records are discarded.
-
-    Failures:
-    - Raises RuntimeError if a 1-to-Many cardinality explosion is detected (duplicate order_ids).
     """
 
-    # Pandas Implementation
-    # df_orders = tables["df_orders"]
-    # df_order_items = tables["df_order_items"]
-    # df_payments = tables["df_payments"]
+    pl.enable_string_cache()
 
-    # initial_orders = len(df_orders)
+    col_orders = [
+        "order_id",
+        "customer_id",
+        "order_status",
+        "order_purchase_timestamp",
+        "order_approved_at",
+        "order_delivered_timestamp",
+        "order_estimated_delivery_date",
+    ]
 
-    # df_merged = df_orders.merge(df_order_items, on="order_id", how="inner").merge(
-    #     df_payments, on="order_id", how="left"
-    # )
-
-    # df_merged = df_merged.rename(columns={"payment_value": "order_revenue"})
-
-    # if df_merged["order_id"].duplicated().any():
-    #     raise RuntimeError(
-    #         "Cardinality violation: 1-to-Many explosion detected (multiple items/payments per order)"
-    #     )
-
-    initial_orders = len(tables["df_orders"])
-
-    # Polars Implementation
-    df_merged = (
-        tables["df_orders"]
-        .join(tables["df_order_items"], on="order_id", how="inner")
-        .join(tables["df_payments"], on="order_id", how="left")
-        .rename({"payment_value": "order_revenue"})
+    # Pre-aggregate Tables
+    lf_payments_agg = (
+        tables["df_payments"]
+        .with_columns(join_key=pl.col("order_id").hash())
+        .group_by("join_key")
+        .agg(order_revenue=pl.col("payment_value").sum())
     )
 
-    if df_merged["order_id"].is_duplicated().any():
-        raise RuntimeError(
-            "Cardinality violation: 1-to-Many explosion detected (multiple items/payments per order)"
+    lf_items_agg = (
+        tables["df_order_items"]
+        .with_columns(
+            join_key=pl.col("order_id").hash(),
+            product_id=pl.col("product_id").cast(pl.Categorical),
+            seller_id=pl.col("seller_id").cast(pl.Categorical),
         )
+        .group_by("join_key")
+        .agg(
+            product_id=pl.col("product_id").first(),
+            seller_id=pl.col("seller_id").first(),
+        )
+    )
 
-    if len(df_merged) < initial_orders:
-        dropped_count = initial_orders - len(df_merged)
-        print(
-            f"[WARNING] Assembly: {dropped_count} orders dropped due to missing valid order_items."
+    lf_orders = (
+        tables["df_orders"]
+        .select(col_orders)
+        .with_columns(
+            join_key=pl.col("order_id").hash(),
+            order_status=pl.col("order_status").cast(pl.Categorical),
         )
+    )
+
+    df_merged = (
+        lf_orders.join(lf_items_agg, on="join_key", how="inner")
+        .join(lf_payments_agg, on="join_key", how="left")
+        .drop("join_key")
+    )
 
     return df_merged
 
 
-def derive_fields(df: pl.DataFrame, run_id: str) -> pl.DataFrame:
+def derive_fields(lf: pl.LazyFrame, run_id: str) -> pl.LazyFrame:
     """
     Analytical enrichment and temporal metric derivation layer.
 
@@ -129,87 +114,72 @@ def derive_fields(df: pl.DataFrame, run_id: str) -> pl.DataFrame:
     - Calculates day-grain durations for fulfillment and approval latency.
     - Stays compliant with ISO-8601 for week/year attributes.
 
+    Optimization Logic:
+    - Memory-Efficient Casting: Forces durations and years to Int16 (2 bytes) to minimize row width.
+    - Categorical Compression: Casts repetitive strings (year_week, run_id) to Categorical.
+    - Early Drop: Purges non-contract columns (e.g., estimated_delivery) immediately after use.
+
     Invariants:
     - Lineage: Every row is stamped with the current 'run_id' for traceability.
     - Temporal Grain: Metrics (lead_time, lags, delays) are represented as integer days.
-
-    Failures:
-    - [Undetermined] - Assumes source timestamps have passed the 'remove_unparsable_timestamps' contract.
     """
 
-    # Pandas Implementation
-    # df["lead_time_days"] = (
-    #     df["order_delivered_timestamp"] - df["order_approved_at"]
-    # ).dt.days
-
-    # df["approval_lag_days"] = (
-    #     df["order_approved_at"] - df["order_purchase_timestamp"]
-    # ).dt.days
-
-    # df["delivery_delay_days"] = (
-    #     df["order_delivered_timestamp"] - df["order_estimated_delivery_date"]
-    # ).dt.days
-
-    # df["order_date"] = df["order_purchase_timestamp"].dt.date
-    # df["order_year"] = df["order_purchase_timestamp"].dt.year
-    # df["order_week_iso"] = df["order_purchase_timestamp"].dt.strftime("W%V")
-    # df["order_year_week"] = df["order_purchase_timestamp"].dt.strftime("%G-W%V")
-    # df["run_id"] = run_id
-
-    # Polars implementation
-    df = df.with_columns(
+    lf_derived = lf.with_columns(
         lead_time_days=(
             pl.col("order_delivered_timestamp") - pl.col("order_approved_at")
-        ).dt.total_days(),
+        )
+        .dt.total_days()
+        .cast(pl.Int16),
         approval_lag_days=(
             pl.col("order_approved_at") - pl.col("order_purchase_timestamp")
-        ).dt.total_days(),
+        )
+        .dt.total_days()
+        .cast(pl.Int16),
         delivery_delay_days=(
             pl.col("order_delivered_timestamp")
             - pl.col("order_estimated_delivery_date")
-        ).dt.total_days(),
+        )
+        .dt.total_days()
+        .cast(pl.Int16),
         order_date=pl.col("order_purchase_timestamp").dt.date(),
         order_year=pl.col("order_purchase_timestamp").dt.year(),
         order_week_iso=pl.col("order_purchase_timestamp").dt.strftime("W%V"),
-        order_year_week=pl.col("order_purchase_timestamp").dt.strftime("%G-W%V"),
-        run_id=pl.lit(run_id),
-    )
+        order_year_week=pl.col("order_purchase_timestamp")
+        .dt.strftime("%G-W%V")
+        .cast(pl.Categorical),
+        run_id=pl.lit(run_id).cast(pl.Categorical),
+    ).drop("order_estimated_delivery_date")
 
-    return df
+    return lf_derived
 
 
-def freeze_schema(df: pl.DataFrame) -> pl.DataFrame:
+def freeze_schema(lf: pl.LazyFrame) -> pl.LazyFrame:
     """
-    Finalizes the structural contract via schema projection, type casting, and sorting.
+    Finalizes the structural contract via schema projection and type casting.
 
     Contract:
     - Schema Projection: Drops all columns not explicitly defined in 'ASSEMBLE_SCHEMA'.
     - Type Enforcement: Casts remaining columns to the formats defined in 'ASSEMBLE_DTYPES'.
-    - Deterministic Order: Performs an ascending sort by 'order_id' and resets the index.
+
+    Optimization Logic:
+    - Zero-Copy Streaming: Omits sorting to maintain the non-blocking execution plan 
+      required for efficient sink_parquet() operations in memory-constrained environments.
 
     Invariants:
-    - Sorting: Guaranteed ascending order by 'order_id'.
-    - Structure: Final frame exactly matches the modeling configuration spec.
+    - Structure: Final execution plan exactly matches the modeling configuration spec.
 
     Failures:
     - Raises RuntimeError if the input frame lacks columns required by 'ASSEMBLE_SCHEMA'.
     """
+    current_columns = lf.collect_schema().names()
 
-    missing_cols = set(ASSEMBLE_SCHEMA) - set(df.columns)
+    missing_cols = set(ASSEMBLE_SCHEMA) - set(current_columns)
     if missing_cols:
         raise RuntimeError(f"missing required columns: {sorted(missing_cols)}")
 
-    # Pandas Implementation
-    # df_contract = df[ASSEMBLE_SCHEMA]
-    # df_contract = df_contract.astype(ASSEMBLE_DTYPES)
-    # df_contract = df_contract.sort_values("order_id").reset_index(drop=True)
+    lf_contract = lf.select(ASSEMBLE_SCHEMA).cast(pl.Schema(ASSEMBLE_DTYPES))
 
-    # Polars Implementation
-    df_contract = df.select(ASSEMBLE_SCHEMA)
-    df_contract = df_contract.cast(dtypes=pl.Schema(ASSEMBLE_DTYPES))
-    df_contract = df_contract.sort(by="order_id")
-
-    return df_contract
+    return lf_contract
 
 
 # ------------------------------------------------------------
@@ -218,11 +188,11 @@ def freeze_schema(df: pl.DataFrame) -> pl.DataFrame:
 
 
 def dimension_references(
-    df: pl.DataFrame,
+    lf: pl.LazyFrame,
     table_name: str,
     primary_key: list[str],
     req_column: list[str],
-) -> pl.DataFrame:
+) -> pl.LazyFrame:
     """
     Extracts a unique reference dataset from a historical source.
 
@@ -238,19 +208,16 @@ def dimension_references(
     - Raises RuntimeError if 'primary_key' duplicates persist after extraction.
     """
 
-    # Pandas Implementation
-    # df_dim = df[req_column].drop_duplicates(subset=primary_key)
+    lf_dim = lf.select(req_column).unique(subset=primary_key).sort(primary_key)
 
-    # if df_dim[primary_key].duplicated().any():
-    #     raise RuntimeError(f"Duplicated {primary_key} detected in {table_name}")
-
-    # Polars Implementations
-    df_dim = df.select(req_column).unique(subset=primary_key)
-
-    if df_dim[primary_key].is_duplicated().any():
+    if (
+        lf_dim.select(pl.col(primary_key).is_duplicated().any())
+        .collect(engine="streaming")
+        .item()
+    ):
         raise RuntimeError(f"Duplicated {primary_key} detected in {table_name}")
 
-    return df_dim
+    return lf_dim
 
 
 # ------------------------------------------------------------
@@ -263,6 +230,7 @@ def task_wrapper(
     report: Dict,
     func: Callable,
     *args,
+    **kwargs,
 ) -> tuple[bool, Any]:
     """
     Unified task runner that handles logging, reporting, and execution.
@@ -288,7 +256,7 @@ def task_wrapper(
     step_report = report["steps"][step_name]
 
     try:
-        result = func(*args)
+        result = func(*args, **kwargs)
 
         if result is None:
             step_report["status"] = "failed"
