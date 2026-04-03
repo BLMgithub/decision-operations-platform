@@ -88,19 +88,17 @@ def orchestrate_module(
     """
 
     module_report = report["modules"]
-    module_report[module_name] = {}
-    table_trackers = {}
 
-    for table_name in module_config["tables"]:
-        tracker = {"build_stage": False, "validate_and_freeze": False}
-        module_report[module_name][table_name] = tracker
-        table_trackers[table_name] = tracker
-
-    module_report[module_name]["export"] = False
+    table_trackers = {
+        table_name: {"build_stage": False, "validate_stage": False}
+        for table_name in module_config["tables"]
+    }
+    module_report[module_name] = {**table_trackers, "export": False}
 
     # Execute Module Builder
     try:
         builder_output = module_config["builder"](df_assembled, run_context)
+
         if builder_output is None:
             log_error(f"Builder {module_name} returned None", report)
             report["status"] = "failed"
