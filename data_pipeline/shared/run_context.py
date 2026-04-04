@@ -59,7 +59,7 @@ class RunContext:
     def create(
         cls,
         base: str | Path = "/tmp",  # "./runtime",
-        storage: str | Path = "gs://operations-pipeline-bucket",  # "./data",
+        storage: str | Path = "gs://ops-pipeline-storage-dev",  # "./data",
         run_id: str | None = None,
         run_id_factory: Callable[[], str] | None = None,
     ) -> "RunContext":

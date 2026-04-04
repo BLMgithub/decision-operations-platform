@@ -11,8 +11,8 @@ from data_extract.shared.utils import (
     GoogleDriveService,
 )
 
-ARCHIVAL_BUCKET = "gs://operations-archival-bucket"
-PIPELINE_BUCKET = "gs://operations-pipeline-bucket"
+ARCHIVAL_BUCKET = "gs://ops-archival-storage-dev"
+PIPELINE_BUCKET = "gs://ops-pipeline-storage-dev"
 PARENT_FOLDER = "operations-upload-folder"
 MIME_TYPE = "application/vnd.google-apps.folder"
 
