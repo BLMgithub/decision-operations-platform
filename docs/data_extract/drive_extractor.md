@@ -24,8 +24,8 @@ Automates the secure transfer of source data from Google Drive to Google Cloud S
 * **Drive Service Account**: (Credentials with read-access to the `operations-upload-folder`).
 
 **Outputs**
-* **Archival Artifacts:** Mirror of source files in `gs://operations-archival-bucket/archive/{folder_name}/`.
-* **Pipeline Artifacts:** Mirror of source files in `gs://operations-pipeline-bucket/raw/`.
+* **Archival Artifacts:** Mirror of source files in `gs://ops-archival-storage-dev/archive/{folder_name}/`.
+* **Pipeline Artifacts:** Mirror of source files in `gs://ops-pipeline-storage-dev/raw/`.
 * **Success Marker:** An empty `gs://.../{folder_name}.success` file used for idempotency.
 * **Extraction Log:** A JSON metadata file summarizing the run.
 

@@ -8,6 +8,7 @@ runtime/
 data/published/
 data/run_artifact
 data/contracted/
+assets/benchmarks/benchmark.py
 
 # local editor configs
 pyrightconfig.json

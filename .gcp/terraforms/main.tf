@@ -30,6 +30,7 @@ locals {
     "eventarc.googleapis.com",
     "cloudscheduler.googleapis.com",
     "iamcredentials.googleapis.com",
+    "drive.googleapis.com",
   ]
 }
 
