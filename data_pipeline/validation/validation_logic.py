@@ -56,7 +56,7 @@ def run_base_validations(
 
     Contract:
     - Mandatory Schema: All 'required_column' names must exist in the DataFrame.
-    - Uniqueness: Values in 'primary_key' columns must be unique.
+    - Uniqueness: Values in 'primary_key' columns must be unique, and column names must also be unique. 
     - Non-Nullability: Columns in 'non_nullable_column' must not contain NaN values.
     - Presence: The table must contain at least one row.
 

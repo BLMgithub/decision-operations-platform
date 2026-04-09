@@ -127,12 +127,14 @@ def orchestrate_module(
     day = run_context.run_id[6:8]
 
     # Validate, Freeze, and Export Each Table
-    for table_name, df_table in builder_output.items():
+    table_names = list(builder_output.keys())
+    for table_name in table_names:
+        lf_frozen = None
+        df_table = builder_output.pop(table_name)
 
         try:
             if table_name not in module_config["tables"]:
                 report["status"] = "failed"
-
                 return False
 
             table_config = module_config["tables"][table_name]
@@ -140,7 +142,7 @@ def orchestrate_module(
 
             ok, lf_frozen = task_wrapper(
                 report=report,
-                step_name="validate_and_freeze",
+                step_name="validate_stage",
                 status_tracker=tracker,
                 func=validate_and_freeze_table,
                 lf=df_table,
@@ -168,9 +170,13 @@ def orchestrate_module(
             log_error(f"Unexpected error processing {table_name}: {e}", report)
 
         finally:
-            if df_table is not None:
-                del df_table
+            if "lf_frozen" in locals():
+                del lf_frozen
+            del df_table
             gc.collect()
+
+    del builder_output
+    gc.collect()
 
     log_info(f"Export Module: {module_name} Successfully", report)
     module_report[module_name]["export"] = True

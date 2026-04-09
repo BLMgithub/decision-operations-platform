@@ -110,9 +110,9 @@ SELLER_FACT_DTYPES: Mapping[str, pl.DataType] = {
     "weekly_cancelled_orders": pl.Int16(),
     "weekly_revenue": pl.Float32(),
     "weekly_avg_lead_time": pl.Float32(),
-    "weekly_total_lead_time": pl.Int32(),
+    "weekly_total_lead_time": pl.Int16(),
     "weekly_avg_delivery_delay": pl.Float32(),
-    "weekly_total_delivery_delay": pl.Int32(),
+    "weekly_total_delivery_delay": pl.Int16(),
     "weekly_avg_approval_lag": pl.Float32(),
 }
 
@@ -167,9 +167,9 @@ CUSTOMER_FACT_DTYPES: Mapping[str, pl.DataType] = {
     "weekly_cancelled_orders": pl.Int16(),
     "weekly_revenue": pl.Float32(),
     "weekly_avg_lead_time": pl.Float32(),
-    "weekly_total_lead_time": pl.Int32(),
+    "weekly_total_lead_time": pl.Int16(),
     "weekly_avg_delivery_delay": pl.Float32(),
-    "weekly_total_delivery_delay": pl.Int32(),
+    "weekly_total_delivery_delay": pl.Int16(),
     "weekly_avg_approval_lag": pl.Float32(),
 }
 
@@ -232,8 +232,8 @@ PRODUCT_FACT_DTYPES: Mapping[str, pl.DataType] = {
     "weekly_cancelled_orders": pl.Int16(),
     "weekly_revenue": pl.Float32(),
     "weekly_avg_lead_time": pl.Float32(),
-    "weekly_total_lead_time": pl.Int32(),
+    "weekly_total_lead_time": pl.Int16(),
     "weekly_avg_delivery_delay": pl.Float32(),
-    "weekly_total_delivery_delay": pl.Int32(),
+    "weekly_total_delivery_delay": pl.Int16(),
     "weekly_avg_approval_lag": pl.Float32(),
 }

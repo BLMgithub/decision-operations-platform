@@ -220,19 +220,9 @@ def dimension_references(
     Invariants:
     - Dataset Grain: Strictly one row per 'primary_key'.
     - Sorting: Inherits source order (deterministic behavior not guaranteed).
-
-    Failures:
-    - Raises RuntimeError if 'primary_key' duplicates persist after extraction.
     """
 
-    lf_dim = lf.select(req_column).unique(subset=primary_key).sort(primary_key)
-
-    if (
-        lf_dim.select(pl.col(primary_key).is_duplicated().any())
-        .collect(engine="streaming")
-        .item()
-    ):
-        raise RuntimeError(f"Duplicated {primary_key} detected in {table_name}")
+    lf_dim = lf.select(req_column).unique(subset=primary_key)
 
     return lf_dim
 
