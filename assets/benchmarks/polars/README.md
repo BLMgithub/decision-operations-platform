@@ -1,6 +1,6 @@
 # Measurement Methodology
 
-This section provides proof that the memory metrics in the root README were captured from a real Cloud Run execution of the 18M row dataset.
+This section details the methodology used to capture the memory metrics in the [`GCP Stress-Test Metrics (Scaling Efficiency)`](/README.md#gcp-stress-test-metrics-scaling-efficiency)
 
 The telemetry logger below was added **temporarily** to the orchestrator for a specific benchmarking run. This code was pushed directly to the Cloud Artifact Registry as an experimental image tag (`mem-record`) and is not part of the permanent git repository history.
 
@@ -27,6 +27,25 @@ try:
 finally:
     stop_event.set()
     logger_thread.join()
+```
+Since `psutil` requires C-extensions to compile, the **Dockerfile** was modified to include the necessary build tools and the package itself. This allowed for benchmarking without altering the project's permanent `requirements.txt`.
+
+```docker
+FROM python:3.11-slim
+ENV # Environments...
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    gcc \
+    python3-dev && \
+    pip install --no-cache-dir -r requirements.txt psutil && \
+    apt-get purge -y --auto-remove gcc python3-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# the rest of docker code...
+
 ```
 
 ### Data Collection
