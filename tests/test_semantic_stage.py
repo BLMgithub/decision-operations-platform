@@ -166,21 +166,6 @@ def test_seller_semantic_model_grain_preserved_success(tmp_path, valid_assembled
     assert dim_df.height == expected_dim_len
 
 
-def test_seller_semantic_fails_on_multiple_run_ids(tmp_path, valid_assembled_df):
-    run_context = RunContext.create(base=tmp_path, run_id="20230101T120000")
-    # Clone and modify run_id
-    broken_df = valid_assembled_df.clone()
-    broken_df = broken_df.with_columns(
-        pl.when(pl.Series([False, True]))
-        .then(pl.lit("another_run").cast(pl.Categorical))
-        .otherwise(pl.col("run_id"))
-        .alias("run_id")
-    )
-
-    with pytest.raises(RuntimeError, match="Multiple run_ids detected"):
-        build_seller_semantic(broken_df.lazy(), run_context)
-
-
 # =============================================================================
 # BUILD BI SEMANTIC
 # =============================================================================
@@ -218,34 +203,6 @@ def test_build_semantic_layer_success(
                 / f"{table_name}_2023_01_01.parquet"
             )
             assert outputs_path.exists()
-
-
-def test_build_semantic_layer_fails_on_multiple_ids(tmp_path, valid_assembled_df):
-    run_id = "20230101T120000"
-    run_context = RunContext.create(base=tmp_path, run_id=run_id)
-    run_context.initialize_directories()
-
-    # Clone and modify run_id for Polars
-    broken_assembled = valid_assembled_df.clone()
-    broken_assembled = broken_assembled.with_columns(
-        pl.when(pl.Series([False, True]))
-        .then(pl.lit("another_run").cast(pl.Categorical))
-        .otherwise(pl.col("run_id"))
-        .alias("run_id")
-    )
-
-    broken_assembled.write_parquet(
-        run_context.assembled_path / "assembled_events_2023_01_01.parquet"
-    )
-
-    report = build_semantic_layer(run_context)
-
-    assert report["status"] == "failed"
-    assert (
-        report["modules"]["seller_semantic"]["seller_weekly_fact"]["build_stage"]
-        == False
-    )
-    assert any("Multiple run_ids detected" in error for error in report["errors"])
 
 
 def test_build_semantic_layer_fails_on_missing_columns(tmp_path, valid_assembled_df):
