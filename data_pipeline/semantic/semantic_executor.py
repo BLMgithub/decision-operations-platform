@@ -26,13 +26,17 @@ def validate_and_freeze_table(lf: pl.LazyFrame, table: dict) -> pl.LazyFrame:
     - Types: Explicitly casts columns to types defined in table['dtypes'].
 
     Optimization Logic:
-    - Lazy Contract Enforcement: Defers all validation and casting to the final
-      streaming sink, avoiding intermediate materialization passes.
-    - Zero-Copy Sort Omission: Bypasses sorting to maintain compatibility with
-      non-blocking streaming engines.
+    - Lazy Contract Enforcement: Defers all validation and casting to the final streaming sink, avoiding intermediate materialization passes.
+    - Zero-Copy Sort Omission: Bypasses sorting to maintain compatibility with non-blocking streaming engines.
 
-    Behavior:
-    - Fast-Fail: Raises RuntimeError on schema violations during plan construction.
+    Invariants:
+    - Schema Integrity: Output exactly matches the registry specification.
+
+    Outputs:
+    - Validated LazyFrame ready for export.
+
+    Failures:
+    - [Structural] Raises RuntimeError on schema violations during plan construction.
     """
 
     current_columns = lf.collect_schema().names()
@@ -62,26 +66,25 @@ def orchestrate_module(
     Coordinates the construction, validation, and export of a semantic module.
 
     Workflow:
-        1. Build: Executes the module-specific builder logic.
-        2. Loop: Iterates through each returned table in the builder output.
-        3. Validate: Enforces technical contracts (schema, dtypes).
-        4. Export: Persists validated artifacts to the semantic zone.
-        5. Cleanup: Manages memory via explicit deletion and garbage collection.
+    1. Delegate: Executes module-specific builder logic with assembled data.
+    2. Validate: Enforces technical contracts (schema, dtypes) for each table.
+    3. Promote: Persists validated artifacts to the semantic zone.
+    4. Purge: Manages memory via explicit deletion and garbage collection.
 
     Optimization Logic:
-    - Linear Streaming Propagation: Maintains the LazyFrame chain from builder to
-    export, ensuring constant memory usage regardless of dataset scale.
-    - Incremental Resource Reclamation: Triggers explicit Python garbage collection
-    after every table export to purge intermediate metadata and plan overhead.
+    - Linear Streaming Propagation: Maintains the LazyFrame chain from builder to export, ensuring constant memory usage regardless of dataset scale.
+    - Incremental Resource Reclamation: Triggers explicit Python garbage collection after every table export to purge intermediate metadata and plan overhead.
 
-    Invariants:
-    - Fail-Fast: Any error in building or table-level processing halts the module.
-    - Strict Config: Builder output must match keys in 'module_config["tables"]'.
+    Operational Guarantees:
+    - Fail-Fast: Any error in building or table-level processing halts the module immediately.
+    - Atomic Module Status: Marks the global report as 'failed' upon any internal exception.
+
+    Side Effects:
+    - Persists multiple Parquet files to the semantic directory.
+    - Mutates the 'report' dictionary with step-level statuses.
 
     Failure Behavior:
-    - Traps builder-level and table-level exceptions via try-except blocks.
-    - Logs specific errors (e.g., FileExistsError, general Exceptions) and marks
-      the module and global report status as 'failed' before returning False.
+    - Traps builder-level and table-level exceptions; logs errors and returns False.
 
     Returns:
         bool: True if the module and all its tables were successfully processed.
@@ -189,19 +192,20 @@ def build_semantic_layer(run_context: RunContext) -> Dict:
     Main entry point for the Gold-to-Semantic stage.
 
     Workflow:
-        1. Source Verification: Loads 'assembled_events' and halts if empty/missing.
-        2. Registry Execution: Iterates through 'SEMANTIC_MODULES'.
-        3. Orchestration: Triggers builder logic followed by contract enforcement.
-        4. Cleanup: Purges memory after each module export.
+    1. Hydrate: Loads 'assembled_events' from the assembly zone.
+    2. Delegate: Iterates through SEMANTIC_MODULES registry and triggers orchestration.
+    3. Purge: Clears the assembled event frame and triggers garbage collection.
 
-    Guarantees:
-    - Atomicity: Module failures are trapped but mark the entire stage as 'failed'.
-    - Lineage: Uses 'run_id' for deterministic output partitioning.
+    Operational Guarantees:
+    - Stage-Level Atomicity: Any module failure halts the entire stage.
+    - Deterministic Lineage: Uses run_id for output partitioning.
+
+    Side Effects:
+    - Creates semantic module subdirectories.
+    - Generates a comprehensive stage report.
 
     Failure Behavior:
-    - Fail-Fast on missing source: Returns immediately if 'assembled_events' is missing.
-    - Bubbles up module-level failures: If any module orchestration returns False,
-      the stage status is set to 'failed' and the report is returned.
+    - Returns a report with status='failed' if source files are missing or any module fails.
 
     Returns:
         Dict: A global report of module statuses and error logs.

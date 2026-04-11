@@ -3,6 +3,8 @@
 # =============================================================================
 
 import gc
+import ctypes
+import platform
 from typing import Dict
 from data_pipeline.shared.run_context import RunContext
 from data_pipeline.shared.loader_exporter import load_historical_table, export_file
@@ -22,6 +24,28 @@ from data_pipeline.assembly.assembly_logic import (
 )
 
 
+def force_gc():
+    """
+    Force the Linux allocator to release memory back to the OS.
+
+    Workflow:
+    1. Purge: Triggers Python's global garbage collection.
+    2. Purge: Invokes libc malloc_trim if on a Linux system to reclaim heap memory.
+
+    Operational Guarantees:
+    - Memory Safety: Minimizes memory fragmentation and peak RSS.
+
+    Side Effects:
+    - Instructs the OS to reclaim unused memory from the process heap.
+    """
+    gc.collect()
+    if platform.system() == "Linux":
+        try:
+            ctypes.CDLL("libc.so.6").malloc_trim(0)
+        except Exception as e:
+            print(f"[WARNING] Force gc and malloc_trim (release memory) failed: {e}")
+
+
 # ------------------------------------------------------------
 # EVENT ASSEMBLY ORCHESTRATION
 # ------------------------------------------------------------
@@ -31,23 +55,24 @@ def orchestrate_event_assembly(run_context: RunContext, report: Dict) -> bool:
     """
     Coordinates the linear transformation pipeline for order-grain events.
 
-    Execution Flow:
-        1. Load: Fetch 'orders', 'items', and 'payments'.
-        2. Merge: Join into a single row-per-order grain.
-        3. Derive: Calculate analytical time-deltas and lineage.
-        4. Freeze: Enforce semantic schema and dtypes.
-        5. Export: Persist to the assembly zone.
+    Workflow:
+    1. Hydrate: Fetches core event tables (Orders, Items, Payments).
+    2. Delegate: Joins and aggregates into a single row-per-order grain.
+    3. Delegate: Calculates analytical time-deltas and lineage.
+    4. Validate: Enforces semantic schema and dtypes.
+    5. Promote: Persists the unified event table to the assembly zone.
+    6. Purge: Triggers explicit memory reclamation via force_gc().
 
-    Memory Management:
-    - Explicitly deletes intermediate DataFrames and triggers gc.collect()
-      after export to minimize peak memory footprint.
+    Operational Guarantees:
+    - Grain Integrity: Strictly enforces one row per order_id.
+    - Fail-Fast: Halts immediately if any sub-task fails.
 
-    Failures:
-    - Returns False immediately (fail-fast) if any sub-task wrapper fails.
+    Side Effects:
+    - Persists 'assembled_events' Parquet file.
+    - Mutates 'report' with event assembly metrics.
 
     Failure Behavior:
-    - Traps unexpected exceptions during the assembly pipeline via a try-except block.
-    - Logs errors to the report and ensures memory reclamation via a finally block.
+    - Returns False and logs errors to the report upon any step failure.
     """
 
     report["assembled_events"] = {
@@ -78,6 +103,7 @@ def orchestrate_event_assembly(run_context: RunContext, report: Dict) -> bool:
             return False
 
         del tables
+        force_gc()
 
         ok, lf_derived = task_wrapper(
             report=report,
@@ -85,7 +111,6 @@ def orchestrate_event_assembly(run_context: RunContext, report: Dict) -> bool:
             status_tracker=tracker,
             func=derive_fields,
             lf=lf_merged,
-            run_id=run_context.run_id,
         )
         if not ok:
             return False
@@ -118,7 +143,7 @@ def orchestrate_event_assembly(run_context: RunContext, report: Dict) -> bool:
         log_error(f"Unexpected error processing event assembly: {e}", report)
 
     finally:
-        gc.collect()
+        force_gc()
 
     return True
 
@@ -132,22 +157,20 @@ def orchestrate_dimension_refs(run_context: RunContext, report: Dict) -> bool:
     """
     Iteratively extracts and exports dimension reference tables.
 
-    Contract:
-    - Processes every table defined in the DIMENSION_REFERENCES registry.
-    - Performs one-to-one extraction from Silver (contracted) to Gold (assembled).
+    Workflow:
+    1. Hydrate: Loads historical source table from the contracted zone.
+    2. Delegate: Extracts unique dimension keys and required columns.
+    3. Promote: Persists the reference table to the assembly zone.
+    4. Purge: Clears intermediate dataframes and triggers garbage collection.
 
-    Invariants:
-    - Fail-Fast: If a single dimension fails to load or validate, the
-      entire orchestration terminates and returns False.
+    Operational Guarantees:
+    - Fail-Fast: Termination of the entire loop if any dimension extraction fails.
 
     Side Effects:
-    - Performs per-iteration memory cleanup (del/gc.collect) to prevent
-      accumulation of large dimension frames.
+    - Persists multiple dimension reference Parquet files.
 
     Failure Behavior:
-    - Traps FileNotFoundError and general Exceptions during each iteration.
-    - Logs specific table-level failures and terminates the orchestration to
-      maintain consistency across dimension snapshots.
+    - Logs table-specific errors and returns False.
     """
 
     for table, config in DIMENSION_REFERENCES.items():
@@ -177,7 +200,6 @@ def orchestrate_dimension_refs(run_context: RunContext, report: Dict) -> bool:
                 status_tracker=tracker,
                 func=dimension_references,
                 lf=lf_raw,
-                table_name=table,
                 primary_key=primary_key,
                 req_column=require_col,
             )
@@ -229,29 +251,19 @@ def assemble_events(run_context: RunContext) -> dict:
     """
     Main entry point for the Silver-to-Gold Assembly stage.
 
-    This component coordinates the transformation of normalized relational
-    tables into contract-compliant analytical datasets.
-
-    Workflow I: Event Assembly (Order Grain)
-        1. Load: Fetches core event tables (Orders, Items, Payments).
-        2. Merge: Join datasets with strict 1:1 order_id cardinality enforcement.
-        3. Derive: Calculate temporal metrics (lead times) and lineage attributes.
-        4. Freeze: Project final schema and enforce strictly defined dtypes.
-        5. Export: Persist the unified event table to the Gold zone.
-
-    Workflow II: Dimension Reference Extraction
-        1. Iterate: Process Customer and Product registries.
-        2. Extract: Select required columns and deduplicate by primary key.
-        3. Export: Persist independent reference tables to the Gold zone.
+    Workflow:
+    1. Delegate: Triggers Workflow I (Event Assembly).
+    2. Delegate: Triggers Workflow II (Dimension Reference Extraction).
 
     Operational Guarantees:
-    - Grain: Strictly one row per 'order_id' for the event dataset.
-    - Failure: Fail-fast; any task failure halts the stage and returns a 'failed' status.
-    - Context: Relies on 'run_context' for deterministic path resolution.
+    - Sequential Dependency: Dimension references only process after event assembly attempts.
+    - Stage Atomicity: Any failure in either workflow marks the stage as 'failed'.
+
+    Side Effects:
+    - Orchestrates the creation of the entire Gold/Assembled layer.
 
     Failure Behavior:
-    - Cascades orchestration failures: If either Workflow I or Workflow II returns
-      False, the stage status is set to 'failed' and the report is returned immediately.
+    - Returns a report with status='failed' if either orchestration branch returns False.
 
     Returns:
         dict: A stage report containing 'status' and step-level execution logs.

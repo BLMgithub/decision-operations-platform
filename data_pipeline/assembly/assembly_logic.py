@@ -52,19 +52,21 @@ def merge_data(tables: Dict) -> pl.LazyFrame:
     Contract:
     - Inner joins 'df_orders' with 'df_order_items' to ensure analytical relevance.
     - Left joins 'df_payments' to capture financial metadata.
+    - Subtractive Filtering: Discards orders lacking corresponding item records.
 
     Optimization Logic:
     - Hash-Join: Maps high-cardinality UUIDs to UInt64 hashes to reduce Join Hash Table memory.
-    - Pre-aggregation: Sums payments and deduplicates items BEFORE joining to guarantee
-      a strict 1:1 grain and prevent Cartesian row explosions.
+    - Pre-aggregation: Sums payments and deduplicates items BEFORE joining to guarantee a strict 1:1 grain and prevent Cartesian row explosions.
     - Early Projection: Selects required columns at the source to minimize join width.
 
     Invariants:
     - Dataset Grain: Strictly one row per 'order_id'.
-    - Referential Integrity: Orders lacking corresponding item records are discarded.
+
+    Outputs:
+    - Merged LazyFrame containing joined order, item, and payment data.
 
     Failures:
-    - Potential for cardinality explosion if pre-aggregation logic is bypassed.
+    - [Structural] Crashes if required tables ('df_orders', 'df_order_items') are missing from input Dict.
     """
 
     pl.enable_string_cache()
@@ -119,7 +121,7 @@ def merge_data(tables: Dict) -> pl.LazyFrame:
     return df_merged
 
 
-def derive_fields(lf: pl.LazyFrame, run_id: str) -> pl.LazyFrame:
+def derive_fields(lf: pl.LazyFrame) -> pl.LazyFrame:
     """
     Analytical enrichment and temporal metric derivation layer.
 
@@ -129,16 +131,17 @@ def derive_fields(lf: pl.LazyFrame, run_id: str) -> pl.LazyFrame:
 
     Optimization Logic:
     - Memory-Efficient Casting: Forces durations and years to Int16 (2 bytes) to minimize row width.
-    - Categorical Compression: Casts repetitive strings (year_week, run_id) to Categorical.
+    - Categorical Compression: Casts repetitive strings (year_week) to Categorical.
     - Early Drop: Purges non-contract columns (e.g., estimated_delivery) immediately after use.
 
     Invariants:
-    - Lineage: Every row is stamped with the current 'run_id' for traceability.
     - Temporal Grain: Metrics (lead_time, lags, delays) are represented as integer days.
 
+    Outputs:
+    - Enriched LazyFrame with derived analytical fields.
+
     Failures:
-    - Raises ComputeError (from Polars) if date subtraction logic encounters nulls
-      in non-nullable date columns.
+    - [Structural] Crashes if input LazyFrame lacks required timestamp columns.
     """
 
     lf_derived = lf.with_columns(
@@ -159,12 +162,9 @@ def derive_fields(lf: pl.LazyFrame, run_id: str) -> pl.LazyFrame:
         .dt.total_days()
         .cast(pl.Int16),
         order_date=pl.col("order_purchase_timestamp").dt.date(),
-        order_year=pl.col("order_purchase_timestamp").dt.year(),
-        order_week_iso=pl.col("order_purchase_timestamp").dt.strftime("W%V"),
         order_year_week=pl.col("order_purchase_timestamp")
         .dt.strftime("%G-W%V")
         .cast(pl.Categorical),
-        run_id=pl.lit(run_id).cast(pl.Categorical),
     ).drop("order_estimated_delivery_date")
 
     return lf_derived
@@ -179,14 +179,16 @@ def freeze_schema(lf: pl.LazyFrame) -> pl.LazyFrame:
     - Type Enforcement: Casts remaining columns to the formats defined in 'ASSEMBLE_DTYPES'.
 
     Optimization Logic:
-    - Zero-Copy Streaming: Omits sorting to maintain the non-blocking execution plan
-      required for efficient sink_parquet() operations in memory-constrained environments.
+    - Zero-Copy Streaming: Omits sorting to maintain the non-blocking execution plan required for efficient sink_parquet() operations.
 
     Invariants:
     - Structure: Final execution plan exactly matches the modeling configuration spec.
 
+    Outputs:
+    - Schema-compliant LazyFrame ready for persistence.
+
     Failures:
-    - Raises RuntimeError if the input frame lacks columns required by 'ASSEMBLE_SCHEMA'.
+    - [Structural] Raises RuntimeError if input frame lacks columns required by 'ASSEMBLE_SCHEMA'.
     """
     current_columns = lf.collect_schema().names()
 
@@ -206,7 +208,6 @@ def freeze_schema(lf: pl.LazyFrame) -> pl.LazyFrame:
 
 def dimension_references(
     lf: pl.LazyFrame,
-    table_name: str,
     primary_key: list[str],
     req_column: list[str],
 ) -> pl.LazyFrame:
@@ -214,12 +215,16 @@ def dimension_references(
     Extracts a unique reference dataset from a historical source.
 
     Contract:
-    - Filters input to specified 'req_column' set.
-    - Enforces uniqueness based on 'primary_key'.
+    - Subtractive Filtering: Selects specified 'req_column' set and enforces uniqueness.
 
     Invariants:
     - Dataset Grain: Strictly one row per 'primary_key'.
-    - Sorting: Inherits source order (deterministic behavior not guaranteed).
+
+    Outputs:
+    - Unique reference LazyFrame.
+
+    Failures:
+    - [Structural] Crashes if input LazyFrame lacks 'primary_key' or 'req_column'.
     """
 
     lf_dim = lf.select(req_column).unique(subset=primary_key)
@@ -244,23 +249,20 @@ def task_wrapper(
     Unified task runner that handles logging, reporting, and execution.
 
     Workflow:
-    1. Dispatch: Executes the logic function 'func' with provided arguments.
+    1. Delegate: Executes the logic function 'func' with provided arguments.
     2. Monitor: Traps any exceptions raised during execution.
-    3. Report: Updates 'status_tracker' and logs success/failure to the report.
+    3. Promote: Updates 'status_tracker' and logs success/failure to the report.
 
     Operational Guarantees:
-    - Fail-Safe: Traps all exceptions to prevent pipeline termination, converting
-      errors into 'failed' status reports.
-    - Integrity: Updates the 'status' field in the report for the given step to
-      either True (success) or False (failed) regardless of outcome.
+    - Fail-Safe: Traps all exceptions to prevent pipeline termination.
+    - Integrity: Updates step-level status regardless of outcome.
 
     Side Effects:
     - Mutates 'report' and 'status_tracker' dictionaries in-place.
     - Prints informational/error logs to stdout.
 
     Failure Behavior:
-    - Catches all Exceptions, logs the traceback via 'log_error', and returns
-      (False, None) to signal a controlled sub-task failure.
+    - Returns (False, None) upon any exception.
 
     Returns:
         tuple[bool, Any]: (Success Boolean, Result Data or None).
@@ -293,11 +295,13 @@ def load_event_table(run_context: RunContext, report: Dict) -> Any:
     Batch-loads core event tables required for assembly.
 
     Contract:
-    - Iterates through the global EVENT_TABLES registry.
-    - Loads Parquet files from the provided 'contracted_path'.
+    - Hydrate: Iterates through EVENT_TABLES and loads Parquet files from 'contracted_path'.
 
     Outputs:
-    - Returns a dictionary keyed by table name.
+    - Dict keyed by table name containing loaded LazyFrames.
+
+    Failures:
+    - [Operational] Returns None if any required table is missing or fails to load.
     """
 
     contracted_path = run_context.contracted_path
@@ -329,11 +333,16 @@ def export_path(run_context: RunContext, file_name: str) -> Path:
     Generates a deterministic destination path for assembled artifacts.
 
     Contract:
-    - Parses the 'run_id' (format: YYYYMMDD...) to extract date partitions.
-    - Constructs a filename with the pattern: {file_name}_{YYYY}_{MM}_{DD}.parquet.
+    - Transformation: Parses 'run_id' to extract date partitions and constructs a timestamped filename.
 
     Invariants:
-    - Output location is always relative to 'run_context.assembled_path'.
+    - Path Integrity: Output location is always relative to 'run_context.assembled_path'.
+
+    Outputs:
+    - Path object for the target file.
+
+    Failures:
+    - [Structural] Crashes if 'run_id' format is invalid.
     """
 
     year = run_context.run_id[:4]
