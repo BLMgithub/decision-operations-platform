@@ -17,57 +17,70 @@ def build_seller_semantic(lf: pl.LazyFrame, run_context: RunContext) -> Dict:
     Constructs the Seller-centric analytical layer from assembled events.
 
     Contract:
-    - Transforms order-grain events into weekly seller performance snapshots.
-    - Aggregates metrics including revenue, lead times, and fulfillment lag.
+    - Subtractive Filtering: Selects strictly required columns for performance.
+    - Transformation: Derives week_start_date and boolean status flags.
+    - Aggregation: Computes weekly performance metrics (revenue, lead times, delays) per seller.
 
     Optimization Logic:
-    - Narrow Aggregation: Casts counts and sums to Int16/Int32 and revenues to Float32
-      immediately within the agg() block to minimize the memory footprint of the result set.
-    - Categorical Handling: Relies on pre-cast Categorical columns for grouping keys.
+    - Streaming Projection: Selects required columns for aggregation, allowing the streaming engine to push projection through the plan.
+    - Non-Blocking Aggregation: Executes aggregations in a streaming fashion, maintaining a constant memory profile.
+    - Categorical Handling: Utilizes categorical grouping keys to maintain optimized performance during non-blocking aggregation.
 
     Invariants:
-    - Lineage: Enforces a single 'run_id' across the input dataset.
     - Fact Grain: Strictly 1 row per ('seller_id', 'order_year_week').
     - Dimension Grain: Strictly 1 row per 'seller_id'.
     - Temporal: Aligns all metrics to ISO-week start dates (Monday).
 
+    Outputs:
+    - Dict containing 'seller_weekly_fact' (LazyFrame) and 'seller_dim' (LazyFrame).
+
     Failures:
-    - Raises RuntimeError if multiple 'run_id' values are detected in the source LazyFrame.
+    - [Structural] Crashes if input LazyFrame lacks required columns.
     """
 
-    if lf.select(pl.col("run_id").n_unique()).collect(engine="streaming").item() != 1:
-        raise RuntimeError("Multiple run_ids detected in source")
+    needed_cols = [
+        "seller_id",
+        "order_year_week",
+        "order_date",
+        "order_status",
+        "order_id",
+        "order_revenue",
+        "lead_time_days",
+        "delivery_delay_days",
+        "approval_lag_days",
+    ]
+
+    lf_filtered = lf.select(needed_cols).with_columns(
+        seller_id=pl.col("seller_id").cast(pl.Categorical),
+        order_year_week=pl.col("order_year_week").cast(pl.Categorical),
+    )
 
     seller_weekly_fact = (
-        lf.with_columns(
+        lf_filtered.with_columns(
             week_start_date=pl.col("order_date").dt.truncate("1w"),
             is_delivered=pl.col("order_status").eq("delivered"),
             is_cancelled=pl.col("order_status").eq("cancelled"),
         )
         .group_by(["seller_id", "order_year_week"])
         .agg(
-            run_id=pl.col("run_id").first().cast(pl.Categorical),
             week_start_date=pl.col("week_start_date").min(),
-            weekly_order_count=pl.col("order_id").count().cast(pl.Int16()),
-            weekly_delivered_orders=pl.col("is_delivered").sum().cast(pl.Int16()),
-            weekly_cancelled_orders=pl.col("is_cancelled").sum().cast(pl.Int16()),
-            weekly_revenue=pl.col("order_revenue").sum().cast(pl.Float32()),
-            weekly_avg_lead_time=pl.col("lead_time_days").mean().cast(pl.Float32()),
-            weekly_total_lead_time=pl.col("lead_time_days").sum().cast(pl.Int16()),
+            weekly_order_count=pl.col("order_id").count().cast(pl.Int16),
+            weekly_delivered_orders=pl.col("is_delivered").sum().cast(pl.Int16),
+            weekly_cancelled_orders=pl.col("is_cancelled").sum().cast(pl.Int16),
+            weekly_revenue=pl.col("order_revenue").sum().cast(pl.Float32),
+            weekly_avg_lead_time=pl.col("lead_time_days").mean().cast(pl.Float32),
+            weekly_total_lead_time=pl.col("lead_time_days").sum().cast(pl.Int16),
             weekly_avg_delivery_delay=pl.col("delivery_delay_days")
             .mean()
-            .cast(pl.Float32()),
+            .cast(pl.Float32),
             weekly_total_delivery_delay=pl.col("delivery_delay_days")
             .sum()
-            .cast(pl.Int16()),
-            weekly_avg_approval_lag=pl.col("approval_lag_days")
-            .mean()
-            .cast(pl.Float32()),
+            .cast(pl.Int16),
+            weekly_avg_approval_lag=pl.col("approval_lag_days").mean().cast(pl.Float32),
         )
     )
 
-    seller_dim = lf.group_by("seller_id").agg(
-        run_id=pl.col("run_id").first(),
+    seller_dim = lf_filtered.group_by("seller_id").agg(
         first_order_date=pl.col("order_date").min(),
         first_order_year_week=pl.col("order_year_week").min(),
     )
@@ -90,59 +103,73 @@ def build_customer_semantic(lf: pl.LazyFrame, run_context: RunContext) -> Dict:
     Constructs the Customer-centric analytical layer from assembled events.
 
     Contract:
-    - Aggregates consumer behavior metrics into a weekly temporal grain.
-    - Calculates lifetime-to-date attributes and first-purchase markers.
+    - Subtractive Filtering: Selects strictly required columns for performance.
+    - Transformation: Derives week_start_date and boolean status flags.
+    - Aggregation: Computes weekly performance metrics (revenue, lead times, delays) per customer.
+    - Hydration: Loads historical customer dimension table from the assembly zone.
 
     Optimization Logic:
-    - Narrow Aggregation: Casts counts and sums to Int16/Int32 and revenues to Float32
-      immediately within the agg() block to minimize the memory footprint of the result set.
-    - Categorical Handling: Relies on pre-cast Categorical columns for grouping keys.
+    - Streaming Projection: Selects required columns for aggregation, allowing the streaming engine to push projection through the plan.
+    - Non-Blocking Aggregation: Executes aggregations in a streaming fashion, maintaining a constant memory profile.
+    - Categorical Handling: Utilizes categorical grouping keys to maintain optimized performance during non-blocking aggregation.
 
     Invariants:
-    - Lineage: Requires a unified 'run_id' for consistent partitioning.
     - Fact Grain: Strictly 1 row per ('customer_id', 'order_year_week').
     - Dimension Grain: Strictly 1 row per 'customer_id'.
 
+    Outputs:
+    - Dict containing 'customer_weekly_fact' (LazyFrame) and 'customer_dim' (LazyFrame).
+
     Failures:
-    - Raises RuntimeError if multiple 'run_id' values are detected in the source LazyFrame.
+    - [Structural] Crashes if input LazyFrame lacks required columns.
+    - [Operational] Crashes if 'df_customers' cannot be loaded from the assembly zone.
     """
 
-    if lf.select(pl.col("run_id").n_unique()).collect(engine="streaming").item() != 1:
-        raise RuntimeError("Multiple run_ids detected in source")
+    needed_cols = [
+        "customer_id",
+        "order_year_week",
+        "order_date",
+        "order_status",
+        "order_id",
+        "order_revenue",
+        "lead_time_days",
+        "delivery_delay_days",
+        "approval_lag_days",
+    ]
+
+    # Cast grouping keys to Categorical to reduce hash table memory pressure
+    lf_filtered = lf.select(needed_cols).with_columns(
+        customer_id=pl.col("customer_id").cast(pl.Categorical),
+        order_year_week=pl.col("order_year_week").cast(pl.Categorical),
+    )
 
     customer_weekly_fact = (
-        lf.with_columns(
+        lf_filtered.with_columns(
             week_start_date=pl.col("order_date").dt.truncate("1w"),
             is_delivered=pl.col("order_status").eq("delivered"),
             is_cancelled=pl.col("order_status").eq("cancelled"),
         )
         .group_by(["customer_id", "order_year_week"])
         .agg(
-            run_id=pl.col("run_id").first().cast(pl.Categorical),
             week_start_date=pl.col("week_start_date").min(),
-            weekly_order_count=pl.col("order_id").count().cast(pl.Int16()),
-            weekly_delivered_orders=pl.col("is_delivered").sum().cast(pl.Int16()),
-            weekly_cancelled_orders=pl.col("is_cancelled").sum().cast(pl.Int16()),
-            weekly_revenue=pl.col("order_revenue").sum().cast(pl.Float32()),
-            weekly_avg_lead_time=pl.col("lead_time_days").mean().cast(pl.Float32()),
-            weekly_total_lead_time=pl.col("lead_time_days").sum().cast(pl.Int16()),
+            weekly_order_count=pl.col("order_id").count().cast(pl.Int16),
+            weekly_delivered_orders=pl.col("is_delivered").sum().cast(pl.Int16),
+            weekly_cancelled_orders=pl.col("is_cancelled").sum().cast(pl.Int16),
+            weekly_revenue=pl.col("order_revenue").sum().cast(pl.Float32),
+            weekly_avg_lead_time=pl.col("lead_time_days").mean().cast(pl.Float32),
+            weekly_total_lead_time=pl.col("lead_time_days").sum().cast(pl.Int16),
             weekly_avg_delivery_delay=pl.col("delivery_delay_days")
             .mean()
-            .cast(pl.Float32()),
+            .cast(pl.Float32),
             weekly_total_delivery_delay=pl.col("delivery_delay_days")
             .sum()
-            .cast(pl.Int16()),
-            weekly_avg_approval_lag=pl.col("approval_lag_days")
-            .mean()
-            .cast(pl.Float32()),
+            .cast(pl.Int16),
+            weekly_avg_approval_lag=pl.col("approval_lag_days").mean().cast(pl.Float32),
         )
     )
 
     customer_dim = load_historical_table(
         base_path=run_context.assembled_path, table_name="df_customers"
-    )
-    customer_dim = customer_dim.with_columns(
-        run_id=pl.lit(run_context.run_id).cast(pl.Categorical)
     )
 
     customer_semantic = {
@@ -163,59 +190,72 @@ def build_product_semantic(lf: pl.LazyFrame, run_context: RunContext) -> Dict:
     Constructs the Product-centric analytical layer from assembled events.
 
     Contract:
-    - Aggregates sales velocity and fulfillment health per product.
-    - Merges category metadata with weekly transaction volumes.
+    - Subtractive Filtering: Selects strictly required columns for performance.
+    - Transformation: Derives week_start_date and boolean status flags.
+    - Aggregation: Computes weekly performance metrics (revenue, lead times, delays) per product.
+    - Hydration: Loads historical product dimension table from the assembly zone.
 
     Optimization Logic:
-    - Narrow Aggregation: Casts counts and sums to Int16/Int32 and revenues to Float32
-      immediately within the agg() block to minimize the memory footprint of the result set.
-    - Categorical Handling: Relies on pre-cast Categorical columns for grouping keys.
+    - Streaming Projection: Selects required columns for aggregation, allowing the streaming engine to push projection through the plan.
+    - Non-Blocking Aggregation: Executes aggregations in a streaming fashion, maintaining a constant memory profile.
+    - Categorical Handling: Utilizes categorical grouping keys to maintain optimized performance during non-blocking aggregation.
 
     Invariants:
-    - Lineage: Validates input homogeneity via 'run_id' check.
     - Fact Grain: Strictly 1 row per ('product_id', 'order_year_week').
     - Dimension Grain: Strictly 1 row per 'product_id'.
 
+    Outputs:
+    - Dict containing 'product_weekly_fact' (LazyFrame) and 'product_dim' (LazyFrame).
+
     Failures:
-    - Raises RuntimeError if multiple 'run_id' values are detected in the source LazyFrame.
+    - [Structural] Crashes if input LazyFrame lacks required columns.
+    - [Operational] Crashes if 'df_products' cannot be loaded from the assembly zone.
     """
 
-    if lf.select(pl.col("run_id").n_unique()).collect(engine="streaming").item() != 1:
-        raise RuntimeError("Multiple run_ids detected in source")
+    needed_cols = [
+        "product_id",
+        "order_year_week",
+        "order_date",
+        "order_status",
+        "order_id",
+        "order_revenue",
+        "lead_time_days",
+        "delivery_delay_days",
+        "approval_lag_days",
+    ]
+
+    lf_filtered = lf.select(needed_cols).with_columns(
+        product_id=pl.col("product_id").cast(pl.Categorical),
+        order_year_week=pl.col("order_year_week").cast(pl.Categorical),
+    )
 
     product_weekly_fact = (
-        lf.with_columns(
+        lf_filtered.with_columns(
             week_start_date=pl.col("order_date").dt.truncate("1w"),
             is_delivered=pl.col("order_status").eq("delivered"),
             is_cancelled=pl.col("order_status").eq("cancelled"),
         )
         .group_by(["product_id", "order_year_week"])
         .agg(
-            run_id=pl.col("run_id").first().cast(pl.Categorical),
             week_start_date=pl.col("week_start_date").min(),
-            weekly_order_count=pl.col("order_id").count().cast(pl.Int16()),
-            weekly_delivered_orders=pl.col("is_delivered").sum().cast(pl.Int16()),
-            weekly_cancelled_orders=pl.col("is_cancelled").sum().cast(pl.Int16()),
-            weekly_revenue=pl.col("order_revenue").sum().cast(pl.Float32()),
-            weekly_avg_lead_time=pl.col("lead_time_days").mean().cast(pl.Float32()),
-            weekly_total_lead_time=pl.col("lead_time_days").sum().cast(pl.Int16()),
+            weekly_order_count=pl.col("order_id").count().cast(pl.Int16),
+            weekly_delivered_orders=pl.col("is_delivered").sum().cast(pl.Int16),
+            weekly_cancelled_orders=pl.col("is_cancelled").sum().cast(pl.Int16),
+            weekly_revenue=pl.col("order_revenue").sum().cast(pl.Float32),
+            weekly_avg_lead_time=pl.col("lead_time_days").mean().cast(pl.Float32),
+            weekly_total_lead_time=pl.col("lead_time_days").sum().cast(pl.Int16),
             weekly_avg_delivery_delay=pl.col("delivery_delay_days")
             .mean()
-            .cast(pl.Float32()),
+            .cast(pl.Float32),
             weekly_total_delivery_delay=pl.col("delivery_delay_days")
             .sum()
-            .cast(pl.Int16()),
-            weekly_avg_approval_lag=pl.col("approval_lag_days")
-            .mean()
-            .cast(pl.Float32()),
+            .cast(pl.Int16),
+            weekly_avg_approval_lag=pl.col("approval_lag_days").mean().cast(pl.Float32),
         )
     )
 
     product_dim = load_historical_table(
         base_path=run_context.assembled_path, table_name="df_products"
-    )
-    product_dim = product_dim.with_columns(
-        run_id=pl.lit(run_context.run_id).cast(pl.Categorical)
     )
 
     product_semantic = {

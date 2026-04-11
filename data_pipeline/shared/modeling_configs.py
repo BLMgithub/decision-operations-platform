@@ -25,9 +25,7 @@ ASSEMBLE_SCHEMA = [
     "approval_lag_days",
     "delivery_delay_days",
     "order_date",
-    "order_year",
     "order_year_week",
-    "run_id",
 ]
 
 ASSEMBLE_DTYPES: Mapping[str, pl.DataType] = {
@@ -44,9 +42,7 @@ ASSEMBLE_DTYPES: Mapping[str, pl.DataType] = {
     "approval_lag_days": pl.Int16(),
     "delivery_delay_days": pl.Int16(),
     "order_date": pl.Datetime(),
-    "order_year": pl.Int16(),
     "order_year_week": pl.String(),
-    "run_id": pl.Categorical(),
 }
 
 # ------------------------------------------------------------
@@ -72,14 +68,12 @@ SELLER_DIM_SCHEMA = [
     "seller_id",
     "first_order_date",
     "first_order_year_week",
-    "run_id",
 ]
 
 SELLER_DIM_DTYPES: Mapping[str, pl.DataType] = {
     "seller_id": pl.String(),
     "first_order_date": pl.Datetime(),
     "first_order_year_week": pl.String(),
-    "run_id": pl.Categorical(),
 }
 
 
@@ -88,7 +82,6 @@ SELLER_FACT_SCHEMA = [
     "seller_id",
     "order_year_week",
     "week_start_date",
-    "run_id",
     "weekly_order_count",
     "weekly_delivered_orders",
     "weekly_cancelled_orders",
@@ -104,15 +97,14 @@ SELLER_FACT_DTYPES: Mapping[str, pl.DataType] = {
     "seller_id": pl.String(),
     "order_year_week": pl.String(),
     "week_start_date": pl.Datetime(),
-    "run_id": pl.Categorical(),
     "weekly_order_count": pl.Int16(),
     "weekly_delivered_orders": pl.Int16(),
     "weekly_cancelled_orders": pl.Int16(),
     "weekly_revenue": pl.Float32(),
     "weekly_avg_lead_time": pl.Float32(),
-    "weekly_total_lead_time": pl.Int32(),
+    "weekly_total_lead_time": pl.Int16(),
     "weekly_avg_delivery_delay": pl.Float32(),
-    "weekly_total_delivery_delay": pl.Int32(),
+    "weekly_total_delivery_delay": pl.Int16(),
     "weekly_avg_approval_lag": pl.Float32(),
 }
 
@@ -128,7 +120,6 @@ CUSTOMER_DIM_SCHEMA = [
     "customer_city",
     "customer_segment",
     "account_creation_date",
-    "run_id",
 ]
 
 CUSTOMER_DIM_DTYPES: Mapping[str, pl.DataType] = {
@@ -137,7 +128,6 @@ CUSTOMER_DIM_DTYPES: Mapping[str, pl.DataType] = {
     "customer_city": pl.Categorical(),
     "customer_segment": pl.Categorical(),
     "account_creation_date": pl.Datetime(),
-    "run_id": pl.Categorical(),
 }
 
 # Customer Fact and dtypes
@@ -145,7 +135,6 @@ CUSTOMER_FACT_SCHEMA = [
     "customer_id",
     "order_year_week",
     "week_start_date",
-    "run_id",
     "weekly_order_count",
     "weekly_delivered_orders",
     "weekly_cancelled_orders",
@@ -161,15 +150,14 @@ CUSTOMER_FACT_DTYPES: Mapping[str, pl.DataType] = {
     "customer_id": pl.String(),
     "order_year_week": pl.String(),
     "week_start_date": pl.Datetime(),
-    "run_id": pl.Categorical(),
     "weekly_order_count": pl.Int16(),
     "weekly_delivered_orders": pl.Int16(),
     "weekly_cancelled_orders": pl.Int16(),
     "weekly_revenue": pl.Float32(),
     "weekly_avg_lead_time": pl.Float32(),
-    "weekly_total_lead_time": pl.Int32(),
+    "weekly_total_lead_time": pl.Int16(),
     "weekly_avg_delivery_delay": pl.Float32(),
-    "weekly_total_delivery_delay": pl.Int32(),
+    "weekly_total_delivery_delay": pl.Int16(),
     "weekly_avg_approval_lag": pl.Float32(),
 }
 
@@ -188,7 +176,6 @@ PRODUCT_DIM_SCHEMA = [
     "product_fragility_index",
     "product_weight_g",
     "supplier_tier",
-    "run_id",
 ]
 
 PRODUCT_DIM_DTYPES: Mapping[str, pl.DataType] = {
@@ -200,7 +187,6 @@ PRODUCT_DIM_DTYPES: Mapping[str, pl.DataType] = {
     "product_fragility_index": pl.Categorical(),
     "product_weight_g": pl.Float32(),
     "supplier_tier": pl.Categorical(),
-    "run_id": pl.Categorical(),
 }
 
 
@@ -209,7 +195,6 @@ PRODUCT_FACT_SCHEMA = [
     "product_id",
     "order_year_week",
     "week_start_date",
-    "run_id",
     "weekly_order_count",
     "weekly_delivered_orders",
     "weekly_cancelled_orders",
@@ -226,14 +211,13 @@ PRODUCT_FACT_DTYPES: Mapping[str, pl.DataType] = {
     "product_id": pl.String(),
     "order_year_week": pl.String(),
     "week_start_date": pl.Datetime(),
-    "run_id": pl.Categorical(),
     "weekly_order_count": pl.Int16(),
     "weekly_delivered_orders": pl.Int16(),
     "weekly_cancelled_orders": pl.Int16(),
     "weekly_revenue": pl.Float32(),
     "weekly_avg_lead_time": pl.Float32(),
-    "weekly_total_lead_time": pl.Int32(),
+    "weekly_total_lead_time": pl.Int16(),
     "weekly_avg_delivery_delay": pl.Float32(),
-    "weekly_total_delivery_delay": pl.Int32(),
+    "weekly_total_delivery_delay": pl.Int16(),
     "weekly_avg_approval_lag": pl.Float32(),
 }

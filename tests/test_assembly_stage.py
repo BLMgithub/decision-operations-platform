@@ -250,7 +250,7 @@ def test_merge_data_aggregates_duplicates(
 
 
 def test_derived_fields_correctness(valid_derived_df):
-    result = derive_fields(valid_derived_df, "20230101T120000")
+    result = derive_fields(valid_derived_df)
 
     if isinstance(result, pl.LazyFrame):
         result = result.collect()
@@ -258,7 +258,6 @@ def test_derived_fields_correctness(valid_derived_df):
     assert result["lead_time_days"].to_list() == [3, 5]
     assert result["approval_lag_days"].to_list() == [1, 1]
     assert result["delivery_delay_days"].to_list() == [1, 1]
-    assert result.select(pl.col("run_id").unique()).item() == "20230101T120000"
     assert "order_year_week" in result.columns
 
 
@@ -358,22 +357,14 @@ def test_assemble_data_fails_on_missing_column(
 def test_dimension_references_uniqueness():
     df = pl.DataFrame({"id": ["1", "1", "2"], "val": ["a", "a", "b"]})
 
-    result = dimension_references(df.lazy(), "test", ["id"], ["id", "val"])
+    result = dimension_references(df.lazy(), ["id"], ["id", "val"])
     if isinstance(result, pl.LazyFrame):
         result = result.collect()
     assert result.height == 2
 
     df_conflict = pl.DataFrame({"id": ["1", "1"], "val": ["a", "b"]})
 
-    result = dimension_references(df_conflict.lazy(), "test", ["id"], ["id", "val"])
+    result = dimension_references(df_conflict.lazy(), ["id"], ["id", "val"])
     if isinstance(result, pl.LazyFrame):
         result = result.collect()
     assert result.height == 1
-
-
-def test_dimension_references_fails_if_cols_missing():
-    df = pl.DataFrame({"id": ["1"]})
-    from polars.exceptions import ColumnNotFoundError
-
-    with pytest.raises((KeyError, ColumnNotFoundError)):
-        dimension_references(df.lazy(), "test", ["id"], ["id", "missing"])

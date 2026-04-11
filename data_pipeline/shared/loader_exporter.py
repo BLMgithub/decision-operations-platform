@@ -137,7 +137,7 @@ def export_file(
             row_count = len(df)
 
         elif isinstance(df, pl.LazyFrame):
-            df.sink_parquet(output_path, compression="brotli")
+            df.sink_parquet(output_path, compression="snappy")
             row_count = "streaming"
 
         else:
