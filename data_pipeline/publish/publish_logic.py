@@ -4,6 +4,7 @@
 
 import polars as pl
 from datetime import datetime as dt
+from google.cloud import bigquery
 from contextlib import suppress
 from pathlib import Path
 import json
@@ -164,6 +165,75 @@ def promote_semantic_version(run_context: RunContext) -> Dict:
         log_error(str(e), report)
 
         return report
+
+    return report
+
+
+# ------------------------------------------------------------
+# PUBLISHED SQL VIEW
+# ------------------------------------------------------------
+
+
+def swap_bigquery_view(run_context: RunContext, location: str | None = None) -> Dict:
+    """
+    Atomically updates BigQuery External Tables and Views to point to the new version.
+
+    Contract:
+    - Versioned Tables: Creates unique external tables for each semantic table in the current run.
+    - Stable Views: Replaces existing 'published_' views to point to the new versioned tables.
+
+    Invariants:
+    - Multi-System Sync: BI tools connected to views see the new data immediately after DDL success.
+    - Cloud Only: Skips SQL updates if the pipeline is running in a local-only environment.
+
+    Outputs:
+    - Dict: Report logging the SQL activation status for each module.
+    """
+
+    report = init_report()
+    latest_path = run_context.latest_pointer_path
+    published_uri = run_context.storage_published_path
+
+    if not str(latest_path).startswith("gs://"):
+        log_info("Skipping BigQuery swap (Local Storage detected)", report)
+
+        return report
+
+    # Use provided location or fallback to environment variable (set by Terraform)
+    effective_location = location or os.getenv("GCP_REGION", "us-east1")
+
+    try:
+
+        client = bigquery.Client(location=effective_location)
+        run_id = run_context.run_id
+        project = client.project
+
+        for module_name, module_config in SEMANTIC_MODULES.items():
+            for table_name in module_config["tables"].keys():
+
+                # Create Versioned External Table
+                table_ddl = f"""
+                CREATE OR REPLACE EXTERNAL TABLE `{project}.{module_name}.{table_name}_v{run_id}`
+                OPTIONS (
+                    format = 'PARQUET',
+                    uris = ['{published_uri}/v{run_id}/{module_name}/{table_name}_*.parquet']
+                )
+                """
+
+                # Atomic Pointer Swap (View)
+                view_ddl = f"""
+                CREATE OR REPLACE VIEW `{project}.{module_name}.published_{table_name}` AS
+                SELECT * FROM `{project}.{module_name}.{table_name}_v{run_id}`
+                """
+
+                client.query(table_ddl, location=effective_location).result()
+                client.query(view_ddl, location=effective_location).result()
+
+            log_info(f"BigQuery swap successful for module: {module_name}", report)
+
+    except Exception as e:
+        report["status"] = "failed"
+        log_error(f"BigQuery Swap Failed: {e}", report)
 
     return report
 
