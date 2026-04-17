@@ -61,4 +61,8 @@ resource "google_bigquery_dataset" "semantic_datasets" {
   dataset_id                 = each.key
   location                   = var.region
   delete_contents_on_destroy = false
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }

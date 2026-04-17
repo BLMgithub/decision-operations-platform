@@ -28,14 +28,29 @@ resource "google_cloud_run_v2_job" "pipeline" {
           name  = "GCP_REGION"
           value = var.region
         }
+
+        volume_mounts {
+          name       = "ephemeral-disk-1"
+          mount_path = "/tmp"
+        }
+      }
+
+      volumes {
+        name = "ephemeral-disk-1"
+        empty_dir {
+          size_limit = "10Gi"
+        }
       }
     }
   }
   lifecycle {
     ignore_changes = [
+      # Github ci-infra updates image every update
       template[0].template[0].containers[0].image,
       client,
-      client_version
+      client_version,
+      # Block terraform from defaulting medium to MEMORY, DISK isn't supported by provider yet
+      template[0].template[0].volumes[0].empty_dir[0].medium
     ]
   }
 }
