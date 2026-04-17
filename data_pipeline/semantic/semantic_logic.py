@@ -39,21 +39,18 @@ def build_seller_semantic(lf: pl.LazyFrame, run_context: RunContext) -> Dict:
     """
 
     needed_cols = [
-        "seller_id",
+        "seller_id_int",
         "order_year_week",
         "order_date",
         "order_status",
-        "order_id",
+        "order_id_int",
         "order_revenue",
         "lead_time_days",
         "delivery_delay_days",
         "approval_lag_days",
     ]
 
-    lf_filtered = lf.select(needed_cols).with_columns(
-        seller_id=pl.col("seller_id").cast(pl.Categorical),
-        order_year_week=pl.col("order_year_week").cast(pl.Categorical),
-    )
+    lf_filtered = lf.select(needed_cols)
 
     seller_weekly_fact = (
         lf_filtered.with_columns(
@@ -61,10 +58,10 @@ def build_seller_semantic(lf: pl.LazyFrame, run_context: RunContext) -> Dict:
             is_delivered=pl.col("order_status").eq("delivered"),
             is_cancelled=pl.col("order_status").eq("cancelled"),
         )
-        .group_by(["seller_id", "order_year_week"])
+        .group_by(["seller_id_int", "order_year_week"])
         .agg(
             week_start_date=pl.col("week_start_date").min(),
-            weekly_order_count=pl.col("order_id").count().cast(pl.Int16),
+            weekly_order_count=pl.col("order_id_int").count().cast(pl.Int16),
             weekly_delivered_orders=pl.col("is_delivered").sum().cast(pl.Int16),
             weekly_cancelled_orders=pl.col("is_cancelled").sum().cast(pl.Int16),
             weekly_revenue=pl.col("order_revenue").sum().cast(pl.Float32),
@@ -80,7 +77,7 @@ def build_seller_semantic(lf: pl.LazyFrame, run_context: RunContext) -> Dict:
         )
     )
 
-    seller_dim = lf_filtered.group_by("seller_id").agg(
+    seller_dim = lf_filtered.group_by("seller_id_int").agg(
         first_order_date=pl.col("order_date").min(),
         first_order_year_week=pl.col("order_year_week").min(),
     )
@@ -126,22 +123,18 @@ def build_customer_semantic(lf: pl.LazyFrame, run_context: RunContext) -> Dict:
     """
 
     needed_cols = [
-        "customer_id",
+        "customer_id_int",
         "order_year_week",
         "order_date",
         "order_status",
-        "order_id",
+        "order_id_int",
         "order_revenue",
         "lead_time_days",
         "delivery_delay_days",
         "approval_lag_days",
     ]
 
-    # Cast grouping keys to Categorical to reduce hash table memory pressure
-    lf_filtered = lf.select(needed_cols).with_columns(
-        customer_id=pl.col("customer_id").cast(pl.Categorical),
-        order_year_week=pl.col("order_year_week").cast(pl.Categorical),
-    )
+    lf_filtered = lf.select(needed_cols)
 
     customer_weekly_fact = (
         lf_filtered.with_columns(
@@ -149,10 +142,10 @@ def build_customer_semantic(lf: pl.LazyFrame, run_context: RunContext) -> Dict:
             is_delivered=pl.col("order_status").eq("delivered"),
             is_cancelled=pl.col("order_status").eq("cancelled"),
         )
-        .group_by(["customer_id", "order_year_week"])
+        .group_by(["customer_id_int", "order_year_week"])
         .agg(
             week_start_date=pl.col("week_start_date").min(),
-            weekly_order_count=pl.col("order_id").count().cast(pl.Int16),
+            weekly_order_count=pl.col("order_id_int").count().cast(pl.Int16),
             weekly_delivered_orders=pl.col("is_delivered").sum().cast(pl.Int16),
             weekly_cancelled_orders=pl.col("is_cancelled").sum().cast(pl.Int16),
             weekly_revenue=pl.col("order_revenue").sum().cast(pl.Float32),
@@ -213,21 +206,18 @@ def build_product_semantic(lf: pl.LazyFrame, run_context: RunContext) -> Dict:
     """
 
     needed_cols = [
-        "product_id",
+        "product_id_int",
         "order_year_week",
         "order_date",
         "order_status",
-        "order_id",
+        "order_id_int",
         "order_revenue",
         "lead_time_days",
         "delivery_delay_days",
         "approval_lag_days",
     ]
 
-    lf_filtered = lf.select(needed_cols).with_columns(
-        product_id=pl.col("product_id").cast(pl.Categorical),
-        order_year_week=pl.col("order_year_week").cast(pl.Categorical),
-    )
+    lf_filtered = lf.select(needed_cols)
 
     product_weekly_fact = (
         lf_filtered.with_columns(
@@ -235,10 +225,10 @@ def build_product_semantic(lf: pl.LazyFrame, run_context: RunContext) -> Dict:
             is_delivered=pl.col("order_status").eq("delivered"),
             is_cancelled=pl.col("order_status").eq("cancelled"),
         )
-        .group_by(["product_id", "order_year_week"])
+        .group_by(["product_id_int", "order_year_week"])
         .agg(
             week_start_date=pl.col("week_start_date").min(),
-            weekly_order_count=pl.col("order_id").count().cast(pl.Int16),
+            weekly_order_count=pl.col("order_id_int").count().cast(pl.Int16),
             weekly_delivered_orders=pl.col("is_delivered").sum().cast(pl.Int16),
             weekly_cancelled_orders=pl.col("is_cancelled").sum().cast(pl.Int16),
             weekly_revenue=pl.col("order_revenue").sum().cast(pl.Float32),

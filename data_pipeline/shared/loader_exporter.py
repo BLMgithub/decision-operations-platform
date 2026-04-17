@@ -4,13 +4,28 @@
 
 from pathlib import Path
 import polars as pl
-import pandas as pd
 from typing import Optional, Callable, Tuple, Any
 
 
+def normalize_datetimes(lf: pl.LazyFrame) -> pl.LazyFrame:
+    """
+    Standardizes all datetime columns to microseconds (us) to prevent environment
+    mismatches.
+    """
+
+    schema = lf.collect_schema()
+    datetime_cols = [
+        col for col, dtype in schema.items() if isinstance(dtype, pl.Datetime)
+    ]
+    if not datetime_cols:
+        return lf
+
+    return lf.with_columns([pl.col(c).dt.cast_time_unit("us") for c in datetime_cols])
+
+
 FILE_LOADERS = {
-    ".csv": lambda path: pd.read_csv(path),
-    ".parquet": lambda path: pd.read_parquet(path),
+    ".csv": lambda path: pl.read_csv(path),
+    ".parquet": lambda path: pl.read_parquet(path),
 }
 
 
@@ -56,6 +71,7 @@ def load_single_delta(
     loader = FILE_LOADERS[target_file.suffix.lower()]
 
     df = loader(target_file)
+    df = normalize_datetimes(df.lazy()).collect()
 
     if log_info:
         log_info(f"Loaded: {target_file.name} ({len(df)} rows)")
@@ -85,7 +101,16 @@ def load_historical_table(
     if not files:
         raise FileNotFoundError(f"No Parquet files found for {table_name}")
 
-    lf_unified = pl.scan_parquet(files)
+    # Scan and normalize each file individually before concatenating
+    # This prevents 'incoming Datetime(ns) != target Datetime(us)' errors
+    # when historical files have mixed resolutions due to different environments.
+    lfs = []
+    for f in files:
+        lf = pl.scan_parquet(f)
+        lf = normalize_datetimes(lf)
+        lfs.append(lf)
+
+    lf_unified = pl.concat(lfs)
 
     if log_info:
         log_info(
@@ -126,13 +151,7 @@ def export_file(
         output_path.parent.mkdir(parents=True, exist_ok=True)
         row_count = 0
 
-        if isinstance(df, pd.DataFrame):
-            df.to_parquet(
-                output_path, index=index, engine="pyarrow", compression="brotli"
-            )
-            row_count = len(df)
-
-        elif isinstance(df, pl.DataFrame):
+        if isinstance(df, pl.DataFrame):
             df.write_parquet(output_path, compression="brotli")
             row_count = len(df)
 

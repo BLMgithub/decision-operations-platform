@@ -72,8 +72,8 @@ def merge_data(tables: Dict) -> pl.LazyFrame:
     pl.enable_string_cache()
 
     col_orders = [
-        "order_id",
-        "customer_id",
+        "order_id_int",
+        "customer_id_int",
         "order_status",
         "order_purchase_timestamp",
         "order_approved_at",
@@ -84,22 +84,17 @@ def merge_data(tables: Dict) -> pl.LazyFrame:
     # Pre-aggregate Tables
     lf_payments_agg = (
         tables["df_payments"]
-        .with_columns(join_key=pl.col("order_id").hash())
-        .group_by("join_key")
+        .group_by("order_id_int")
         .agg(order_revenue=pl.col("payment_value").sum())
     )
 
     lf_items_agg = (
         tables["df_order_items"]
-        .with_columns(
-            join_key=pl.col("order_id").hash(),
-            product_id=pl.col("product_id").cast(pl.Categorical),
-            seller_id=pl.col("seller_id").cast(pl.Categorical),
-        )
-        .group_by("join_key")
+        .select(["order_id_int", "product_id_int", "seller_id_int"])
+        .group_by("order_id_int")
         .agg(
-            product_id=pl.col("product_id").first(),
-            seller_id=pl.col("seller_id").first(),
+            product_id_int=pl.col("product_id_int").first(),
+            seller_id_int=pl.col("seller_id_int").first(),
         )
     )
 
@@ -107,15 +102,12 @@ def merge_data(tables: Dict) -> pl.LazyFrame:
         tables["df_orders"]
         .select(col_orders)
         .with_columns(
-            join_key=pl.col("order_id").hash(),
             order_status=pl.col("order_status").cast(pl.Categorical),
         )
     )
 
-    df_merged = (
-        lf_orders.join(lf_items_agg, on="join_key", how="inner")
-        .join(lf_payments_agg, on="join_key", how="left")
-        .drop("join_key")
+    df_merged = lf_orders.join(lf_items_agg, on="order_id_int", how="inner").join(
+        lf_payments_agg, on="order_id_int", how="left"
     )
 
     return df_merged
@@ -190,6 +182,7 @@ def freeze_schema(lf: pl.LazyFrame) -> pl.LazyFrame:
     Failures:
     - [Structural] Raises RuntimeError if input frame lacks columns required by 'ASSEMBLE_SCHEMA'.
     """
+
     current_columns = lf.collect_schema().names()
 
     missing_cols = set(ASSEMBLE_SCHEMA) - set(current_columns)
@@ -280,7 +273,7 @@ def task_wrapper(
         return True, result
 
     except Exception as e:
-        log_error(f"Step {step_name} failed: {(e)}", report)
+        log_error(f"Step {step_name} failed: {e}", report)
         status_tracker[step_name] = False
         return False, None
 

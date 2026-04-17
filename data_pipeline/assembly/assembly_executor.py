@@ -222,13 +222,13 @@ def orchestrate_dimension_refs(run_context: RunContext, report: Dict) -> bool:
             log_info(f"Export dimension reference:{table} successfully", report)
 
         except FileNotFoundError as e:
-            log_error(f"File not found for dimension table {table}: {str(e)}", report)
+            log_error(f"File not found for dimension table {table}: {e}", report)
 
             return False
 
         except Exception as e:
             log_error(
-                f"Unexpected error processing dimension table {table}: {str(e)}", report
+                f"Unexpected error processing dimension table {table}: {e}", report
             )
             return False
 

@@ -118,7 +118,7 @@ def orchestrate_module(
         print(f"[INFO] Module {module_name}: build_stage completed successfully.")
 
     except Exception as e:
-        log_error(f"Step build_stage failed: {str(e)}", report)
+        log_error(f"Step build_stage failed: {e}", report)
         report["status"] = "failed"
 
         return False
