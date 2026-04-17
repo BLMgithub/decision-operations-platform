@@ -14,21 +14,20 @@ from data_pipeline.shared.loader_exporter import load_historical_table
 
 def build_seller_semantic(lf: pl.LazyFrame, run_context: RunContext) -> Dict:
     """
-    Constructs the Seller-centric analytical layer from assembled events.
+    Constructs the Seller-centric analytical layer from assembled integer-mapped events.
 
     Contract:
     - Subtractive Filtering: Selects strictly required columns for performance.
     - Transformation: Derives week_start_date and boolean status flags.
-    - Aggregation: Computes weekly performance metrics (revenue, lead times, delays) per seller.
+    - Aggregation: Computes weekly performance metrics (revenue, lead times, delays) per seller using optimized Integer keys.
 
     Optimization Logic:
-    - Streaming Projection: Selects required columns for aggregation, allowing the streaming engine to push projection through the plan.
-    - Non-Blocking Aggregation: Executes aggregations in a streaming fashion, maintaining a constant memory profile.
-    - Categorical Handling: Utilizes categorical grouping keys to maintain optimized performance during non-blocking aggregation.
+    - Integer Key Optimization: Utilizes UInt32/UInt64 grouping keys (seller_id_int) to maintain a constant memory profile during non-blocking aggregation.
+    - Metric Downcasting: Enforces Int16 for counts/days and Float32 for revenue to minimize row width during streaming.
 
     Invariants:
-    - Fact Grain: Strictly 1 row per ('seller_id', 'order_year_week').
-    - Dimension Grain: Strictly 1 row per 'seller_id'.
+    - Fact Grain: Strictly 1 row per ('seller_id_int', 'order_year_week').
+    - Dimension Grain: Strictly 1 row per 'seller_id_int'.
     - Temporal: Aligns all metrics to ISO-week start dates (Monday).
 
     Outputs:
@@ -97,22 +96,21 @@ def build_seller_semantic(lf: pl.LazyFrame, run_context: RunContext) -> Dict:
 
 def build_customer_semantic(lf: pl.LazyFrame, run_context: RunContext) -> Dict:
     """
-    Constructs the Customer-centric analytical layer from assembled events.
+    Constructs the Customer-centric analytical layer from assembled integer-mapped events.
 
     Contract:
     - Subtractive Filtering: Selects strictly required columns for performance.
     - Transformation: Derives week_start_date and boolean status flags.
-    - Aggregation: Computes weekly performance metrics (revenue, lead times, delays) per customer.
+    - Aggregation: Computes weekly performance metrics (revenue, lead times, delays) per customer using optimized Integer keys.
     - Hydration: Loads historical customer dimension table from the assembly zone.
 
     Optimization Logic:
-    - Streaming Projection: Selects required columns for aggregation, allowing the streaming engine to push projection through the plan.
-    - Non-Blocking Aggregation: Executes aggregations in a streaming fashion, maintaining a constant memory profile.
-    - Categorical Handling: Utilizes categorical grouping keys to maintain optimized performance during non-blocking aggregation.
+    - Integer Key Optimization: Utilizes UInt32/UInt64 grouping keys (customer_id_int) to maintain a constant memory profile during non-blocking aggregation.
+    - Metric Downcasting: Enforces Int16 for counts/days and Float32 for revenue to minimize row width.
 
     Invariants:
-    - Fact Grain: Strictly 1 row per ('customer_id', 'order_year_week').
-    - Dimension Grain: Strictly 1 row per 'customer_id'.
+    - Fact Grain: Strictly 1 row per ('customer_id_int', 'order_year_week').
+    - Dimension Grain: Strictly 1 row per 'customer_id_int'.
 
     Outputs:
     - Dict containing 'customer_weekly_fact' (LazyFrame) and 'customer_dim' (LazyFrame).
@@ -180,22 +178,21 @@ def build_customer_semantic(lf: pl.LazyFrame, run_context: RunContext) -> Dict:
 
 def build_product_semantic(lf: pl.LazyFrame, run_context: RunContext) -> Dict:
     """
-    Constructs the Product-centric analytical layer from assembled events.
+    Constructs the Product-centric analytical layer from assembled integer-mapped events.
 
     Contract:
     - Subtractive Filtering: Selects strictly required columns for performance.
     - Transformation: Derives week_start_date and boolean status flags.
-    - Aggregation: Computes weekly performance metrics (revenue, lead times, delays) per product.
+    - Aggregation: Computes weekly performance metrics (revenue, lead times, delays) per product using optimized Integer keys.
     - Hydration: Loads historical product dimension table from the assembly zone.
 
     Optimization Logic:
-    - Streaming Projection: Selects required columns for aggregation, allowing the streaming engine to push projection through the plan.
-    - Non-Blocking Aggregation: Executes aggregations in a streaming fashion, maintaining a constant memory profile.
-    - Categorical Handling: Utilizes categorical grouping keys to maintain optimized performance during non-blocking aggregation.
+    - Integer Key Optimization: Utilizes UInt32/UInt64 grouping keys (product_id_int) to maintain a constant memory profile during non-blocking aggregation.
+    - Metric Downcasting: Enforces Int16 for counts/days and Float32 for revenue to minimize row width.
 
     Invariants:
-    - Fact Grain: Strictly 1 row per ('product_id', 'order_year_week').
-    - Dimension Grain: Strictly 1 row per 'product_id'.
+    - Fact Grain: Strictly 1 row per ('product_id_int', 'order_year_week').
+    - Dimension Grain: Strictly 1 row per 'product_id_int'.
 
     Outputs:
     - Dict containing 'product_weekly_fact' (LazyFrame) and 'product_dim' (LazyFrame).

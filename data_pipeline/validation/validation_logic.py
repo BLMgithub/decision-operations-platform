@@ -53,15 +53,16 @@ def run_base_validations(
     report: Dict[str, List[str]],
 ) -> bool:
     """
-    Enforces foundational structural integrity for a logical table.
+    Enforces foundational structural integrity using Polars-native expressions.
 
     Contract:
     - Mandatory Schema: All 'required_column' names must exist in the DataFrame.
     - Uniqueness: Enforces primary key uniqueness and detects conflicting duplicates.
-    - Non-Nullability: Columns in 'non_nullable_column' must not contain NaN values.
+    - Non-Nullability: Columns in 'non_nullable_column' must not contain Null values.
 
     Invariants:
     - Diagnostic Safety: Read-only; does not mutate the input DataFrame.
+    - Performance: Leverages Polars lazy-style evaluations for memory efficiency.
 
     Outputs:
     - Boolean: True if all mandatory structural checks pass.
@@ -164,14 +165,15 @@ def run_event_fact_validations(
     df: pl.DataFrame, table_name: str, report: Dict[str, List[str]]
 ) -> bool:
     """
-    Enforces business-logic chronology for Event-Role tables.
+    Enforces business-logic chronology and resolution standards for Event-Role tables.
 
     Contract:
-    - Chronological Check: Evaluates temporal sequence (Purchase <= Approval <= Delivery).
-    - Parseability: Validates timestamp string compatibility with system formats.
+    - Resolution Verification: Asserts that all timestamps are pre-normalized to microseconds (us) by the I/O layer.
+    - Chronological Check: Evaluates temporal sequence (Purchase <= Approval <= Delivery) using clean Polars syntax.
 
     Invariants:
     - Temporal Consistency: Flags records where delivery precedes purchase as Warnings.
+    - Zero-Tolerance Resolution: Assumes compliance with the 'Normalize-at-Source' I/O strategy.
 
     Outputs:
     - Boolean: True if all temporal checks are executed.

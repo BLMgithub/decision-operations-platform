@@ -19,7 +19,23 @@ def map_uuid_to_int(
     df: pl.DataFrame, mapping_file_path: Path, id_column: str
 ) -> pl.DataFrame:
     """
-    docstrings...
+    Enforces a deterministic 1-to-1 mapping between UUID strings and UInt32 integers.
+
+    Contract:
+    - Hydrate: Loads existing mapping registry from Parquet if present.
+    - Discover: Identifies new UUIDs in the input 'df' that are missing from the registry.
+    - Generate: Assigns incrementing UInt32 values to new UUIDs, starting from max(existing_id) + 1.
+    - Persist: Updates the mapping registry on disk immediately upon discovery of new keys.
+
+    Invariants:
+    - Referential Integrity: Guarantees that a UUID always maps to the same integer across runs.
+    - Uniqueness: Enforces strict 1-to-1 parity between strings and integers.
+
+    Outputs:
+    - Joined DataFrame containing both the original 'id_column' and the new '{id_column}_int'.
+
+    Failures:
+    - [Operational] Crashes if the mapping file is corrupted or disk I/O fails.
     """
 
     int_col_name = f"{id_column}_int"
@@ -65,7 +81,24 @@ def id_mapping(
     destination: Path,
 ) -> pl.DataFrame:
     """
-    docstrings..
+    Orchestrates multi-column UUID-to-Integer transformation for a specific logical table.
+
+    Contract:
+    - Resolution: Identifies target ID columns (e.g., customer_id, order_id) based on 'mapping_dict'.
+    - Isolation: Manages local temp paths vs. global storage paths for mapping registries.
+    - Promotion: Synchronizes updated mapping files to the central storage destination.
+
+    Optimization Logic:
+    - Primitive Integer Pipeline: Converts high-cardinality strings to 4-byte integers to minimize downstream Hash Table memory.
+
+    Invariants:
+    - Traceability: All mapped files are promoted to 'destination' to ensure global consistency.
+
+    Outputs:
+    - DataFrame with all specified UUID columns supplemented by their integer counterparts.
+
+    Failures:
+    - [Structural] Skips mapping if the 'table_name' is not present in the 'mapping_dict'.
     """
 
     df_mapped = df

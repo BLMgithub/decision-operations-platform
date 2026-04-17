@@ -3,9 +3,10 @@
 **Files:**
 * **Executor:** [`contract_executor.py`](../../data_pipeline/contract/contract_executor.py)
 * **Logic:** [`contract_logic.py`](../../data_pipeline/contract/contract_logic.py)
+* **Registrar:** [`id_registrar.py`](../../data_pipeline/contract/id_registrar.py)
 * **Registry:** [`registry.py`](../../data_pipeline/contract/registry.py)
 
-**Role:** Structural Enforcement and Subtractive Filtering.
+**Role:** Structural Enforcement, Subtractive Filtering, and Integer Mapping.
 
 ![contract-stage-diagram](/assets/diagrams/03-contract-stage-diagram.png)
 
@@ -39,11 +40,12 @@ The **Executor** applies the contract through a registry-driven sequence:
 
 1.  **Role Resolution:** Identifies if the table is an `event_fact`, `transaction_detail`, or `entity_reference`.
 2.  **Logic Sequencing:** Fetches the specific list of rules (e.g., `deduplicate`, `remove_nulls`) from the `ROLE_STEPS` registry.
-3.  **Atomic Filtering:** Iteratively applies each logic function. For `event_fact` roles, it captures any `order_id` that triggers a violation.
+3.  **Atomic Filtering:** Iteratively applies each logic function using Polars-native expressions. For `event_fact` roles, it captures any `order_id` that triggers a violation.
 4.  **Cascade Cleanup:** If `invalid_order_ids` are provided, it drops child records whose parents were previously invalidated.
 5.  **Referential Gate:** If `valid_order_ids` are provided (post-orders processing), it prunes orphan records.
-6.  **Schema Freeze:** As the final operation, it executes `enforce_schema` to project only required columns and cast types.
-7.  **Persistence:** Saves the resulting compliant DataFrame to the Silver layer.
+6.  **ID Mapping:** Dispatches the filtered DataFrame to `id_registrar.py` to convert high-cardinality UUIDs into `UInt32/UInt64` integers, ensuring a deterministic 1-to-1 mapping.
+7.  **Schema Freeze:** As the final operation, it executes `enforce_schema` to project only required columns and cast types.
+8.  **Persistence:** Saves the resulting compliant and integer-mapped DataFrame to the Silver layer.
 
 ## **Boundaries**
 
@@ -52,8 +54,8 @@ The **Executor** applies the contract through a registry-driven sequence:
 | Remove rows violating structural rules (Nulls, Duplicates). | Calculate business metrics or durations. |
 | Drop child records based on parent invalidation (Cascade). | Impute missing values or "fix" bad data. |
 | Enforce chronological logic (Purchase < Delivery). | Join multiple tables (delegated to Assembly stage). |
-| Project a final schema and enforce strictly defined types. | Rename columns or change business definitions. |
-| Track exactly how many rows were lost at each rule. | Handle global orchestration of all tables. |
+| Map high-cardinality UUIDs to primitive integers. | Rename columns or change business definitions. |
+| Project a final schema and enforce strictly defined types. | Handle global orchestration of all tables. |
 
 ## **Failure & Severity Model**
 

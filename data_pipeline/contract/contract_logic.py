@@ -44,15 +44,15 @@ def deduplicate_exact_events(df: pl.DataFrame) -> tuple[pl.DataFrame, int]:
 
 def remove_unparsable_timestamps(df: pl.DataFrame) -> tuple[pl.DataFrame, int, set]:
     """
-    Enforces parseability for system-critical temporal fields.
+    Enforces temporal completeness for system-critical fields.
 
     Contract:
-    - Evaluates all columns defined in REQUIRED_TIMESTAMPS.
-    - Subtractive Filtering: Drops any row containing at least one NaT/unparsable value in target columns.
+    - Data Presence: Evaluates all columns defined in REQUIRED_TIMESTAMPS for Null/NaT values.
+    - Subtractive Filtering: Drops any row containing unmapped temporal data.
 
     Invariants:
-    - Type Safety: Does not cast types permanently; performs internal validation only.
-    - Lineage: Emits 'order_id' of failing rows to enable cascade pruning downstream.
+    - Post-Normalization: Operates on the guarantee that the I/O layer has already standardized resolution to microseconds.
+    - Referential Integrity: Emits 'order_id' of failing rows to enable cascade pruning downstream.
 
     Outputs:
     - Tuple: (Filtered DataFrame, Count of dropped rows, Set of invalid order_ids).
@@ -89,7 +89,7 @@ def remove_unparsable_timestamps(df: pl.DataFrame) -> tuple[pl.DataFrame, int, s
 
 def remove_impossible_timestamps(df: pl.DataFrame) -> tuple[pl.DataFrame, int, set]:
     """
-    Enforces logical chronology for the order lifecycle.
+    Enforces logical chronology for the order lifecycle using Polars expressions.
 
     Contract:
     - Chronological Gate: Order Approval Date >= Order Purchase Date AND Order Delivery Date >= Order Purchase Date.
@@ -97,6 +97,7 @@ def remove_impossible_timestamps(df: pl.DataFrame) -> tuple[pl.DataFrame, int, s
 
     Invariants:
     - Temporal Alignment: Ensures all orders have a positive or zero lead time.
+    - Clean Code: Leverages direct Polars comparison logic without manual type-checking overhead.
 
     Outputs:
     - Tuple: (Filtered DataFrame, Count of dropped rows, Set of invalid order_ids).

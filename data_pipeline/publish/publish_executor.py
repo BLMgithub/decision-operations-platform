@@ -73,7 +73,12 @@ def execute_publish_lifecycle(run_context: RunContext) -> Dict:
     if update_sql_view["status"] == "failed":
         return fail_step("sql_view")
 
-    log_info("BigQuery views updated successfully", update_sql_view)
+    # Skip logging view updated
+    if any("Skipping" in info for info in update_sql_view["info"]):
+        pass
+
+    else:
+        log_info("BigQuery views updated successfully", update_sql_view)
 
     published_activation = activate_published_version(run_context)
     report["steps"]["activation"] = published_activation

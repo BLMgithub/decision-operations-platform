@@ -9,8 +9,19 @@ from typing import Optional, Callable, Tuple, Any
 
 def normalize_datetimes(lf: pl.LazyFrame) -> pl.LazyFrame:
     """
-    Standardizes all datetime columns to microseconds (us) to prevent environment
-    mismatches.
+    Standardizes all Datetime columns to a unified resolution (microseconds).
+
+    Contract:
+    - Discovery: Scans the LazyFrame schema for all pl.Datetime fields.
+    - Transformation: Forcefully casts identified columns to 'us' (microseconds) resolution.
+
+    Invariants:
+    - Zero-Failure: Returns the input 'lf' unchanged if no Datetime columns are found.
+    - Environment Neutrality: Prevents 'Datetime(ns) != Datetime(us)' resolution mismatches
+      between local development and cloud production environments.
+
+    Outputs:
+    - LazyFrame with resolution-standardized temporal fields.
     """
 
     schema = lf.collect_schema()
@@ -38,15 +49,20 @@ def load_single_delta(
     Loads the chronologically most recent delta for a logical table.
 
     Contract:
-    - Scans 'base_path' for files matching the 'table_name' prefix.
-    - Identifies the target file via alphanumeric sorting of the date suffix (YYYY_MM_DD).
+    - Discovery: Scans 'base_path' for files matching the 'table_name' prefix.
+    - Selection: Identifies the target file via alphanumeric sorting of the date suffix (YYYY_MM_DD).
+    - Normalization: Automatically applies 'normalize_datetimes' to enforce microsecond resolution.
 
     Invariants:
     - Recency: Only the latest snapshot is returned; historical deltas are ignored.
     - Format Support: Handles .csv and .parquet (prioritizing Parquet).
+    - Source Integrity: Operates on a lazy scan to minimize memory footprint during initial load.
+
+    Outputs:
+    - Tuple containing (pl.DataFrame, str: file_name).
 
     Failures:
-    - Raises FileNotFoundError if no matching artifacts are found.
+    - [Operational] Raises FileNotFoundError if no matching artifacts are found.
     """
 
     base_path = Path(base_path)
@@ -88,11 +104,21 @@ def load_historical_table(
     Aggregates matching artifacts into a single cumulative LazyFrame.
 
     Contract:
-    - Performs a multi-file scan of all Parquet artifacts matching 'table_name'.
-    - Queues files for lazy evaluation rather than loading them into memory.
+    - Heterogeneous Scan Fix: Scans and normalizes resolution for every file individually before concatenation.
+    - Discovery: Performs a multi-file scan of all Parquet artifacts matching 'table_name'.
+
+    Optimization Logic:
+    - Normalize-at-Source Strategy: Standardizes Datetime resolution at the point of ingestion to prevent
+      downstream merge crashes caused by mixed local/cloud environments.
+
+    Invariants:
+    - Schema Stability: Returns a unified LazyFrame ready for streaming evaluation.
 
     Outputs:
     - Returns a pl.LazyFrame ready for downstream transformations.
+
+    Failures:
+    - [Operational] Raises FileNotFoundError if no Parquet files match the table name.
     """
     base_path = Path(base_path)
 
@@ -131,18 +157,21 @@ def export_file(
     Persists DataFrames or LazyFrames to disk using standardized formats.
 
     Contract:
-    - Automates directory creation for the target 'output_path'.
-    - Enforces Parquet with Brotli compression as the internal standard.
+    - Hydrate: Automatically ensures parent directories for 'output_path' exist.
+    - Persist: Enforces Parquet with compression as the internal standard.
 
     Optimization Logic:
-    - Streaming Sink: When provided with a pl.LazyFrame, uses sink_parquet() to
-      stream data in chunks, bypassing full in-memory materialization.
+    - Streaming Sink: If 'df' is a LazyFrame, uses 'sink_parquet()' to execute 
+      non-blocking writes directly from the query plan to disk.
 
     Invariants:
-    - Compression: Parquet exports always utilize 'brotli' to optimize storage.
+    - Compression: Utilizes 'brotli' for DataFrames and 'snappy' for LazyFrame streaming sinks.
 
-    Returns:
-        bool: True if write succeeded, False on I/O exception.
+    Outputs:
+    - Boolean: True if write succeeded, False on I/O exception.
+
+    Failures:
+    - [Operational] Returns False and logs to 'log_error' if disk I/O fails or permissions are denied.
     """
 
     output_path = Path(output_path)
