@@ -6,7 +6,7 @@ import gc
 import polars as pl
 from typing import Dict
 from data_pipeline.shared.run_context import RunContext
-from data_pipeline.shared.loader_exporter import load_historical_table, export_file
+from data_pipeline.shared.loader_exporter import load_assembled_data, export_file
 from data_pipeline.semantic.registry import SEMANTIC_MODULES
 from data_pipeline.assembly.assembly_logic import (
     init_report,
@@ -214,7 +214,7 @@ def build_semantic_layer(run_context: RunContext) -> Dict:
     report = init_report()
     report["modules"] = {}
 
-    df_assembled = load_historical_table(
+    df_assembled = load_assembled_data(
         base_path=run_context.assembled_path,
         table_name="assembled_events",
         log_info=lambda msg: loaded_data(msg, report),

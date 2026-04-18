@@ -6,7 +6,7 @@ import polars as pl
 from pathlib import Path
 from typing import Dict, Callable, Any, List
 from data_pipeline.shared.run_context import RunContext
-from data_pipeline.shared.loader_exporter import load_historical_table
+from data_pipeline.shared.loader_exporter import load_historical_data
 from data_pipeline.shared.modeling_configs import ASSEMBLE_SCHEMA, ASSEMBLE_DTYPES
 
 EVENT_TABLES = ["df_orders", "df_order_items", "df_payments"]
@@ -295,14 +295,14 @@ def load_event_table(run_context: RunContext, report: Dict) -> Any:
     - [Operational] Returns None if any required table is missing or fails to load.
     """
 
-    contracted_path = run_context.contracted_path
+    base_contracted_path = run_context.contracted_path
     tables = {}
 
     for table_name in EVENT_TABLES:
         try:
-            df = load_historical_table(
-                contracted_path,
-                table_name,
+            df = load_historical_data(
+                base_path=base_contracted_path,
+                table_name=table_name,
                 log_info=lambda msg: loaded_data(msg, report),
             )
 

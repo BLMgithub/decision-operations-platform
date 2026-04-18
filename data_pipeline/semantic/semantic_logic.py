@@ -5,7 +5,7 @@
 import polars as pl
 from typing import Dict
 from data_pipeline.shared.run_context import RunContext
-from data_pipeline.shared.loader_exporter import load_historical_table
+from data_pipeline.shared.loader_exporter import load_assembled_data
 
 # ------------------------------------------------------------
 # SELLER SEMANTIC BUILDER
@@ -159,7 +159,7 @@ def build_customer_semantic(lf: pl.LazyFrame, run_context: RunContext) -> Dict:
         )
     )
 
-    customer_dim = load_historical_table(
+    customer_dim = load_assembled_data(
         base_path=run_context.assembled_path, table_name="df_customers"
     )
 
@@ -241,7 +241,7 @@ def build_product_semantic(lf: pl.LazyFrame, run_context: RunContext) -> Dict:
         )
     )
 
-    product_dim = load_historical_table(
+    product_dim = load_assembled_data(
         base_path=run_context.assembled_path, table_name="df_products"
     )
 

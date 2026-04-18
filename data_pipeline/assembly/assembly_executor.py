@@ -7,7 +7,7 @@ import ctypes
 import platform
 from typing import Dict
 from data_pipeline.shared.run_context import RunContext
-from data_pipeline.shared.loader_exporter import load_historical_table, export_file
+from data_pipeline.shared.loader_exporter import load_historical_data, export_file
 from data_pipeline.shared.modeling_configs import DIMENSION_REFERENCES
 from data_pipeline.assembly.assembly_logic import (
     init_report,
@@ -181,10 +181,12 @@ def orchestrate_dimension_refs(run_context: RunContext, report: Dict) -> bool:
         lf_raw = None
         df_dim = None
 
+        base_contracted_path = run_context.contracted_path
+
         try:
-            lf_raw = load_historical_table(
-                run_context.contracted_path,
-                table,
+            lf_raw = load_historical_data(
+                base_path=base_contracted_path,
+                table_name=table,
                 log_info=lambda msg: loaded_data(msg, report),
             )
 
