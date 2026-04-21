@@ -3,7 +3,7 @@
 # =============================================================================
 
 import polars as pl
-from datetime import datetime as dt
+from datetime import datetime as dt, timezone
 from google.cloud import bigquery
 from contextlib import suppress
 from pathlib import Path
@@ -209,7 +209,7 @@ def swap_bigquery_view(run_context: RunContext, location: str | None = None) -> 
         project = client.project
 
         for module_name, module_config in SEMANTIC_MODULES.items():
-            for table_name in module_config["tables"].keys():
+            for table_name in module_config["tables"]:
 
                 # Create Versioned External Table
                 table_ddl = f"""
@@ -273,7 +273,7 @@ def activate_published_version(run_context: RunContext) -> Dict:
         "run_year": run_dt.year,
         "run_month": run_dt.month,
         "run_week_of_month": (run_dt.day - 1) // 7 + 1,
-        "published_at": dt.utcnow().isoformat(),
+        "published_at": dt.now(timezone.utc).isoformat(),
     }
 
     # LOCAL storage

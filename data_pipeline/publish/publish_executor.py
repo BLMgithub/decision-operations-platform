@@ -20,8 +20,8 @@ def execute_publish_lifecycle(run_context: RunContext) -> Dict:
     Workflow:
     1. Validate: Executes the 'Integrity Gate' to ensure all semantic artifacts exist and are schema-compliant.
     2. Promote: Transfers validated artifacts to the permanent versioned publication zone (GCS).
-    3. Sync: Synchronizes BigQuery External Tables and Views to point to the newly promoted version.
-    4. Delegate: Triggers the atomic pointer swap (_latest.json) to activate the new version for file-system consumers.
+    3. Synchronizes BigQuery External Tables and Views to point to the newly promoted version.
+    4. Activate: Triggers the atomic pointer swap (_latest.json) to update the version pointer for file-system consumers.
 
     Operational Guarantees:
     - Multi-System Atomicity: The BI views and file-system pointers are updated ONLY after successful promotion of all artifacts.

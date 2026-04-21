@@ -2,7 +2,7 @@
 # UNIT TESTS FOR contract_logic.py and contract_executor.py
 # =============================================================================
 
-import pandas as pd
+import polars as pl
 import pytest
 from data_pipeline.shared.run_context import RunContext
 from data_pipeline.contract.contract_executor import apply_contract
@@ -23,7 +23,7 @@ from data_pipeline.contract.contract_logic import (
 
 @pytest.fixture
 def sample_orders_df():
-    return pd.DataFrame(
+    return pl.DataFrame(
         {
             "order_id": ["o1", "o2", "o3"],
             "customer_id": ["c1", "c2", "c3"],
@@ -50,7 +50,7 @@ def sample_orders_df():
 
 @pytest.fixture
 def sample_payments_df():
-    return pd.DataFrame(
+    return pl.DataFrame(
         {
             "order_id": ["o1", "o2", "o3"],
             "payment_sequential": [1, 1, 1],
@@ -65,14 +65,14 @@ def sample_payments_df():
 
 
 def test_deduplicate_exact_events():
-    df = pd.DataFrame({"a": [1, 1, 2], "b": [2, 2, 3]})
+    df = pl.DataFrame({"a": [1, 1, 2], "b": [2, 2, 3]})
     filtered, removed = deduplicate_exact_events(df)
     assert len(filtered) == 2
     assert removed == 1
 
 
 def test_remove_unparsable_timestamps():
-    df = pd.DataFrame(
+    df = pl.DataFrame(
         {
             "order_id": ["o1", "o2"],
             "order_purchase_timestamp": ["2026-01-01 10:00:00", "garbage"],
@@ -89,7 +89,7 @@ def test_remove_unparsable_timestamps():
 
 def test_remove_impossible_timestamps():
     # Delivered before purchase
-    df = pd.DataFrame(
+    df = pl.DataFrame(
         {
             "order_id": ["o1"],
             "order_purchase_timestamp": ["2026-03-25 10:00:00"],
@@ -104,29 +104,29 @@ def test_remove_impossible_timestamps():
 
 
 def test_cascade_drop_by_order_id():
-    df = pd.DataFrame({"order_id": ["o1", "o2", "o3"]})
+    df = pl.DataFrame({"order_id": ["o1", "o2", "o3"]})
     invalid = {"o1", "o3"}
 
     filtered, removed = cascade_drop_by_order_id(df, invalid)
 
     assert len(filtered) == 1
     assert removed == 2
-    assert filtered.iloc[0]["order_id"] == "o2"
+    assert filtered[0, "order_id"] == "o2"
 
 
 def test_enforce_parent_reference():
-    df = pd.DataFrame({"order_id": ["o1", "o2", "ghost"]})
+    df = pl.DataFrame({"order_id": ["o1", "o2", "ghost"]})
     valid = {"o1", "o2"}
 
     filtered, removed = enforce_parent_reference(df, valid)
 
     assert len(filtered) == 2
     assert removed == 1
-    assert "ghost" not in filtered["order_id"].values
+    assert "ghost" not in filtered["order_id"].to_list()
 
 
 def test_remove_rows_with_null_constraint():
-    df = pd.DataFrame({"order_id": ["o1", "o2", None, "o4"]})
+    df = pl.DataFrame({"order_id": ["o1", "o2", None, "o4"]})
     non_nullable = ["order_id"]
 
     filtered, removed, invalid_ids = remove_rows_with_null_constraint(df, non_nullable)
@@ -137,7 +137,7 @@ def test_remove_rows_with_null_constraint():
 
 
 def test_enforce_schema():
-    df = pd.DataFrame(
+    df = pl.DataFrame(
         {
             "order_id": ["o1", "o2", "o3"],
             "customer_id": ["c1", "c2", "c3"],
@@ -146,14 +146,14 @@ def test_enforce_schema():
         }
     )
     req_col = ["order_id", "customer_id", "state"]
-    dtype = {"order_id": "string", "customer_id": "string", "state": "category"}
+    dtype = {"order_id": pl.String, "customer_id": pl.String, "state": pl.Categorical}
 
     filtered, removed = enforce_schema(df, req_col, dtype)
 
     assert len(filtered) == 3
     assert removed == 1
-    assert isinstance(filtered["order_id"].dtype, pd.StringDtype)
-    assert isinstance(filtered["state"].dtype, pd.CategoricalDtype)
+    assert filtered["order_id"].dtype == pl.String
+    assert filtered["state"].dtype == pl.Categorical
 
 
 # ------------------------------------------------------------
@@ -162,12 +162,12 @@ def test_enforce_schema():
 
 
 def test_apply_contract_orders_success(tmp_path, sample_orders_df):
-    run_context = RunContext.create(base=tmp_path)
+    run_context = RunContext.create(base=tmp_path, storage=tmp_path / "storage")
     run_context.initialize_directories()
 
     suffix = "2026_03_25"
-    sample_orders_df.to_csv(
-        run_context.raw_snapshot_path / f"df_orders_{suffix}.csv", index=False
+    sample_orders_df.write_csv(
+        run_context.raw_snapshot_path / f"df_orders_{suffix}.csv"
     )
 
     # New 3-tuple return signature
@@ -183,19 +183,27 @@ def test_apply_contract_orders_success(tmp_path, sample_orders_df):
 def test_apply_contract_cascade_and_valid_propagation(
     tmp_path, sample_orders_df, sample_payments_df
 ):
-    run_context = RunContext.create(base=tmp_path)
+    run_context = RunContext.create(base=tmp_path, storage=tmp_path / "storage")
     run_context.initialize_directories()
 
     # o1: valid, o2: unparsable, o3: impossible
-    sample_orders_df.loc[1, "order_purchase_timestamp"] = "garbage"
-    sample_orders_df.loc[2, "order_delivered_timestamp"] = "2026-01-01 00:00:00"
+    sample_orders_df = sample_orders_df.with_columns(
+        pl.when(pl.col("order_id") == "o2")
+        .then(pl.lit("garbage"))
+        .otherwise(pl.col("order_purchase_timestamp"))
+        .alias("order_purchase_timestamp"),
+        pl.when(pl.col("order_id") == "o3")
+        .then(pl.lit("2026-01-01 00:00:00"))
+        .otherwise(pl.col("order_delivered_timestamp"))
+        .alias("order_delivered_timestamp"),
+    )
 
     suffix = "2026_03_25"
-    sample_orders_df.to_csv(
-        run_context.raw_snapshot_path / f"df_orders_{suffix}.csv", index=False
+    sample_orders_df.write_csv(
+        run_context.raw_snapshot_path / f"df_orders_{suffix}.csv"
     )
-    sample_payments_df.to_csv(
-        run_context.raw_snapshot_path / f"df_payments_{suffix}.csv", index=False
+    sample_payments_df.write_csv(
+        run_context.raw_snapshot_path / f"df_payments_{suffix}.csv"
     )
 
     # 1. Process Orders
@@ -212,9 +220,9 @@ def test_apply_contract_cascade_and_valid_propagation(
     assert rep_p["removed_cascade_rows"] == 2  # o2 and o3 dropped
     assert rep_p["final_rows"] == 1
     assert "o1" in set(
-        pd.read_parquet(run_context.contracted_path / f"df_payments_{suffix}.parquet")[
+        pl.read_parquet(run_context.contracted_path / f"df_payments_{suffix}.parquet")[
             "order_id"
-        ]
+        ].to_list()
     )
 
 

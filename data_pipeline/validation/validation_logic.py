@@ -194,21 +194,16 @@ def run_event_fact_validations(
     safe_parse_expr = []
 
     for col in REQUIRED_TIMESTAMPS:
-        if col in df.columns:
 
-            # Parse only string columns
-            if df.schema[col] == pl.String:
-                safe_parse_expr.append(
-                    pl.col(col)
-                    .str.to_datetime(format=TIMESTAMP_FORMATS[col], strict=False)
-                    .alias(col)
-                )
+        # Parse only string columns
+        if col in df.columns and df.schema[col] == pl.String:
+            safe_parse_expr.append(
+                pl.col(col)
+                .str.to_datetime(format=TIMESTAMP_FORMATS[col], strict=False)
+                .alias(col)
+            )
 
-    if safe_parse_expr:
-        parsed_df = df.with_columns(safe_parse_expr)
-
-    else:
-        parsed_df = df
+    parsed_df = df.with_columns(safe_parse_expr) if safe_parse_expr else df
 
     unparsable_counts = parsed_df.select(
         [

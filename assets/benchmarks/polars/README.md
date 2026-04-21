@@ -34,6 +34,10 @@ Since `psutil` requires C-extensions to compile, the **Dockerfile** was modified
 FROM python:3.11-slim
 ENV # Environments...
 
+WORKDIR /app
+
+COPY data_pipeline/requirements.txt .
+
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     gcc \
@@ -42,7 +46,8 @@ RUN apt-get update && \
     apt-get purge -y --auto-remove gcc python3-dev && \
     rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app
+COPY data_pipeline/ ./data_pipeline/
+ENV PYTHONPATH=/app
 
 # the rest of docker code...
 
