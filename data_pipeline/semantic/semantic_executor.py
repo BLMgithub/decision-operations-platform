@@ -168,9 +168,13 @@ def orchestrate_module(
 
         except FileExistsError as e:
             log_error(f"Unexpected table returned {table_name}: {e}", report)
+            report["status"] = "failed"
+            return False
 
         except Exception as e:
             log_error(f"Unexpected error processing {table_name}: {e}", report)
+            report["status"] = "failed"
+            return False
 
         finally:
             if "lf_frozen" in locals():

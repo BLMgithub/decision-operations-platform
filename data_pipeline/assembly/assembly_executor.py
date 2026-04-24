@@ -145,6 +145,8 @@ def orchestrate_event_assembly(run_context: RunContext, report: Dict) -> bool:
 
     except Exception as e:
         log_error(f"Unexpected error processing event assembly: {e}", report)
+        report["status"] = "failed"
+        return False
 
     finally:
         if "lf_derived" in locals():
