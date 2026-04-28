@@ -1,0 +1,6 @@
+# Power BI Cache and temporary files during dev.
+**/.pbi/
+**/cache.abf
+**/localSettings.json
+*.tmp
+*.log

@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "customer_experience_exposure"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "a8b5c3f2-baf6-4998-8f85-6646bbfa2ec2"
+  }
+}

@@ -1,0 +1,14 @@
+relationship afce0b1d-6c17-4f01-916d-985ee8f7d1e4
+	joinOnDateBehavior: datePartOnly
+	fromColumn: seller_dim.first_order_date
+	toColumn: LocalDateTable_410a4258-39bc-4d07-95b7-d48554a19508.Date
+
+relationship a86afcfa-f82d-4b07-bad1-8cebdf58be8c
+	joinOnDateBehavior: datePartOnly
+	fromColumn: seller_weekly_fact.week_start_date
+	toColumn: LocalDateTable_b7e7710a-dddb-470f-b9bd-dd945eb72abd.Date
+
+relationship AutoDetected_5ac73d55-8600-4e3b-b884-633e35fa6958
+	fromColumn: seller_weekly_fact.seller_id_int
+	toColumn: seller_dim.seller_id_int
+

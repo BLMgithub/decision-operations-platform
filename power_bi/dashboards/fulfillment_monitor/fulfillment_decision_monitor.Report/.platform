@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "fulfillment_decision_monitor"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "cb56554e-6a5d-48ef-beea-4f5b3341b9d6"
+  }
+}

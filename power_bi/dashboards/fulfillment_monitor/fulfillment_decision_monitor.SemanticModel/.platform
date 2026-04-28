@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "fulfillment_decision_monitor"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "79dad697-c97f-4086-a565-6d87d6931cd7"
+  }
+}

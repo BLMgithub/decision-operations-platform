@@ -1,0 +1,14 @@
+relationship 8f1d8ce6-49c4-4922-b215-9fd683f8b6ec
+	joinOnDateBehavior: datePartOnly
+	fromColumn: customer_dim.account_creation_date
+	toColumn: LocalDateTable_ac18b08d-e573-46e4-b21a-1fa80555f5f9.Date
+
+relationship 1fcc5e67-86e1-45ff-b58d-0ced2d3e27f6
+	joinOnDateBehavior: datePartOnly
+	fromColumn: customer_weekly_fact.week_start_date
+	toColumn: LocalDateTable_3efc0a78-eeed-46c2-87eb-4f16a1acb131.Date
+
+relationship AutoDetected_c957b328-9d9d-465d-a864-86aed1141323
+	fromColumn: customer_weekly_fact.customer_id_int
+	toColumn: customer_dim.customer_id_int
+

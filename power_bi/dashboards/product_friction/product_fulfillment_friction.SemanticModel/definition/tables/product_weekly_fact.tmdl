@@ -1,0 +1,131 @@
+table product_weekly_fact
+	lineageTag: f83ee91d-ab47-46e2-8a49-87a68626e2c4
+
+	column product_id_int
+		dataType: int64
+		formatString: 0
+		lineageTag: 3f059f51-5a9f-44fc-af00-9f477ab6941d
+		summarizeBy: none
+		sourceColumn: product_id_int
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_year_week
+		dataType: string
+		lineageTag: 00ebf74f-2fbc-4828-8d82-5e58a05eb10d
+		summarizeBy: none
+		sourceColumn: order_year_week
+
+		annotation SummarizationSetBy = Automatic
+
+	column week_start_date
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 18577939-7655-400f-86d5-b7cbe888f695
+		summarizeBy: none
+		sourceColumn: week_start_date
+
+		variation Variation
+			isDefault
+			relationship: a71201b4-096c-4c70-90d8-155058480e54
+			defaultHierarchy: LocalDateTable_0cdfe5ea-fca2-4ff0-b221-ec851222d6b6.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column weekly_order_count
+		dataType: int64
+		formatString: 0
+		lineageTag: d6a91f90-49b9-4939-b274-61865a3262e5
+		summarizeBy: sum
+		sourceColumn: weekly_order_count
+
+		annotation SummarizationSetBy = Automatic
+
+	column weekly_delivered_orders
+		dataType: int64
+		formatString: 0
+		lineageTag: 9fd6784d-9369-4a9c-b6fb-9cf2d5e3db9c
+		summarizeBy: sum
+		sourceColumn: weekly_delivered_orders
+
+		annotation SummarizationSetBy = Automatic
+
+	column weekly_cancelled_orders
+		dataType: int64
+		formatString: 0
+		lineageTag: bb038044-669d-40c3-8640-bf8415a8b546
+		summarizeBy: sum
+		sourceColumn: weekly_cancelled_orders
+
+		annotation SummarizationSetBy = Automatic
+
+	column weekly_revenue
+		dataType: double
+		lineageTag: ca25c268-ceee-4fb8-9400-a89f7e7839e9
+		summarizeBy: sum
+		sourceColumn: weekly_revenue
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column weekly_avg_lead_time
+		dataType: double
+		lineageTag: a4b64054-d954-4f16-9f7a-40e842ec6938
+		summarizeBy: sum
+		sourceColumn: weekly_avg_lead_time
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column weekly_total_lead_time
+		dataType: int64
+		formatString: 0
+		lineageTag: fae500e7-0735-482b-a9c9-15c412063efc
+		summarizeBy: sum
+		sourceColumn: weekly_total_lead_time
+
+		annotation SummarizationSetBy = Automatic
+
+	column weekly_avg_delivery_delay
+		dataType: double
+		lineageTag: 2f7c6258-7a47-407c-9daa-1680fcd1242f
+		summarizeBy: sum
+		sourceColumn: weekly_avg_delivery_delay
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column weekly_total_delivery_delay
+		dataType: int64
+		formatString: 0
+		lineageTag: 10c0db26-e28d-4bd7-bf0a-8c9212e7d775
+		summarizeBy: sum
+		sourceColumn: weekly_total_delivery_delay
+
+		annotation SummarizationSetBy = Automatic
+
+	column weekly_avg_approval_lag
+		dataType: double
+		lineageTag: 51874296-4083-4b57-a9c3-277b49053ed3
+		summarizeBy: sum
+		sourceColumn: weekly_avg_approval_lag
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition product_weekly_fact = m
+		mode: import
+		source =
+				let
+				    Source = Value.NativeQuery(GoogleBigQuery.Database([Implementation="2.0", UseStorageApi=false]){[Name="project-877b0f21-c8c1-4367-888"]}[Data], "SELECT * FROM `project-877b0f21-c8c1-4367-888.product_semantic.published_product_weekly_fact`", null, [EnableFolding=true])
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

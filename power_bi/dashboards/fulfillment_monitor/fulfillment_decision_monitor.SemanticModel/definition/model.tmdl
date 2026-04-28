@@ -1,0 +1,22 @@
+model Model
+	culture: en-PH
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_QueryOrder = ["seller_dim","seller_weekly_fact"]
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table seller_dim
+ref table DateTableTemplate_a5151ec5-b8e2-46fa-9a13-8e1d7b08ceb2
+ref table LocalDateTable_410a4258-39bc-4d07-95b7-d48554a19508
+ref table seller_weekly_fact
+ref table LocalDateTable_b7e7710a-dddb-470f-b9bd-dd945eb72abd
+
+ref cultureInfo en-PH
+

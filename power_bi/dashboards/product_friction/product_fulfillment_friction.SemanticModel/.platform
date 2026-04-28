@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "product_fulfillment_friction"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "e9d565bc-1556-46c6-819a-1c6d938ec15a"
+  }
+}

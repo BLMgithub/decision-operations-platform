@@ -1,0 +1,46 @@
+table seller_dim
+	lineageTag: 6b860f6b-2820-4325-8f6a-fcdec39de07c
+
+	column seller_id_int
+		dataType: int64
+		formatString: 0
+		lineageTag: 50f99bd0-09ad-4008-b830-894979619bde
+		summarizeBy: none
+		sourceColumn: seller_id_int
+
+		annotation SummarizationSetBy = Automatic
+
+	column first_order_date
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 7bac39ce-2ba0-4b99-8383-a62af594fc91
+		summarizeBy: none
+		sourceColumn: first_order_date
+
+		variation Variation
+			isDefault
+			relationship: afce0b1d-6c17-4f01-916d-985ee8f7d1e4
+			defaultHierarchy: LocalDateTable_410a4258-39bc-4d07-95b7-d48554a19508.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column first_order_year_week
+		dataType: string
+		lineageTag: 3fe13eb2-3879-4fe4-82f3-eae5d860b0af
+		summarizeBy: none
+		sourceColumn: first_order_year_week
+
+		annotation SummarizationSetBy = Automatic
+
+	partition seller_dim = m
+		mode: import
+		source =
+				let
+				    Source = Value.NativeQuery(GoogleBigQuery.Database([Implementation="2.0", UseStorageApi=false]){[Name="project-877b0f21-c8c1-4367-888"]}[Data], "SELECT * FROM `project-877b0f21-c8c1-4367-888.seller_semantic.published_seller_dim`", null, [EnableFolding=true])
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

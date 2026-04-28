@@ -182,16 +182,20 @@ operations-analytics-pipeline/
 │   ├── shared/             # Extractor logic and core I/O utilities
 │   └── run_extract.py      # The Drive extractor orchestrator
 ├── data_pipeline/
+│   ├── .shared/            # Storage adapters, IO wrappers, and registry configurations
 │   ├── assembly/           # Delta merging and event mapping logic (Gold Pre-processing)
 │   ├── contract/           # Subtractive filtering logic (Silver Layer)
 │   ├── publish/            # Manages the atomic publish lifecycle of semantic datasets
 │   ├── semantic/           # Fact/Dimension table builders (Gold Layer)
-│   ├── shared/             # Storage adapters, IO wrappers, and registry configurations
 │   ├── validation/         # Dual-pass structural data validation gates
 │   └── run_pipeline.py     # The pipeline orchestrator and state manager
 ├── docs/                   # Detailed architectural and stage-level system contracts
 ├── runtime/                # Git-ignored ephemeral workspace used by the local pipeline executor
-└── tests/                  # Pytest suite for pipeline logic and validation rules
+├── tests/                  # Pytest suite for pipeline logic and validation rules
+└── power_bi/
+    ├── .shared/            # Global Dashboards BI assets (e.g. Themes, .json files, etc.)
+    ├── dashboards/         # Source Control (PBIP) 
+    └──releases             # Deliverables (PBIX)
 ```
 
 ## CI/CD & Security

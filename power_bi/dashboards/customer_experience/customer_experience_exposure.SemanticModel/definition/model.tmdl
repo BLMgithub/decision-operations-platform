@@ -1,0 +1,22 @@
+model Model
+	culture: en-PH
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_QueryOrder = ["customer_dim","customer_weekly_fact"]
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table customer_dim
+ref table DateTableTemplate_194af432-c826-4071-8692-34f439c2e3d5
+ref table LocalDateTable_ac18b08d-e573-46e4-b21a-1fa80555f5f9
+ref table customer_weekly_fact
+ref table LocalDateTable_3efc0a78-eeed-46c2-87eb-4f16a1acb131
+
+ref cultureInfo en-PH
+
