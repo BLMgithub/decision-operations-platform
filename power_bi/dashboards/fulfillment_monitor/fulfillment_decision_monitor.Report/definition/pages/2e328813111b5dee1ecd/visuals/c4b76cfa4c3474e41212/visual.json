@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
   "name": "c4b76cfa4c3474e41212",
   "position": {
-    "x": 47.327731092436977,
-    "y": 107.56302521008404,
-    "z": 2000,
-    "height": 287.55182072829132,
-    "width": 534.22969187675073,
-    "tabOrder": 1000
+    "x": 0,
+    "y": 0,
+    "z": 0,
+    "height": 282.72727272727269,
+    "width": 618.18181818181813,
+    "tabOrder": 0
   },
   "visual": {
     "visualType": "lineChart",
@@ -105,7 +105,7 @@
             "titleFontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "12D"
+                  "Value": "11D"
                 }
               }
             },
@@ -185,6 +185,19 @@
             }
           }
         }
+      ],
+      "lineStyles": [
+        {
+          "properties": {
+            "showMarker": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
       ]
     },
     "visualContainerObjects": {
@@ -228,7 +241,26 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
+                }
+              }
+            },
+            "radius": {
+              "expr": {
+                "Literal": {
+                  "Value": "5D"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 1,
+                      "Percent": 0.6
+                    }
+                  }
                 }
               }
             }
@@ -241,7 +273,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Network Speed Trend (4-week MA)'"
+                  "Value": "' '"
                 }
               }
             },
@@ -271,11 +303,63 @@
                   "Value": "'Monitoring global shifts in fulfillment efficiency over time'"
                 }
               }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#5c5c5c'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "padding": [
+        {
+          "properties": {
+            "top": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            },
+            "left": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            },
+            "bottom": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
             }
           }
         }
       ]
     },
     "drillFilterOtherVisuals": true
-  }
+  },
+  "parentGroupName": "7e185ff444e85e1d0b16"
 }

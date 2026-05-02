@@ -1,0 +1,29 @@
+table source_last_update_time
+	lineageTag: 56f51e53-8354-417b-af75-263ba204d081
+
+	column last_update_time
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 8019fcb5-f58e-4c75-9fb0-c0d9fdeb0c68
+		summarizeBy: none
+		sourceColumn: last_update_time
+
+		variation Variation
+			isDefault
+			relationship: 048fd15f-8316-4d2d-9801-8f1d90040dfd
+			defaultHierarchy: LocalDateTable_3beb9ab2-5a81-4331-a944-2c8989d3c762.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	partition source_last_update_time = m
+		mode: import
+		source =
+				let
+				    Source = Value.NativeQuery(GoogleBigQuery.Database([Implementation="2.0", UseStorageApi=false]){[Name="project-877b0f21-c8c1-4367-888"]}[Data], "SELECT #(lf)    TIMESTAMP_MILLIS(last_modified_time) AS last_update_time #(lf)FROM #(lf)    `project-877b0f21-c8c1-4367-888.seller_semantic.__TABLES__` #(lf)WHERE #(lf)    table_id = 'published_seller_weekly_fact'", null, [EnableFolding=true])
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

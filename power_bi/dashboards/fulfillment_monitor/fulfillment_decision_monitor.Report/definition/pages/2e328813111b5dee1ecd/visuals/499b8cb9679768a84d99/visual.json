@@ -1,0 +1,17 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
+  "name": "499b8cb9679768a84d99",
+  "position": {
+    "x": 0,
+    "y": 296.17096796843572,
+    "z": 2000,
+    "height": 301.5384615384616,
+    "width": 351.53846153846155,
+    "tabOrder": 0
+  },
+  "visualGroup": {
+    "displayName": "lost-speed-history-top20",
+    "groupMode": "ScaleMode"
+  },
+  "parentGroupName": "0a9682438c2674d0407c"
+}

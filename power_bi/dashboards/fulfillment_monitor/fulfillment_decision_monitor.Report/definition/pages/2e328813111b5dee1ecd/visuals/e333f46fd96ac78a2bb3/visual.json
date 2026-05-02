@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
   "name": "e333f46fd96ac78a2bb3",
   "position": {
-    "x": 593.03081232493,
-    "y": 107.56302521008404,
-    "z": 5000,
-    "height": 287.55182072829132,
-    "width": 321.9719887955182,
-    "tabOrder": 5000
+    "x": 0,
+    "y": 0,
+    "z": 0,
+    "height": 301.53846153846155,
+    "width": 351.53846153846155,
+    "tabOrder": 1000
   },
   "visual": {
     "visualType": "pivotTable",
@@ -107,66 +107,6 @@
       }
     ],
     "objects": {
-      "columnWidth": [
-        {
-          "properties": {},
-          "selector": {
-            "data": [
-              {
-                "scopeId": {
-                  "Comparison": {
-                    "ComparisonKind": 0,
-                    "Left": {
-                      "Column": {
-                        "Expression": {
-                          "SourceRef": {
-                            "Entity": "calendar_dates"
-                          }
-                        },
-                        "Property": "Week Number"
-                      }
-                    },
-                    "Right": {
-                      "Literal": {
-                        "Value": "' W36'"
-                      }
-                    }
-                  }
-                }
-              }
-            ]
-          }
-        },
-        {
-          "properties": {},
-          "selector": {
-            "data": [
-              {
-                "scopeId": {
-                  "Comparison": {
-                    "ComparisonKind": 0,
-                    "Left": {
-                      "Column": {
-                        "Expression": {
-                          "SourceRef": {
-                            "Entity": "calendar_dates"
-                          }
-                        },
-                        "Property": "Week Number"
-                      }
-                    },
-                    "Right": {
-                      "Literal": {
-                        "Value": "' W37'"
-                      }
-                    }
-                  }
-                }
-              }
-            ]
-          }
-        }
-      ],
       "subTotals": [
         {
           "properties": {
@@ -190,10 +130,17 @@
       "grid": [
         {
           "properties": {
-            "gridHorizontal": {
+            "textSize": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "10D"
+                }
+              }
+            },
+            "rowPadding": {
+              "expr": {
+                "Literal": {
+                  "Value": "4.5D"
                 }
               }
             }
@@ -313,11 +260,18 @@
                         }
                       },
                       "FillRule": {
-                        "linearGradient2": {
+                        "linearGradient3": {
                           "min": {
                             "color": {
                               "Literal": {
-                                "Value": "'#becfdc'"
+                                "Value": "'#FFFFFF'"
+                              }
+                            }
+                          },
+                          "mid": {
+                            "color": {
+                              "Literal": {
+                                "Value": "'#9db6cb'"
                               }
                             }
                           },
@@ -376,6 +330,27 @@
                   "Value": "9D"
                 }
               }
+            },
+            "bandedRowHeaders": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "valuesOnRow": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "bold": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
             }
           }
         }
@@ -392,7 +367,7 @@
             "styleSubtotals": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
                 }
               }
             },
@@ -406,10 +381,119 @@
                   }
                 }
               }
+            },
+            "styleValues": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
             }
           },
           "selector": {
             "metadata": "calculations.matrix_slippage_tracker"
+          }
+        }
+      ],
+      "rowHeaders": [
+        {
+          "properties": {
+            "showExpandCollapseButtons": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "wordWrap": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Center'"
+                }
+              }
+            },
+            "bold": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            },
+            "expandCollapseButtonsSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "columnHeaders": [
+        {
+          "properties": {
+            "autoSizeColumnWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Center'"
+                }
+              }
+            },
+            "columnAdjustment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'growToFit'"
+                }
+              }
+            },
+            "wordWrap": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "titleAlignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Center'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "blankRows": [
+        {
+          "properties": {
+            "showBlankRows": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
           }
         }
       ]
@@ -428,14 +512,14 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Performance History (Top 15 Sellers)'"
+                  "Value": "' '"
                 }
               }
             },
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "13D"
+                  "Value": "14D"
                 }
               }
             }
@@ -448,7 +532,105 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
+                }
+              }
+            },
+            "radius": {
+              "expr": {
+                "Literal": {
+                  "Value": "5D"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 1,
+                      "Percent": 0.6
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "lockAspect": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "padding": [
+        {
+          "properties": {
+            "bottom": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            },
+            "top": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            },
+            "left": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "divider": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "stylePreset": [
+        {
+          "properties": {
+            "name": {
+              "expr": {
+                "Literal": {
+                  "Value": "'None'"
                 }
               }
             }
@@ -458,6 +640,7 @@
     },
     "drillFilterOtherVisuals": true
   },
+  "parentGroupName": "ffb4d760030aa555cb00",
   "filterConfig": {
     "filters": [
       {
@@ -522,7 +705,7 @@
                         }
                       }
                     ],
-                    "Top": 15
+                    "Top": 10
                   }
                 }
               },

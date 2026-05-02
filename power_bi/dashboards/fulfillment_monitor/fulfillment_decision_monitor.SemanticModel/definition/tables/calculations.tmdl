@@ -55,7 +55,7 @@ table calculations
 		lineageTag: 28178188-cfc3-48c6-a749-b8df1bdf8dd6
 
 	measure total_order_volume = SUM(seller_weekly_fact[weekly_order_count])
-		formatString: 0
+		formatString: #,0
 		displayFolder: visual_measures
 		lineageTag: 024606e7-3b5b-4ed9-a4b4-28c92ada3b6a
 
@@ -222,7 +222,7 @@ table calculations
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
-	measure top_15_filter_color = ```
+	measure top_10_filter_color = ```
 			
 			VAR CurrentRank = 
 			    RANKX(
@@ -233,7 +233,7 @@ table calculations
 			        Dense
 			    )
 			RETURN 
-			    IF(CurrentRank <= 15, "#5C86A8", "#BBBBBE")
+			    IF(CurrentRank <= 10, "#5C86A8", "#999999")
 			```
 		displayFolder: visual_measures
 		lineageTag: 2349a8a2-63f6-4db4-8a46-231f5d4cc6c1
@@ -266,6 +266,35 @@ table calculations
 		lineageTag: 1a56b5a8-3985-4adc-a97e-886801cddaf6
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure top_20_filter_color = ```
+			
+			VAR CurrentRank = 
+			    RANKX(
+			        ALLSELECTED('seller_dim'[seller_id_int]),
+			        [latency_slippage],
+			        ,
+			        DESC,
+			        Dense
+			    )
+			RETURN 
+			    IF(CurrentRank <= 20, "#5C86A8", "#999999")
+			```
+		displayFolder: visual_measures
+		lineageTag: 9ced56b7-07df-4ad3-94a0-ccdd1d1099b8
+
+	measure last_source_update = MAX(source_last_update_time[Last_Update_Time])
+		formatString: General Date
+		displayFolder: visual_measures
+		lineageTag: 9381f0c1-a333-4432-8bd9-1db17cb742da
+
+	measure tooltip_seller_id = ```
+			
+			    SELECTEDVALUE(seller_dim[seller_id_int])
+			```
+		formatString: 0
+		displayFolder: visual_measures
+		lineageTag: 4cd6ae0d-5073-4ea4-acad-e2db64f5f31c
 
 	partition calculations = m
 		mode: import

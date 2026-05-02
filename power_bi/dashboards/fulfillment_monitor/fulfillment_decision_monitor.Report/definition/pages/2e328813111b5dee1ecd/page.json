@@ -5,6 +5,48 @@
   "displayOption": "FitToPage",
   "height": 720,
   "width": 1280,
+  "objects": {
+    "background": [
+      {
+        "properties": {
+          "image": {
+            "image": {
+              "name": {
+                "expr": {
+                  "Literal": {
+                    "Value": "'seller-fulfillment-DB-BG.svg'"
+                  }
+                }
+              },
+              "url": {
+                "expr": {
+                  "ResourcePackageItem": {
+                    "PackageName": "RegisteredResources",
+                    "PackageType": 1,
+                    "ItemName": "seller-fulfillment-DB-BG13038505927952238.svg"
+                  }
+                }
+              },
+              "scaling": {
+                "expr": {
+                  "Literal": {
+                    "Value": "'Fill'"
+                  }
+                }
+              }
+            }
+          },
+          "transparency": {
+            "expr": {
+              "Literal": {
+                "Value": "50D"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
   "visualInteractions": [
     {
       "source": "fb0d8ba2660bb95a0ab0",

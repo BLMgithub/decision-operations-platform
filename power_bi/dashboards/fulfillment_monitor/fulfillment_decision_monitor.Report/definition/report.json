@@ -11,7 +11,7 @@
       "type": "SharedResources"
     },
     "customTheme": {
-      "name": "minimalist-theme8982396168571158.json",
+      "name": "minimalist-theme9017827215093651.json",
       "reportVersionAtImport": {
         "visual": "2.8.0",
         "report": "3.2.0",
@@ -65,9 +65,49 @@
       "type": "RegisteredResources",
       "items": [
         {
-          "name": "minimalist-theme8982396168571158.json",
-          "path": "minimalist-theme8982396168571158.json",
+          "name": "apply-filter-button9453364507194122.svg",
+          "path": "apply-filter-button9453364507194122.svg",
+          "type": "Image"
+        },
+        {
+          "name": "close-icon36275792513021987.svg",
+          "path": "close-icon36275792513021987.svg",
+          "type": "Image"
+        },
+        {
+          "name": "filter-icon19591755421825552.svg",
+          "path": "filter-icon19591755421825552.svg",
+          "type": "Image"
+        },
+        {
+          "name": "info-icon1264730808586947.svg",
+          "path": "info-icon1264730808586947.svg",
+          "type": "Image"
+        },
+        {
+          "name": "info-icon23483565090016834.svg",
+          "path": "info-icon23483565090016834.svg",
+          "type": "Image"
+        },
+        {
+          "name": "info-icon41796530286320277.svg",
+          "path": "info-icon41796530286320277.svg",
+          "type": "Image"
+        },
+        {
+          "name": "minimalist-theme9017827215093651.json",
+          "path": "minimalist-theme9017827215093651.json",
           "type": "CustomTheme"
+        },
+        {
+          "name": "project-logo-08595080001216826.svg",
+          "path": "project-logo-08595080001216826.svg",
+          "type": "Image"
+        },
+        {
+          "name": "seller-fulfillment-DB-BG13038505927952238.svg",
+          "path": "seller-fulfillment-DB-BG13038505927952238.svg",
+          "type": "Image"
         }
       ]
     }

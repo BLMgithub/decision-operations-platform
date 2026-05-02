@@ -10,8 +10,8 @@
       "nodes": [
         {
           "location": {
-            "x": 726,
-            "y": 432.5
+            "x": 768.60443583734275,
+            "y": 0
           },
           "nodeIndex": "seller_dim",
           "nodeLineageTag": "6b860f6b-2820-4325-8f6a-fcdec39de07c",
@@ -19,12 +19,12 @@
             "height": 190,
             "width": 234
           },
-          "zIndex": 1
+          "zIndex": 2
         },
         {
           "location": {
-            "x": 417,
-            "y": 418.5
+            "x": 450.63508092421807,
+            "y": 218.52318208868076
           },
           "nodeIndex": "seller_weekly_fact",
           "nodeLineageTag": "9a04b2c9-ff80-44ec-8289-806fbc650a68",
@@ -32,12 +32,12 @@
             "height": 300,
             "width": 234
           },
-          "zIndex": 2
+          "zIndex": 3
         },
         {
           "location": {
-            "x": 56,
-            "y": 419.5
+            "x": 126.63366994085783,
+            "y": 0
           },
           "nodeIndex": "calendar_dates",
           "nodeLineageTag": "16c5f41e-77e9-43e9-8acf-9dc4dcff8e02",
@@ -45,12 +45,12 @@
             "height": 224,
             "width": 234
           },
-          "zIndex": 3
+          "zIndex": 4
         },
         {
           "location": {
-            "x": 1013,
-            "y": 435.5
+            "x": 1121.7534283216382,
+            "y": 0
           },
           "nodeIndex": "calculations",
           "nodeLineageTag": "e51c39d9-db10-451e-9645-5418f2df1e4c",
@@ -58,11 +58,24 @@
             "height": 104,
             "width": 234
           },
-          "zIndex": 0
+          "zIndex": 1
+        },
+        {
+          "location": {
+            "x": 1119.9957670499196,
+            "y": 145.94112371157644
+          },
+          "nodeIndex": "source_last_update_time",
+          "nodeLineageTag": "56f51e53-8354-417b-af75-263ba204d081",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 5
         }
       ],
       "name": "All tables",
-      "zoomValue": 100,
+      "zoomValue": 89.19259052056961,
       "pinKeyFieldsToTop": false,
       "showExtraHeaderInfo": false,
       "hideKeyFieldsWhenCollapsed": false,

@@ -1,0 +1,293 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
+  "name": "36b183ef293480915703",
+  "position": {
+    "x": 8.5714285714285552,
+    "y": 39.27290916366546,
+    "z": 2500,
+    "height": 196.42857142857144,
+    "width": 350.71428571428572,
+    "tabOrder": 1000
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Delivery Stability",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "-",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  },
+                  {
+                    "value": " 0-10% (Stable)",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#006400"
+                    }
+                  },
+                  {
+                    "value": ": Normal.",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "- ",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  },
+                  {
+                    "value": "11-25% (Volatile)",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#f28c28"
+                    }
+                  },
+                  {
+                    "value": ": Monitor \"Systemic Slowdown.\"",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "- ",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  },
+                  {
+                    "value": ">25% (Erratic)",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#a1343c"
+                    }
+                  },
+                  {
+                    "value": ": High Risk; re-evaluate couriers.",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": ""
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "Network Slowdown",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "- ",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  },
+                  {
+                    "value": "0-2% (Healthy)",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#006400"
+                    }
+                  },
+                  {
+                    "value": ": Normal variance.",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "- ",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  },
+                  {
+                    "value": "3-5% (Slowdown)",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#f28c28"
+                    }
+                  },
+                  {
+                    "value": ": Warning; check weather/external issues.",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "- ",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  },
+                  {
+                    "value": ">5% (Critical)",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#a1343c"
+                    }
+                  },
+                  {
+                    "value": ": Systemic failure; high-level review required.",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": ""
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "Sellers at Risk",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "- ",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  },
+                  {
+                    "value": "0-10 (Normal)",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#006400"
+                    }
+                  },
+                  {
+                    "value": ": Business as usual.",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "- ",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  },
+                  {
+                    "value": "11-50 (Warning)",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#f28c28"
+                    }
+                  },
+                  {
+                    "value": ": Stress increasing; contact \"Top 10/20\" by volume.",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "- ",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  },
+                  {
+                    "value": ">50 (Alert)",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#a1343c"
+                    }
+                  },
+                  {
+                    "value": ": Overload; prioritize by \"Revenue at Risk.\"",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "parentGroupName": "5969dbf319c08d85dca1"
+}

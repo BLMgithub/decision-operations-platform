@@ -11,3 +11,8 @@ relationship d551fb30-9dbe-1199-45ff-0f54e55a5c80
 	fromColumn: seller_weekly_fact.week_start_date
 	toColumn: calendar_dates.Date
 
+relationship 048fd15f-8316-4d2d-9801-8f1d90040dfd
+	joinOnDateBehavior: datePartOnly
+	fromColumn: source_last_update_time.last_update_time
+	toColumn: LocalDateTable_3beb9ab2-5a81-4331-a944-2c8989d3c762.Date
+

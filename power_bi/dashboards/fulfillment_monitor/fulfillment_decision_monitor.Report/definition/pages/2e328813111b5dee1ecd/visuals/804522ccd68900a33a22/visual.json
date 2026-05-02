@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
   "name": "804522ccd68900a33a22",
   "position": {
-    "x": 47.327731092436977,
-    "y": 410.890756302521,
-    "z": 3000,
-    "height": 294.00560224089634,
-    "width": 623.86554621848734,
-    "tabOrder": 3000
+    "x": 0,
+    "y": 0,
+    "z": 0,
+    "height": 283.63636363636363,
+    "width": 610.90909090909088,
+    "tabOrder": 1000
   },
   "visual": {
     "visualType": "scatterChart",
@@ -27,8 +27,9 @@
                 }
               },
               "queryRef": "seller_dim.seller_id_int",
-              "nativeQueryRef": "Count of seller_id_int",
-              "active": true
+              "nativeQueryRef": "Seller ID",
+              "active": true,
+              "displayName": "Seller ID"
             }
           ]
         },
@@ -46,8 +47,9 @@
                 }
               },
               "queryRef": "calculations.latency_slippage",
-              "nativeQueryRef": "latency_slippage",
-              "active": true
+              "nativeQueryRef": "Speed Loss (Days)",
+              "active": true,
+              "displayName": "Speed Loss (Days)"
             }
           ]
         },
@@ -65,7 +67,8 @@
                 }
               },
               "queryRef": "calculations.total_order_volume",
-              "nativeQueryRef": "total_order_volume"
+              "nativeQueryRef": "Order Volume",
+              "displayName": "Order Volume"
             }
           ]
         }
@@ -200,7 +203,7 @@
                           "Entity": "calculations"
                         }
                       },
-                      "Property": "top_15_filter_color"
+                      "Property": "top_10_filter_color"
                     }
                   }
                 }
@@ -217,6 +220,39 @@
             ]
           }
         }
+      ],
+      "bubbles": [
+        {
+          "properties": {
+            "bubbleSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "-5L"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "markers": [
+        {
+          "properties": {
+            "transparency": {
+              "expr": {
+                "Literal": {
+                  "Value": "50D"
+                }
+              }
+            },
+            "borderWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
+            }
+          }
+        }
       ]
     },
     "visualContainerObjects": {
@@ -226,7 +262,7 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
                 }
               }
             },
@@ -234,6 +270,25 @@
               "expr": {
                 "Literal": {
                   "Value": "1D"
+                }
+              }
+            },
+            "radius": {
+              "expr": {
+                "Literal": {
+                  "Value": "5D"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 1,
+                      "Percent": 0.6
+                    }
+                  }
                 }
               }
             }
@@ -246,7 +301,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Impact vs. Delay Mapping (Highlighting Top 15 Sellers)'"
+                  "Value": "' '"
                 }
               }
             },
@@ -283,6 +338,17 @@
                   "Value": "'Mapping high-volume sellers against their specific speed loss'"
                 }
               }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#5c5c5c'"
+                    }
+                  }
+                }
+              }
             }
           }
         }
@@ -293,7 +359,7 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
                 }
               }
             },
@@ -320,14 +386,14 @@
             "type": {
               "expr": {
                 "Literal": {
-                  "Value": "'Default'"
+                  "Value": "'Canvas'"
                 }
               }
             },
             "section": {
               "expr": {
                 "Literal": {
-                  "Value": "'49cf77bb00546e510107'"
+                  "Value": "'84ee6106e9e54cd70b00'"
                 }
               }
             },
@@ -337,6 +403,40 @@
                   "Value": "true"
                 }
               }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "11D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "padding": [
+        {
+          "properties": {
+            "top": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            },
+            "left": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            },
+            "bottom": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
             }
           }
         }
@@ -344,6 +444,7 @@
     },
     "drillFilterOtherVisuals": true
   },
+  "parentGroupName": "99fb12dc7a81ee37bc55",
   "filterConfig": {
     "filters": [
       {
