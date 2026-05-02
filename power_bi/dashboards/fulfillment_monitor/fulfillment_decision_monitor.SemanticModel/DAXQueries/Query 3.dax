@@ -1,0 +1,19 @@
+EVALUATE
+// {
+// 	CALCULATE(
+// 		DISTINCTCOUNT(seller_weekly_fact[seller_id_int]),
+// 		seller_weekly_fact[weekly_cancelled_orders] > 0
+// 		)
+// }
+
+ROW
+(
+	"total_avg_weekly_delivery_delay",
+	CALCULATE(
+		AVERAGE(seller_weekly_fact[weekly_avg_delivery_delay])
+	),
+	"max_avg_weekly_delivery_delay",
+	CALCULATE(
+		MAX(seller_weekly_fact[weekly_avg_delivery_delay])
+	)
+)

@@ -1,0 +1,28 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "49cf77bb00546e510107",
+  "displayName": "Tooltip - Network Speed",
+  "displayOption": "ActualSize",
+  "height": 82,
+  "width": 165,
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "e16bbcd018e415c3bd19",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "calendar_dates"
+              }
+            },
+            "Property": "Year"
+          }
+        },
+        "type": "Advanced",
+        "howCreated": "User"
+      }
+    ]
+  },
+  "type": "Tooltip"
+}

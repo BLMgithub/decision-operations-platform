@@ -1,0 +1,87 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
+  "name": "db90fcbc9e875edc2aeb",
+  "position": {
+    "x": 59.518207282913167,
+    "y": 23.663865546218489,
+    "z": 7000,
+    "height": 47.327731092436977,
+    "width": 680.515406162465,
+    "tabOrder": 7000
+  },
+  "visual": {
+    "visualType": "multiRowCard",
+    "autoSelectVisualType": true,
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "calculations"
+                    }
+                  },
+                  "Property": "fulfillment_instability_index"
+                }
+              },
+              "queryRef": "calculations.fulfillment_instability_index",
+              "nativeQueryRef": "Delivery Stability",
+              "displayName": "Delivery Stability"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "calculations"
+                    }
+                  },
+                  "Property": "systemic_drift_pct"
+                }
+              },
+              "queryRef": "calculations.systemic_drift_pct",
+              "nativeQueryRef": "Network Slowdown",
+              "displayName": "Network Slowdown"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "calculations"
+                    }
+                  },
+                  "Property": "seller_at_risk"
+                }
+              },
+              "queryRef": "calculations.seller_at_risk",
+              "nativeQueryRef": "Seller at Risk",
+              "displayName": "Seller at Risk"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "calculations"
+                  }
+                },
+                "Property": "fulfillment_instability_index"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

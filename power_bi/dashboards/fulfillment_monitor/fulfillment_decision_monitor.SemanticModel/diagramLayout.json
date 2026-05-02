@@ -10,26 +10,52 @@
       "nodes": [
         {
           "location": {
-            "x": 460,
-            "y": 33
+            "x": 726,
+            "y": 432.5
           },
           "nodeIndex": "seller_dim",
           "nodeLineageTag": "6b860f6b-2820-4325-8f6a-fcdec39de07c",
           "size": {
-            "height": 152,
+            "height": 190,
             "width": 234
           },
-          "zIndex": 0
+          "zIndex": 1
         },
         {
           "location": {
-            "x": 50,
-            "y": -50
+            "x": 417,
+            "y": 418.5
           },
           "nodeIndex": "seller_weekly_fact",
           "nodeLineageTag": "9a04b2c9-ff80-44ec-8289-806fbc650a68",
           "size": {
             "height": 300,
+            "width": 234
+          },
+          "zIndex": 2
+        },
+        {
+          "location": {
+            "x": 56,
+            "y": 419.5
+          },
+          "nodeIndex": "calendar_dates",
+          "nodeLineageTag": "16c5f41e-77e9-43e9-8acf-9dc4dcff8e02",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 3
+        },
+        {
+          "location": {
+            "x": 1013,
+            "y": 435.5
+          },
+          "nodeIndex": "calculations",
+          "nodeLineageTag": "e51c39d9-db10-451e-9645-5418f2df1e4c",
+          "size": {
+            "height": 104,
             "width": 234
           },
           "zIndex": 0

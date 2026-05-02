@@ -1,8 +1,20 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
   "name": "2e328813111b5dee1ecd",
-  "displayName": "Page 1",
+  "displayName": "Fulfillment Decision Monitor",
   "displayOption": "FitToPage",
   "height": 720,
-  "width": 1280
+  "width": 1280,
+  "visualInteractions": [
+    {
+      "source": "fb0d8ba2660bb95a0ab0",
+      "target": "c4b76cfa4c3474e41212",
+      "type": "DataFilter"
+    },
+    {
+      "source": "c4b76cfa4c3474e41212",
+      "target": "93252d4b05e81b92eb92",
+      "type": "DataFilter"
+    }
+  ]
 }

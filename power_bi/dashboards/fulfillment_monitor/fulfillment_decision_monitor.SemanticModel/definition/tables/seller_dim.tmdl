@@ -8,6 +8,8 @@ table seller_dim
 		summarizeBy: none
 		sourceColumn: seller_id_int
 
+		changedProperty = IsHidden
+
 		annotation SummarizationSetBy = Automatic
 
 	column first_order_date

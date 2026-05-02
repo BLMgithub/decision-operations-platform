@@ -1,0 +1,28 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "84ee6106e9e54cd70b00",
+  "displayName": "Tooltip - Impact vs Delay Mapping",
+  "displayOption": "ActualSize",
+  "height": 82,
+  "width": 165,
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "e16bbcd018e415c3bd19",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "calendar_dates"
+              }
+            },
+            "Property": "Year"
+          }
+        },
+        "type": "Advanced",
+        "howCreated": "User"
+      }
+    ]
+  },
+  "type": "Tooltip"
+}

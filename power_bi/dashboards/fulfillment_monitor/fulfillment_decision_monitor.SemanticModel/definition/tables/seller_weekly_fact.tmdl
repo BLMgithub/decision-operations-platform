@@ -3,10 +3,13 @@ table seller_weekly_fact
 
 	column seller_id_int
 		dataType: int64
+		isHidden
 		formatString: 0
 		lineageTag: 09b62596-781f-4a33-b7cf-b948ac965e96
 		summarizeBy: none
 		sourceColumn: seller_id_int
+
+		changedProperty = IsHidden
 
 		annotation SummarizationSetBy = Automatic
 
@@ -20,15 +23,10 @@ table seller_weekly_fact
 
 	column week_start_date
 		dataType: dateTime
-		formatString: General Date
+		formatString: Short Date
 		lineageTag: b6bc683e-32a1-47af-a77b-17c1b5af5eb0
 		summarizeBy: none
 		sourceColumn: week_start_date
-
-		variation Variation
-			isDefault
-			relationship: a86afcfa-f82d-4b07-bad1-8cebdf58be8c
-			defaultHierarchy: LocalDateTable_b7e7710a-dddb-470f-b9bd-dd945eb72abd.'Date Hierarchy'
 
 		annotation SummarizationSetBy = Automatic
 
