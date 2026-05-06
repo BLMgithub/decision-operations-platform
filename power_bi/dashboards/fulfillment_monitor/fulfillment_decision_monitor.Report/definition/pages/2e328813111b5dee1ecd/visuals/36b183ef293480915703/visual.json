@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
   "name": "36b183ef293480915703",
   "position": {
-    "x": 8.5714285714285552,
-    "y": 39.27290916366546,
-    "z": 2500,
-    "height": 196.42857142857144,
-    "width": 350.71428571428572,
+    "x": 1.6666666666666667,
+    "y": 47.5,
+    "z": 1000,
+    "height": 196.66666666666669,
+    "width": 350.83333333333337,
     "tabOrder": 1000
   },
   "visual": {
@@ -29,13 +29,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "-",
-                    "textStyle": {
-                      "fontSize": "9pt"
-                    }
-                  },
-                  {
-                    "value": " 0-10% (Stable)",
+                    "value": "0-10% (Stable)",
                     "textStyle": {
                       "fontSize": "9pt",
                       "color": "#006400"
@@ -47,16 +41,11 @@
                       "fontSize": "9pt"
                     }
                   }
-                ]
+                ],
+                "listType": "bullet"
               },
               {
                 "textRuns": [
-                  {
-                    "value": "- ",
-                    "textStyle": {
-                      "fontSize": "9pt"
-                    }
-                  },
                   {
                     "value": "11-25% (Volatile)",
                     "textStyle": {
@@ -70,16 +59,11 @@
                       "fontSize": "9pt"
                     }
                   }
-                ]
+                ],
+                "listType": "bullet"
               },
               {
                 "textRuns": [
-                  {
-                    "value": "- ",
-                    "textStyle": {
-                      "fontSize": "9pt"
-                    }
-                  },
                   {
                     "value": ">25% (Erratic)",
                     "textStyle": {
@@ -93,7 +77,8 @@
                       "fontSize": "9pt"
                     }
                   }
-                ]
+                ],
+                "listType": "bullet"
               },
               {
                 "textRuns": [
@@ -115,12 +100,6 @@
               {
                 "textRuns": [
                   {
-                    "value": "- ",
-                    "textStyle": {
-                      "fontSize": "9pt"
-                    }
-                  },
-                  {
                     "value": "0-2% (Healthy)",
                     "textStyle": {
                       "fontSize": "9pt",
@@ -133,16 +112,11 @@
                       "fontSize": "9pt"
                     }
                   }
-                ]
+                ],
+                "listType": "bullet"
               },
               {
                 "textRuns": [
-                  {
-                    "value": "- ",
-                    "textStyle": {
-                      "fontSize": "9pt"
-                    }
-                  },
                   {
                     "value": "3-5% (Slowdown)",
                     "textStyle": {
@@ -156,16 +130,11 @@
                       "fontSize": "9pt"
                     }
                   }
-                ]
+                ],
+                "listType": "bullet"
               },
               {
                 "textRuns": [
-                  {
-                    "value": "- ",
-                    "textStyle": {
-                      "fontSize": "9pt"
-                    }
-                  },
                   {
                     "value": ">5% (Critical)",
                     "textStyle": {
@@ -179,7 +148,8 @@
                       "fontSize": "9pt"
                     }
                   }
-                ]
+                ],
+                "listType": "bullet"
               },
               {
                 "textRuns": [
@@ -201,12 +171,6 @@
               {
                 "textRuns": [
                   {
-                    "value": "- ",
-                    "textStyle": {
-                      "fontSize": "9pt"
-                    }
-                  },
-                  {
                     "value": "0-10 (Normal)",
                     "textStyle": {
                       "fontSize": "9pt",
@@ -219,16 +183,11 @@
                       "fontSize": "9pt"
                     }
                   }
-                ]
+                ],
+                "listType": "bullet"
               },
               {
                 "textRuns": [
-                  {
-                    "value": "- ",
-                    "textStyle": {
-                      "fontSize": "9pt"
-                    }
-                  },
                   {
                     "value": "11-50 (Warning)",
                     "textStyle": {
@@ -242,16 +201,11 @@
                       "fontSize": "9pt"
                     }
                   }
-                ]
+                ],
+                "listType": "bullet"
               },
               {
                 "textRuns": [
-                  {
-                    "value": "- ",
-                    "textStyle": {
-                      "fontSize": "9pt"
-                    }
-                  },
                   {
                     "value": ">50 (Alert)",
                     "textStyle": {
@@ -265,7 +219,8 @@
                       "fontSize": "9pt"
                     }
                   }
-                ]
+                ],
+                "listType": "bullet"
               }
             ]
           }

@@ -1,5 +1,5 @@
 let
-    SourceFact = seller_weekly_fact,
+    SourceFact = // fact table,
     MaxDateInFact = Date.From(List.Max(SourceFact[week_start_date])),
 
     // List of dates
@@ -16,8 +16,8 @@ let
     #"Added Month" = Table.AddColumn(#"Added Year", "Month", each Date.Month([Date]), Int64.Type),
     #"Added Month Name" = Table.AddColumn(#"Added Month", "Month Name", each Date.MonthName([Date]), type text),
     #"Added Year Month" = Table.AddColumn(#"Added Month Name", "Year Month", each Text.From([Year]) & "-" & Text.PadStart(Text.From([Month]), 2, "0"), type text),
-    #"Added Year Week" = Table.AddColumn(#"Added Year Month", "Year Week", each Text.From([Year]) & " W" & Text.PadStart(Text.From(Date.WeekOfYear([Date])), 2, "0"), type text),
+    #"Added Week Number" = Table.AddColumn(#"Added Year Month", "Week Number", each " W" & Text.PadStart(Text.From(Date.WeekOfYear([Date])), 2, "0"), type text),
     // #"Added Year Week" = Table.AddColumn(#"Added Year Month", "Year Week", each Text.From([Year]) & " W" & Text.PadStart(Text.From(Date.WeekOfYear([Date])), 2, "0"), type text),
-    #"Added Week Start Date" = Table.AddColumn(#"Added Year Week", "Week Start Date", each Date.StartOfWeek([Date], Day.Monday), type date)
+    #"Added Week Start Date" = Table.AddColumn(#"Added Week Number", "Week Start Date", each Date.StartOfWeek([Date], Day.Monday), type date)
 in
     #"Added Week Start Date"

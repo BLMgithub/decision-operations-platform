@@ -5,8 +5,8 @@
     "x": 0,
     "y": 0,
     "z": 1000,
-    "height": 301.81818181818181,
-    "width": 506.36363636363632,
+    "height": 305,
+    "width": 506.66666666666669,
     "tabOrder": 0
   },
   "visual": {
@@ -297,6 +297,13 @@
                   "Value": "true"
                 }
               }
+            },
+            "gridHorizontalWeight": {
+              "expr": {
+                "Literal": {
+                  "Value": "0.5D"
+                }
+              }
             }
           }
         }
@@ -377,6 +384,13 @@
               "expr": {
                 "Literal": {
                   "Value": "0D"
+                }
+              }
+            },
+            "outlineWeight": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
                 }
               }
             }
@@ -620,6 +634,22 @@
             }
           }
         }
+      ],
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "107.16666650968321D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "calculations.latency_slippage"
+          }
+        }
       ]
     },
     "visualContainerObjects": {
@@ -790,7 +820,7 @@
     "filters": [
       {
         "name": "54382fbc075d0603a190",
-        "ordinal": 5,
+        "ordinal": 0,
         "field": {
           "Column": {
             "Expression": {
@@ -801,98 +831,11 @@
             "Property": "seller_id_int"
           }
         },
-        "type": "TopN",
-        "filter": {
-          "Version": 2,
-          "From": [
-            {
-              "Name": "subquery",
-              "Expression": {
-                "Subquery": {
-                  "Query": {
-                    "Version": 2,
-                    "From": [
-                      {
-                        "Name": "s",
-                        "Entity": "seller_dim",
-                        "Type": 0
-                      },
-                      {
-                        "Name": "c",
-                        "Entity": "calculations",
-                        "Type": 0
-                      }
-                    ],
-                    "Select": [
-                      {
-                        "Column": {
-                          "Expression": {
-                            "SourceRef": {
-                              "Source": "s"
-                            }
-                          },
-                          "Property": "seller_id_int"
-                        },
-                        "Name": "field"
-                      }
-                    ],
-                    "OrderBy": [
-                      {
-                        "Direction": 2,
-                        "Expression": {
-                          "Measure": {
-                            "Expression": {
-                              "SourceRef": {
-                                "Source": "c"
-                              }
-                            },
-                            "Property": "latency_slippage"
-                          }
-                        }
-                      }
-                    ],
-                    "Top": 10
-                  }
-                }
-              },
-              "Type": 2
-            },
-            {
-              "Name": "s",
-              "Entity": "seller_dim",
-              "Type": 0
-            }
-          ],
-          "Where": [
-            {
-              "Condition": {
-                "In": {
-                  "Expressions": [
-                    {
-                      "Column": {
-                        "Expression": {
-                          "SourceRef": {
-                            "Source": "s"
-                          }
-                        },
-                        "Property": "seller_id_int"
-                      }
-                    }
-                  ],
-                  "Table": {
-                    "SourceRef": {
-                      "Source": "subquery"
-                    }
-                  }
-                }
-              }
-            }
-          ]
-        }
+        "type": "TopN"
       },
       {
         "name": "a73f3137314d0568564c",
-        "ordinal": 6,
+        "ordinal": 1,
         "field": {
           "Measure": {
             "Expression": {
@@ -926,6 +869,131 @@
                         }
                       },
                       "Property": "seller_at_risk"
+                    }
+                  },
+                  "Right": {
+                    "Literal": {
+                      "Value": "1L"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "User"
+      },
+      {
+        "name": "4a5f038718c505d13b8c",
+        "ordinal": 2,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "calculations"
+              }
+            },
+            "Property": "wrapper_is_outlier"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "dcefbf38834b01cc0220",
+        "ordinal": 3,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "calculations"
+              }
+            },
+            "Property": "latency_slippage"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "68344a638e578b09985d",
+        "ordinal": 4,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "calculations"
+              }
+            },
+            "Property": "total_order_volume"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "ab8478cad63ee7c508dc",
+        "ordinal": 5,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "calculations"
+              }
+            },
+            "Property": "revenue_exposed"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "a07147e0052e66b84eb8",
+        "ordinal": 6,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "calculations"
+              }
+            },
+            "Property": "is_new_seller"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "b1695d015873a494e12b",
+        "ordinal": 7,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "calculations"
+              }
+            },
+            "Property": "top_10_seller_id"
+          }
+        },
+        "type": "Advanced",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "c",
+              "Entity": "calculations",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "Comparison": {
+                  "ComparisonKind": 0,
+                  "Left": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Source": "c"
+                        }
+                      },
+                      "Property": "top_10_seller_id"
                     }
                   },
                   "Right": {

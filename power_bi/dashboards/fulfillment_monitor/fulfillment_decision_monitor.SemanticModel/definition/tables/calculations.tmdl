@@ -26,12 +26,9 @@ table calculations
 		displayFolder: _prerequisites_measures
 		lineageTag: 1f738c60-8fd8-4eb2-afe9-c3c9a577ba37
 
-	measure latency_current_week =
-			
-			VAR max_date = MAX(seller_weekly_fact[week_start_date])
-			
-			RETURN
-			    CALCULATE([latency], calendar_dates[Date])
+	measure latency_current_week = ```
+			CALCULATE([latency], calendar_dates[Date])    
+			```
 		formatString: 0
 		displayFolder: _prerequisites_measures
 		lineageTag: f232b501-3a69-473d-ab63-e4704129268a
@@ -295,6 +292,78 @@ table calculations
 		formatString: 0
 		displayFolder: visual_measures
 		lineageTag: 4cd6ae0d-5073-4ea4-acad-e2db64f5f31c
+
+	measure bubble_size_sensivity = [latency_slippage] ^ 4.5
+		formatString: 0
+		displayFolder: visual_measures
+		lineageTag: 690696e6-d4ff-4229-bcb5-a8857ccca39b
+
+	measure seller_highlight_rank =
+			
+			RANK(
+			    DENSE,
+			    FILTER(
+			        ALLSELECTED(seller_dim[seller_id_int]),
+			        [is_outlier] = 1),
+			    ORDERBY([latency_slippage], DESC)
+			)
+		formatString: 0
+		displayFolder: visual_measures
+		lineageTag: 44807533-cecf-4430-a45b-c5d1a2223314
+
+	measure top_10_seller_id = ```
+			
+			VAR _rank = 
+			    RANK(
+			        DENSE,
+			        FILTER(
+			            ALLSELECTED('seller_dim'[seller_id_int]),
+			            [seller_at_risk] = 1
+			            ),
+			        ORDERBY([latency_slippage], 
+			        DESC)
+			    )
+			
+			VAR _top_10 = 
+			    IF(
+			        _rank <= 10 
+			        && [seller_at_risk] = 1, 
+			        1, BLANK()
+			    )
+			
+			RETURN
+			    _top_10
+			```
+		formatString: 0
+		displayFolder: visual_measures
+		lineageTag: 0aaa748b-af8c-4697-92d7-cc984e5480f5
+
+	measure top_20_seller_id = ```
+			
+			VAR _rank = 
+			    RANK(
+			        DENSE,
+			        FILTER(
+			            ALLSELECTED('seller_dim'[seller_id_int]),
+			            [seller_at_risk] = 1
+			            ),
+			        ORDERBY([latency_slippage], 
+			        DESC)
+			    )
+			
+			VAR _top_10 = 
+			    IF(
+			        _rank <= 20 
+			        && [seller_at_risk] = 1, 
+			        1, BLANK()
+			    )
+			
+			RETURN
+			    _top_10
+			```
+		formatString: 0
+		displayFolder: visual_measures
+		lineageTag: d50245ea-ef79-46bc-b575-8929b75edf57
 
 	partition calculations = m
 		mode: import

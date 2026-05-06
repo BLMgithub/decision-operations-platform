@@ -8,14 +8,17 @@ model Model
 
 annotation __PBI_TimeIntelligenceEnabled = 1
 
-annotation PBI_QueryOrder = ["product_dim","product_weekly_fact"]
+annotation PBI_QueryOrder = ["product_dim","product_weekly_fact","calendar_date","calculations","source_last_update_time"]
 
-annotation PBI_ProTooling = ["DevMode"]
+annotation PBI_ProTooling = ["DevMode","DaxQueryView_Desktop"]
 
 ref table product_dim
 ref table product_weekly_fact
-ref table DateTableTemplate_24306338-8900-4559-88f0-1e226014a889
-ref table LocalDateTable_0cdfe5ea-fca2-4ff0-b221-ec851222d6b6
+ref table calendar_date
+ref table calculations
+ref table source_last_update_time
+ref table DateTableTemplate_2e98e11f-68fb-4f64-9b71-f22c37eedbe2
+ref table LocalDateTable_05b807e6-e171-46b2-9526-0964eef07df4
 
 ref cultureInfo en-PH
 

@@ -54,6 +54,8 @@ table product_dim
 		summarizeBy: none
 		sourceColumn: product_fragility_index
 
+		changedProperty = SortByColumn
+
 		annotation SummarizationSetBy = Automatic
 
 	column product_weight_g
@@ -71,6 +73,26 @@ table product_dim
 		lineageTag: f6bef4e7-6618-4bce-a56d-5b5fb791c089
 		summarizeBy: none
 		sourceColumn: supplier_tier
+
+		annotation SummarizationSetBy = Automatic
+
+	column size_bucket =
+			
+			SWITCH(
+			    TRUE(),
+			    [product_weight_g] < 1000, "Small",
+			    [product_weight_g] < 5000, "Standard",
+			    [product_weight_g] < 10000, "Heavy",
+			    "Oversize"
+			)
+		lineageTag: cb392f7a-7e82-4b12-a7a4-42772ca9b746
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column string_product_id = CONVERT(product_dim[product_id_int], STRING)
+		lineageTag: ffaa83ac-d6f3-4fb2-abb7-a3b6940e76f3
+		summarizeBy: none
 
 		annotation SummarizationSetBy = Automatic
 

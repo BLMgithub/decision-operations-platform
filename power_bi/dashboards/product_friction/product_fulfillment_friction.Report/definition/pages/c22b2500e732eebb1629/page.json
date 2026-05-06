@@ -1,0 +1,10 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "c22b2500e732eebb1629",
+  "displayName": "Tooltip- Stack Bar Chart",
+  "displayOption": "ActualSize",
+  "height": 230,
+  "width": 185,
+  "visibility": "HiddenInViewMode",
+  "type": "Tooltip"
+}

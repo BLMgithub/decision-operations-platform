@@ -3,11 +3,11 @@
   "name": "499b8cb9679768a84d99",
   "position": {
     "x": 0,
-    "y": 296.17096796843572,
+    "y": 294.66666666666669,
     "z": 2000,
-    "height": 301.5384615384616,
-    "width": 351.53846153846155,
-    "tabOrder": 0
+    "height": 305,
+    "width": 347,
+    "tabOrder": 1000
   },
   "visualGroup": {
     "displayName": "lost-speed-history-top20",

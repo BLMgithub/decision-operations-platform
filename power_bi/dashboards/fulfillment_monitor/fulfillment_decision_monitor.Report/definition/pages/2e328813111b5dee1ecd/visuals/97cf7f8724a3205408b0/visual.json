@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
   "name": "97cf7f8724a3205408b0",
   "position": {
-    "x": 5.2840909090909918,
-    "y": 4.8295454545454959,
+    "x": 13.238976592270006,
+    "y": 6.2710941752857927,
     "z": 0,
-    "height": 35.625,
-    "width": 345.625,
-    "tabOrder": 0
+    "height": 35.536200326619493,
+    "width": 443.157321720196,
+    "tabOrder": 1000
   },
   "visual": {
     "visualType": "textbox",
@@ -25,7 +25,7 @@
                     }
                   },
                   {
-                    "value": "Top 20 Sellers",
+                    "value": "Top 20 Sellers at Risk",
                     "textStyle": {
                       "fontWeight": "bold",
                       "fontSize": "14pt",

@@ -1,7 +1,7 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
   "name": "84ee6106e9e54cd70b00",
-  "displayName": "Tooltip - Impact vs Delay Mapping",
+  "displayName": "Tooltip - Scatter Plot",
   "displayOption": "ActualSize",
   "height": 90,
   "width": 170,
@@ -24,5 +24,6 @@
       }
     ]
   },
+  "visibility": "HiddenInViewMode",
   "type": "Tooltip"
 }

@@ -5,9 +5,9 @@
     "x": 0,
     "y": 0,
     "z": 1000,
-    "height": 301.81818181818181,
+    "height": 305,
     "width": 506.36363636363632,
-    "tabOrder": 1000
+    "tabOrder": 0
   },
   "visual": {
     "visualType": "pivotTable",
@@ -730,7 +730,7 @@
     "filters": [
       {
         "name": "a73f3137314d0568564c",
-        "ordinal": 6,
+        "ordinal": 0,
         "field": {
           "Measure": {
             "Expression": {
@@ -777,6 +777,96 @@
           ]
         },
         "howCreated": "User"
+      },
+      {
+        "name": "4a68ee03ddc4349895d4",
+        "ordinal": 1,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "seller_dim"
+              }
+            },
+            "Property": "seller_id_int"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "4c083f4d4b084085cc10",
+        "ordinal": 2,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "calculations"
+              }
+            },
+            "Property": "wrapper_is_outlier"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "e7ecadae05b9b7d1003b",
+        "ordinal": 3,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "calculations"
+              }
+            },
+            "Property": "latency_slippage"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "e4865300767a4ed49525",
+        "ordinal": 4,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "calculations"
+              }
+            },
+            "Property": "total_order_volume"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "af93d9e202c5d15c5b7b",
+        "ordinal": 5,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "calculations"
+              }
+            },
+            "Property": "revenue_exposed"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "252f0b100530099c6c8d",
+        "ordinal": 6,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "calculations"
+              }
+            },
+            "Property": "is_new_seller"
+          }
+        },
+        "type": "Advanced"
       }
     ],
     "filterSortOrder": "Custom"

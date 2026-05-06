@@ -34,6 +34,12 @@ table seller_dim
 
 		annotation SummarizationSetBy = Automatic
 
+	column string_seller_id = CONVERT(seller_dim[seller_id_int], STRING)
+		lineageTag: 98574d9a-2d38-47b4-81f1-b62e4ee7d888
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
 	partition seller_dim = m
 		mode: import
 		source =

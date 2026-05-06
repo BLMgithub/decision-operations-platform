@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
   "name": "6055d50e29307b14ba7d",
   "position": {
-    "x": 93.571428571428584,
-    "y": 15.714285714285715,
+    "x": 115.83333333333334,
+    "y": 26.666666666666668,
     "z": 0,
-    "height": 46.428571428571431,
-    "width": 342.85714285714289,
+    "height": 46.666666666666671,
+    "width": 343.33333333333337,
     "tabOrder": 3000
   },
   "visual": {
@@ -22,7 +22,7 @@
                     "value": "Seller Fulfillment Monitor",
                     "textStyle": {
                       "fontSize": "24pt",
-                      "color": "#5c5c5c"
+                      "color": "#000000"
                     }
                   }
                 ],

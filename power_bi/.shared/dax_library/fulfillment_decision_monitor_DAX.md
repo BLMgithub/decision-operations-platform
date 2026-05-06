@@ -30,7 +30,6 @@ AVERAGEX(
 )
 ```
 
----
 
 ## 2. Core KPIs (Fulfillment Health Pulse)
 
@@ -77,7 +76,6 @@ COUNTROWS(
 )
 ```
 
----
 
 ## 3. Statistical Detection Logic
 
@@ -113,7 +111,6 @@ RETURN
     IF([is_outlier] = 1, delta, BLANK())
 ```
 
----
 
 ## 4. Diagnostic & Visual Measures
 

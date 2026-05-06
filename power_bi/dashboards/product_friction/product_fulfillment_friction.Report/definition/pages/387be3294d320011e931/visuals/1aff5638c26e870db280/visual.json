@@ -1,0 +1,233 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
+  "name": "1aff5638c26e870db280",
+  "position": {
+    "x": 0,
+    "y": 57.232704402515722,
+    "z": 1000,
+    "height": 198.11320754716979,
+    "width": 454.71698113207543,
+    "tabOrder": 1000
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Flagged Products",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "0–50 (Stable)",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#006400"
+                    }
+                  },
+                  {
+                    "value": ": Normal operations; isolated product friction.",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  }
+                ],
+                "listType": "bullet"
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "51–150 (Warning)",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#f28c28"
+                    }
+                  },
+                  {
+                    "value": ": Rising friction; audit Supplier Tier performance.",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  }
+                ],
+                "listType": "bullet"
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": ">150 (Critical)",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#a1343c"
+                    }
+                  },
+                  {
+                    "value": ": Systemic stress; prioritize interventions by Order Volume.",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  }
+                ],
+                "listType": "bullet"
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": ""
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "Fulfillment Volatility",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "0–10% (Predictable)",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#006400"
+                    }
+                  },
+                  {
+                    "value": ": High-performing, stable logistics flow.",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  }
+                ],
+                "listType": "bullet"
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "11–25% (Unstable)",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#f28c28"
+                    }
+                  },
+                  {
+                    "value": ": Shifting delivery windows; monitor Category Lead Times.",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  }
+                ],
+                "listType": "bullet"
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": ">25% (Erratic)",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#a1343c"
+                    }
+                  },
+                  {
+                    "value": ": High failure risk; investigate courier/warehouse bottlenecks.",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  }
+                ],
+                "listType": "bullet"
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": ""
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "Revenue Exposure",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "<$250K (Safe)",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#006400"
+                    }
+                  },
+                  {
+                    "value": ": Minimal cash flow risk; monitor \"Small\" weight categories.",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  }
+                ],
+                "listType": "bullet"
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "$250K–$1M (At Risk)",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#f28c28"
+                    }
+                  },
+                  {
+                    "value": ": Significant impact; review \"Heavy/Oversize\" outliers.",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  }
+                ],
+                "listType": "bullet"
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": ">$1M (Critical)",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#a1343c"
+                    }
+                  },
+                  {
+                    "value": ": Major financial threat; escalate to leadership for carrier re-negotiation.",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  }
+                ],
+                "listType": "bullet"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "parentGroupName": "b8f9256b0a82dc25830b"
+}

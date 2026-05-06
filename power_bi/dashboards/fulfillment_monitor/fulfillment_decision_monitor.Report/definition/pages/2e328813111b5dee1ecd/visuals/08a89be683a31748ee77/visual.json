@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
   "name": "08a89be683a31748ee77",
   "position": {
-    "x": 5.2380952380952381,
-    "y": 5.2380952380952381,
+    "x": 6.9309203083241551,
+    "y": 5.7531104045527117,
     "z": 1000,
     "height": 35.714285714285715,
     "width": 343.33333333333331,
-    "tabOrder": 1000
+    "tabOrder": 0
   },
   "visual": {
     "visualType": "textbox",
@@ -25,7 +25,7 @@
                     }
                   },
                   {
-                    "value": "4 week Moving Avg",
+                    "value": "4 Week Rolling Avg",
                     "textStyle": {
                       "fontWeight": "bold",
                       "fontSize": "14pt",

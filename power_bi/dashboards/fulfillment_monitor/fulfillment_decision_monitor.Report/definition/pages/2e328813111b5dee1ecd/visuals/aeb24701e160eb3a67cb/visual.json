@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
   "name": "aeb24701e160eb3a67cb",
   "position": {
-    "x": 365.25275685620392,
-    "y": 296,
+    "x": 367,
+    "y": 294.66666666666669,
     "z": 1000,
-    "height": 301.81818181818176,
-    "width": 506.36363636363626,
-    "tabOrder": 1000
+    "height": 305,
+    "width": 506.36363636363632,
+    "tabOrder": 2000
   },
   "visualGroup": {
     "displayName": "intervention-list-top20",

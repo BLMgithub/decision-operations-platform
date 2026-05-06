@@ -5,8 +5,8 @@
     "x": 0,
     "y": 0,
     "z": 0,
-    "height": 283.63636363636363,
-    "width": 610.90909090909088,
+    "height": 270.83333333333337,
+    "width": 600,
     "tabOrder": 1000
   },
   "visual": {
@@ -30,6 +30,24 @@
               "nativeQueryRef": "Seller ID",
               "active": true,
               "displayName": "Seller ID"
+            }
+          ]
+        },
+        "Size": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "calculations"
+                    }
+                  },
+                  "Property": "bubble_size_sensivity"
+                }
+              },
+              "queryRef": "calculations.bubble_size_sensivity",
+              "nativeQueryRef": "bubble_size_sensivity"
             }
           ]
         },

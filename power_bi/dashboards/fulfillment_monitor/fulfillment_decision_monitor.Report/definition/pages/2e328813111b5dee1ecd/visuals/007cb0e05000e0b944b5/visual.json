@@ -4,10 +4,10 @@
   "position": {
     "x": 0,
     "y": 0,
-    "z": 9000,
+    "z": 10000,
     "height": 719.95518207282907,
     "width": 1280,
-    "tabOrder": 10000
+    "tabOrder": 11000
   },
   "visualGroup": {
     "displayName": "filter-pane",

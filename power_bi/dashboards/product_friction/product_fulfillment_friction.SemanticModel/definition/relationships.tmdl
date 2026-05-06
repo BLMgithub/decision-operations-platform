@@ -1,9 +1,13 @@
-relationship a71201b4-096c-4c70-90d8-155058480e54
-	joinOnDateBehavior: datePartOnly
-	fromColumn: product_weekly_fact.week_start_date
-	toColumn: LocalDateTable_0cdfe5ea-fca2-4ff0-b221-ec851222d6b6.Date
-
 relationship AutoDetected_8a6dec04-aa32-4ad2-9594-e83d116e4134
 	fromColumn: product_weekly_fact.product_id_int
 	toColumn: product_dim.product_id_int
+
+relationship 91f3afe3-8bda-300f-db6b-483b102cf0d4
+	fromColumn: product_weekly_fact.week_start_date
+	toColumn: calendar_date.Date
+
+relationship 3fbb01c9-18f4-4e6b-ad6f-75d0405064ab
+	joinOnDateBehavior: datePartOnly
+	fromColumn: source_last_update_time.last_update_time
+	toColumn: LocalDateTable_05b807e6-e171-46b2-9526-0964eef07df4.Date
 

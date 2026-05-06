@@ -4,10 +4,10 @@
   "position": {
     "x": 0,
     "y": 0,
-    "z": 0,
-    "height": 283.63636363636363,
-    "width": 610.90909090909088,
-    "tabOrder": 1000
+    "z": 1000,
+    "height": 270,
+    "width": 600,
+    "tabOrder": 0
   },
   "visual": {
     "visualType": "scatterChart",
@@ -29,6 +29,24 @@
               "queryRef": "seller_dim.seller_id_int",
               "nativeQueryRef": "Count of seller_id_int",
               "active": true
+            }
+          ]
+        },
+        "Size": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "calculations"
+                    }
+                  },
+                  "Property": "bubble_size_sensivity"
+                }
+              },
+              "queryRef": "calculations.bubble_size_sensivity",
+              "nativeQueryRef": "bubble_size_sensivity"
             }
           ]
         },

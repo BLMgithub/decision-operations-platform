@@ -1,0 +1,398 @@
+table calculations
+	lineageTag: ad26b367-a8d6-42af-8b25-fe1308ad1a37
+
+	measure total_orders = SUM(product_weekly_fact[weekly_order_count])
+		formatString: 0
+		displayFolder: _prerequisites_measures
+		lineageTag: 5f89224d-2c0f-40d5-9761-e65d9136294e
+
+	measure avg_delivery_delay = AVERAGE(product_weekly_fact[weekly_avg_delivery_delay])
+		displayFolder: _prerequisites_measures
+		lineageTag: 4e142d1a-f1aa-401b-bc53-cca3a5b6bc0f
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure total_cancelled = SUM(product_weekly_fact[weekly_cancelled_orders])
+		displayFolder: _prerequisites_measures
+		lineageTag: fe57b795-2a34-4661-ab64-dc00dd293fa9
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure total_revenue = SUM(product_weekly_fact[weekly_revenue])
+		displayFolder: _prerequisites_measures
+		lineageTag: ffefa665-dc81-4997-afe1-934e87c4646d
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure avg_lead_time = AVERAGE(product_weekly_fact[weekly_avg_lead_time])
+		displayFolder: _prerequisites_measures
+		lineageTag: a3e4f028-c0da-4115-81b0-6cb2e215ad8c
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure lead_time_4w_rolling_avg = ```
+			
+			    AVERAGEX(
+			        DATESINPERIOD('calendar_date'[Date], LASTDATE('calendar_date'[Date]), -28, DAY),
+			        [avg_lead_time]
+			    )
+			```
+		displayFolder: _prerequisites_measures
+		lineageTag: ac5f3a7d-a595-4994-a5cc-423eef53d7d4
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure product_weight = ```
+			
+			LOOKUPVALUE(
+			    product_dim[product_weight_g], 
+			    product_dim[product_id_int], 
+			    MAX(product_weekly_fact[product_id_int])
+			)
+			
+			```
+		displayFolder: visual_measures
+		lineageTag: d800dd8c-ba8c-414b-a766-22e7a622834b
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure product_volume_categ = ```
+			
+			LOOKUPVALUE(
+			    product_dim[size_bucket], 
+			    product_dim[product_id_int], 
+			    MAX(product_weekly_fact[product_id_int])
+			)
+			```
+		displayFolder: visual_measures
+		lineageTag: 034dbb4d-401f-4f1c-86e3-9cc95b8a2fdf
+
+	measure category_range_view = ```
+			
+			VAR highest_value =
+			    MAXX(
+			        ALL(product_dim[product_category_name]), 
+			        [revenue_at_risk]
+			    )
+			
+			VAR adjustment = highest_value * 1.05
+			
+			RETURN 
+			    adjustment
+			```
+		displayFolder: visual_measures
+		lineageTag: 70e2a94c-8098-4cbd-bb2b-fc2d01634053
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure is_outlier = ```
+			
+			VAR slippage_delta = [current_lead_time] - [lead_time_4w_rolling_avg]
+			VAR is_meaningful = IF(slippage_delta > 0.5, 1, 0)
+			
+			VAR _stddev =
+			    CALCULATE(
+			        STDEV.S(product_weekly_fact[weekly_avg_lead_time]),
+			        ALLEXCEPT(product_weekly_fact, product_weekly_fact[product_id_int])
+			    )
+			
+			VAR outlier_flags =
+			    IF(
+			        is_meaningful = 1 &&
+			        [current_lead_time] > ([lead_time_4w_rolling_avg] + (1 * _stddev)),
+			        1, 0
+			    )
+			    
+			RETURN
+			    outlier_flags
+			```
+		formatString: 0
+		displayFolder: _prerequisites_measures
+		lineageTag: f8779455-7694-4bf2-ae1c-3b70bfb53cae
+
+	measure current_lead_time = CALCULATE([avg_lead_time], calendar_date[Date])
+		displayFolder: _prerequisites_measures
+		lineageTag: 28f1c97e-1537-47c4-b5e5-f290312eda5a
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure lead_time_slippage =
+			
+			VAR delta = [current_lead_time] - [lead_time_4w_rolling_avg]
+			RETURN
+			    IF([is_outlier] = 1, delta, BLANK())
+		displayFolder: _prerequisites_measures
+		lineageTag: 82b9fa97-dff1-4b5c-8a0c-64a01514fcbd
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure product_at_risk =
+			
+			COUNTROWS(
+				FILTER(
+					VALUES(product_dim[product_id_int]),
+					[is_outlier]=1
+				)
+			)
+		formatString: 0
+		displayFolder: KPI_measures
+		lineageTag: 201fa0cd-af5b-4254-82a1-4e1cc60a22f8
+
+	measure lead_time_volatility = ```
+			
+			VAR at_risk_products =
+				FILTER(
+					VALUES(product_dim[product_id_int]),
+					[is_outlier]=1
+				)
+			VAR result = 
+			    CALCULATE(
+			        STDEV.S(product_weekly_fact[weekly_avg_lead_time]),
+			        at_risk_products
+			    )
+			RETURN
+			    result
+			```
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: KPI_measures
+		lineageTag: ce579d10-b2ce-4756-b616-e86f30ddba73
+
+	measure revenue_at_risk =
+			
+			CALCULATE(
+			    [total_revenue],
+			    FILTER(
+			        VALUES(product_dim[product_id_int]),
+			        [is_outlier] = 1
+			    )
+			)
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: KPI_measures
+		lineageTag: 68fb4724-091d-41fc-bb40-e051143043f6
+
+	measure chart_format_revenue_at_risk = ```
+			
+			    IF(
+			        [revenue_at_risk] < 1000000,
+			        FORMAT([revenue_at_risk], "#,##0, K"),
+			        FORMAT([revenue_at_risk], "#,##0,, M")
+			    )
+			```
+		displayFolder: visual_measures
+		lineageTag: fc2ad2ba-cedc-43f5-a2ab-6be8495a2da7
+
+	measure bubble_size_sensitivity = [revenue_at_risk] ^ 1.5
+		displayFolder: visual_measures
+		lineageTag: 9ac3920f-fd02-4dc6-8c06-be4b28cee937
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure top_10_filter_color = ```
+			
+			VAR CurrentRank = 
+			    RANKX(
+			        ALLSELECTED(product_dim[product_id_int]),
+			        [revenue_at_risk],
+			        ,
+			        DESC,
+			        Dense
+			    )
+			RETURN 
+			    IF(CurrentRank <= 10, "#5C86A8", "#999999")
+			```
+		displayFolder: visual_measures
+		lineageTag: 3010a438-931d-4ab4-bf44-b9cd89e447b1
+
+	measure top_20_filter_color = ```
+			
+			VAR CurrentRank = 
+			    RANKX(
+			        ALLSELECTED(product_dim[product_id_int]),
+			        [revenue_at_risk],
+			        ,
+			        DESC,
+			        Dense
+			    )
+			RETURN 
+			    IF(CurrentRank <= 20, "#5C86A8", "#999999")
+			```
+		displayFolder: visual_measures
+		lineageTag: fe9c5db1-ce4c-416c-8619-640a9dbb6ceb
+
+	measure top_10_product_id = ```
+			
+			VAR _rank = 
+			    RANK(
+			        DENSE,
+			        FILTER(
+			            ALLSELECTED(product_dim[product_id_int]),
+			            [product_at_risk] = 1
+			            ),
+			        ORDERBY([revenue_at_risk], 
+			        DESC)
+			    )
+			
+			VAR _top_10 = 
+			    IF(
+			        _rank <= 10 
+			        && [product_at_risk] = 1, 
+			        1, BLANK()
+			    )
+			
+			RETURN
+			    _top_10
+			```
+		formatString: 0
+		displayFolder: visual_measures
+		lineageTag: a67cf9f1-c44e-45ef-873d-da6b6662007f
+
+	measure last_source_update = MAX(source_last_update_time[Last_Update_Time])
+		formatString: General Date
+		displayFolder: visual_measures
+		lineageTag: 5ec76ac2-a2c7-46c5-9662-62d3726df3b2
+
+	measure top_20_product_id = ```
+			
+			VAR _rank = 
+			    RANK(
+			        DENSE,
+			        FILTER(
+			            ALLSELECTED(product_dim[product_id_int]),
+			            [product_at_risk] = 1
+			            ),
+			        ORDERBY([revenue_at_risk], 
+			        DESC)
+			    )
+			
+			VAR _top_20 = 
+			    IF(
+			        _rank <= 20 
+			        && [product_at_risk] = 1, 
+			        1, BLANK()
+			    )
+			
+			RETURN
+			    _top_20
+			```
+		formatString: 0
+		displayFolder: visual_measures
+		lineageTag: d1eb6f69-82dd-4ef1-9b77-2674fc914066
+
+	measure tool_tip_week_start_date = SELECTEDVALUE(calendar_date[Week Start Date])
+		formatString: Short Date
+		displayFolder: visual_measures
+		lineageTag: d2eaf8be-8d91-4540-9a22-b44c106083fa
+
+	measure tool_tip_product_id = SELECTEDVALUE(product_dim[product_id_int])
+		formatString: 0
+		displayFolder: visual_measures
+		lineageTag: 0a37d776-43f7-4156-8172-7df15421a48d
+
+	measure format_product_id_count = ```
+			
+			VAR _distinct_count = [product_at_risk]
+			VAR format_count = 
+			    IF(_distinct_count < 1000,
+			        FORMAT(_distinct_count, "0"),
+			        FORMAT(_distinct_count, "#,000")
+			    )
+			RETURN
+			    format_count
+			```
+		displayFolder: visual_measures
+		lineageTag: f8b1832f-1d12-4f7c-b956-d5aaf0ed3e28
+
+	measure format_total_orders = ```
+			
+			VAR order_at_risk =
+			    CALCULATE(
+			        [total_orders],
+			        FILTER(
+			            VALUES(product_dim[product_id_int]),
+			            [is_outlier] = 1
+			        )
+			    )
+			
+			VAR _format = 
+			    IF(
+			        order_at_risk < 1000,
+			        FORMAT(order_at_risk, "0"),
+			        FORMAT(order_at_risk, "#,##0,.00 K")
+			    )
+			RETURN
+			    _format
+			```
+		displayFolder: visual_measures
+		lineageTag: 5a27ba7d-4894-4dda-af00-710494c49db4
+
+	measure tooltip_format_revenue_at_risk = ```
+			
+			    IF(
+			        [revenue_at_risk] < 1000000,
+			        FORMAT([revenue_at_risk], "#,##0,.00 K"),
+			        FORMAT([revenue_at_risk], "#,##0,,.00 M")
+			    )
+			```
+		displayFolder: visual_measures
+		lineageTag: 487c13a3-d35f-4563-b2a4-3ac65e9579b5
+
+	measure tool_tip_oversize =
+			
+			COUNTROWS(
+			    FILTER(
+			        VALUES(product_dim),
+			        product_dim[size_bucket] = "Oversize" && [is_outlier] = 1
+			    )
+			)
+		formatString: 0
+		displayFolder: visual_measures
+		lineageTag: c5d02df5-ef42-44ec-ab7e-c0075dfc2e00
+
+	measure tool_tip_heavy =
+			
+			COUNTROWS(
+			    FILTER(
+			        VALUES(product_dim),
+			        product_dim[size_bucket] = "Heavy" && [is_outlier] = 1
+			    )
+			)
+		formatString: 0
+		displayFolder: visual_measures
+		lineageTag: 641a1226-1192-40a4-ae22-ca33f840a7b1
+
+	measure tool_tip_standard =
+			
+			COUNTROWS(
+			    FILTER(
+			        VALUES(product_dim),
+			        product_dim[size_bucket] = "Standard" && [is_outlier] = 1
+			    )
+			)
+		formatString: 0
+		displayFolder: visual_measures
+		lineageTag: fd54c690-a1fa-4d44-9193-a6a3cdb1a028
+
+	measure tool_tip_small =
+			
+			COUNTROWS(
+			    FILTER(
+			        VALUES(product_dim),
+			        product_dim[size_bucket] = "Small" && [is_outlier] = 1
+			    )
+			)
+		formatString: 0
+		displayFolder: visual_measures
+		lineageTag: 58b932ba-937d-4c51-a955-947f6ae14994
+
+	partition calculations = m
+		mode: import
+		source =
+				let
+				    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Column1 = _t]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Column1", type text}}),
+				    #"Removed Columns" = Table.RemoveColumns(#"Changed Type",{"Column1"})
+				in
+				    #"Removed Columns"
+
+	annotation PBI_ResultType = Table
+

@@ -9,6 +9,15 @@
         "page": "2.3.1"
       },
       "type": "SharedResources"
+    },
+    "customTheme": {
+      "name": "minimalist-theme3467758954368505.json",
+      "reportVersionAtImport": {
+        "visual": "2.8.0",
+        "report": "3.2.0",
+        "page": "2.3.1"
+      },
+      "type": "RegisteredResources"
     }
   },
   "objects": {
@@ -19,6 +28,19 @@
             "expr": {
               "Literal": {
                 "Value": "'Top'"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "outspacePane": [
+      {
+        "properties": {
+          "expanded": {
+            "expr": {
+              "Literal": {
+                "Value": "false"
               }
             }
           }
@@ -35,6 +57,52 @@
           "name": "CY26SU04",
           "path": "BaseThemes/CY26SU04.json",
           "type": "BaseTheme"
+        }
+      ]
+    },
+    {
+      "name": "RegisteredResources",
+      "type": "RegisteredResources",
+      "items": [
+        {
+          "name": "apply-filter-button5878607895258912.svg",
+          "path": "apply-filter-button5878607895258912.svg",
+          "type": "Image"
+        },
+        {
+          "name": "close-icon14917274980951856.svg",
+          "path": "close-icon14917274980951856.svg",
+          "type": "Image"
+        },
+        {
+          "name": "close-icon8444761694964004.svg",
+          "path": "close-icon8444761694964004.svg",
+          "type": "Image"
+        },
+        {
+          "name": "filter-icon962589965351642.svg",
+          "path": "filter-icon962589965351642.svg",
+          "type": "Image"
+        },
+        {
+          "name": "info-icon4675062560198311.svg",
+          "path": "info-icon4675062560198311.svg",
+          "type": "Image"
+        },
+        {
+          "name": "minimalist-theme3467758954368505.json",
+          "path": "minimalist-theme3467758954368505.json",
+          "type": "CustomTheme"
+        },
+        {
+          "name": "product-friction-DB-BG06606806428706213.svg",
+          "path": "product-friction-DB-BG06606806428706213.svg",
+          "type": "Image"
+        },
+        {
+          "name": "project-logo-7765603844422274.svg",
+          "path": "project-logo-7765603844422274.svg",
+          "type": "Image"
         }
       ]
     }

@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
   "name": "e4051eb1320e0b004380",
   "position": {
-    "x": 5.5757575757576205,
-    "y": 4.4848484848484986,
-    "z": 1000,
-    "height": 35.333333333333336,
+    "x": 9,
+    "y": 5.6666666666666714,
+    "z": 2000,
+    "height": 33,
     "width": 428,
-    "tabOrder": 0
+    "tabOrder": 1000
   },
   "visual": {
     "visualType": "textbox",
@@ -25,7 +25,7 @@
                     }
                   },
                   {
-                    "value": "Highlighting All Sellers",
+                    "value": "All Sellers",
                     "textStyle": {
                       "fontWeight": "bold",
                       "fontSize": "14pt",

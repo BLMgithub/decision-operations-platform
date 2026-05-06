@@ -4,7 +4,7 @@
   "position": {
     "x": 482.85714285714289,
     "y": 6.4285714285714288,
-    "z": 2000,
+    "z": 3000,
     "height": 96.428571428571431,
     "width": 510.00000000000006,
     "tabOrder": 1000
@@ -1325,6 +1325,19 @@
             "id": "default"
           }
         }
+      ],
+      "fillCustom": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
       ]
     },
     "visualContainerObjects": {
@@ -1361,6 +1374,13 @@
               "expr": {
                 "Literal": {
                   "Value": "true"
+                }
+              }
+            },
+            "transparency": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
                 }
               }
             }

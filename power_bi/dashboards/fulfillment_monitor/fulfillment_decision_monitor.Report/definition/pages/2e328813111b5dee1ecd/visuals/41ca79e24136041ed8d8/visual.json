@@ -4,10 +4,10 @@
   "position": {
     "x": 0,
     "y": 0.044817927170925032,
-    "z": 10000,
+    "z": 11000,
     "height": 719.95518207282907,
     "width": 1280,
-    "tabOrder": 11002
+    "tabOrder": 12000
   },
   "visualGroup": {
     "displayName": "info-pane",

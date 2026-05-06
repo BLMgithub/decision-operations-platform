@@ -1,0 +1,16 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
+  "name": "309cdb28005db575d3a2",
+  "position": {
+    "x": 21.437543614794137,
+    "y": 104.50802512212141,
+    "z": 4000,
+    "height": 274.221912072575,
+    "width": 610.07676203768312,
+    "tabOrder": 3000
+  },
+  "visualGroup": {
+    "displayName": "lead-time-trend",
+    "groupMode": "ScaleMode"
+  }
+}
