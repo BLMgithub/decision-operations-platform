@@ -474,7 +474,7 @@
                 "Entity": "calculations"
               }
             },
-            "Property": "revenue_exposed"
+            "Property": "tooltip_revenue_exposed"
           }
         },
         "type": "Advanced",

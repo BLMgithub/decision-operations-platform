@@ -6547,7 +6547,7 @@ cultureInfo en-PH
 			      "Definition": {
 			        "Binding": {
 			          "ConceptualEntity": "calculations",
-			          "ConceptualProperty": "tool_tip_week_start_date"
+			          "ConceptualProperty": "tooltip_week_start_date"
 			        }
 			      },
 			      "State": "Generated",
@@ -6689,7 +6689,7 @@ cultureInfo en-PH
 			      "Definition": {
 			        "Binding": {
 			          "ConceptualEntity": "calculations",
-			          "ConceptualProperty": "tool_tip_product_id"
+			          "ConceptualProperty": "tooltip_product_id"
 			        }
 			      },
 			      "State": "Generated",
@@ -7281,7 +7281,7 @@ cultureInfo en-PH
 			      "Definition": {
 			        "Binding": {
 			          "ConceptualEntity": "calculations",
-			          "ConceptualProperty": "tool_tip_oversize"
+			          "ConceptualProperty": "tooltip_oversize"
 			        }
 			      },
 			      "State": "Generated",
@@ -7356,7 +7356,7 @@ cultureInfo en-PH
 			      "Definition": {
 			        "Binding": {
 			          "ConceptualEntity": "calculations",
-			          "ConceptualProperty": "tool_tip_heavy"
+			          "ConceptualProperty": "tooltip_heavy"
 			        }
 			      },
 			      "State": "Generated",
@@ -7441,7 +7441,7 @@ cultureInfo en-PH
 			      "Definition": {
 			        "Binding": {
 			          "ConceptualEntity": "calculations",
-			          "ConceptualProperty": "tool_tip_standard"
+			          "ConceptualProperty": "tooltip_standard"
 			        }
 			      },
 			      "State": "Generated",
@@ -7586,7 +7586,7 @@ cultureInfo en-PH
 			      "Definition": {
 			        "Binding": {
 			          "ConceptualEntity": "calculations",
-			          "ConceptualProperty": "tool_tip_small"
+			          "ConceptualProperty": "tooltip_small"
 			        }
 			      },
 			      "State": "Generated",

@@ -68,7 +68,7 @@
                       "Entity": "calculations"
                     }
                   },
-                  "Property": "tool_tip_small"
+                  "Property": "tooltip_small"
                 }
               },
               "queryRef": "calculations.tool_tip_small",
@@ -83,7 +83,7 @@
                       "Entity": "calculations"
                     }
                   },
-                  "Property": "tool_tip_standard"
+                  "Property": "tooltip_standard"
                 }
               },
               "queryRef": "calculations.tool_tip_standard",
@@ -98,7 +98,7 @@
                       "Entity": "calculations"
                     }
                   },
-                  "Property": "tool_tip_heavy"
+                  "Property": "tooltip_heavy"
                 }
               },
               "queryRef": "calculations.tool_tip_heavy",
@@ -113,7 +113,7 @@
                       "Entity": "calculations"
                     }
                   },
-                  "Property": "tool_tip_oversize"
+                  "Property": "tooltip_oversize"
                 }
               },
               "queryRef": "calculations.tool_tip_oversize",

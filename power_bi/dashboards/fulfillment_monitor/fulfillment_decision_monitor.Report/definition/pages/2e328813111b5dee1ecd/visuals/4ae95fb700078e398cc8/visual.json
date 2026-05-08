@@ -88,7 +88,7 @@
                       "Entity": "calculations"
                     }
                   },
-                  "Property": "revenue_exposed"
+                  "Property": "tooltip_revenue_exposed"
                 }
               },
               "queryRef": "calculations.revenue_exposed",
@@ -540,7 +540,7 @@
                                       "Entity": "calculations"
                                     }
                                   },
-                                  "Property": "revenue_exposed"
+                                  "Property": "tooltip_revenue_exposed"
                                 }
                               },
                               "Right": {
@@ -567,7 +567,7 @@
                                       "Entity": "calculations"
                                     }
                                   },
-                                  "Property": "revenue_exposed"
+                                  "Property": "tooltip_revenue_exposed"
                                 }
                               },
                               "Right": {
@@ -938,7 +938,7 @@
                 "Entity": "calculations"
               }
             },
-            "Property": "revenue_exposed"
+            "Property": "tooltip_revenue_exposed"
           }
         },
         "type": "Advanced"

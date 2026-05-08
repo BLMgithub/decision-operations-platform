@@ -5,8 +5,8 @@
     "x": 0,
     "y": 0,
     "z": 1000,
-    "height": 90,
-    "width": 170,
+    "height": 130,
+    "width": 190,
     "tabOrder": 2000
   },
   "visual": {
@@ -44,6 +44,21 @@
               "queryRef": "calculations.latency_slippage",
               "nativeQueryRef": "Speed Loss (Days)",
               "displayName": "Speed Loss (Days)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "calculations"
+                    }
+                  },
+                  "Property": "tooltip_revenue_exposed"
+                }
+              },
+              "queryRef": "calculations.tooltip_revenue_exposed",
+              "nativeQueryRef": "Revenue Exposed",
+              "displayName": "Revenue Exposed"
             },
             {
               "field": {
@@ -261,6 +276,19 @@
               "expr": {
                 "Literal": {
                   "Value": "'None'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "padding": [
+        {
+          "properties": {
+            "right": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
                 }
               }
             }

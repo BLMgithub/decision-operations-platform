@@ -278,14 +278,14 @@ table calculations
 		displayFolder: visual_measures
 		lineageTag: d1eb6f69-82dd-4ef1-9b77-2674fc914066
 
-	measure tool_tip_week_start_date = SELECTEDVALUE(calendar_date[Week Start Date])
+	measure tooltip_week_start_date = SELECTEDVALUE(calendar_date[Week Start Date])
 		formatString: Short Date
-		displayFolder: visual_measures
+		displayFolder: visual_measures_tooltip
 		lineageTag: d2eaf8be-8d91-4540-9a22-b44c106083fa
 
-	measure tool_tip_product_id = SELECTEDVALUE(product_dim[product_id_int])
+	measure tooltip_product_id = SELECTEDVALUE(product_dim[product_id_int])
 		formatString: 0
-		displayFolder: visual_measures
+		displayFolder: visual_measures_tooltip
 		lineageTag: 0a37d776-43f7-4156-8172-7df15421a48d
 
 	measure format_product_id_count = ```
@@ -333,10 +333,10 @@ table calculations
 			        FORMAT([revenue_at_risk], "#,##0,,.00 M")
 			    )
 			```
-		displayFolder: visual_measures
+		displayFolder: visual_measures_tooltip
 		lineageTag: 487c13a3-d35f-4563-b2a4-3ac65e9579b5
 
-	measure tool_tip_oversize =
+	measure tooltip_oversize =
 			
 			COUNTROWS(
 			    FILTER(
@@ -345,10 +345,10 @@ table calculations
 			    )
 			)
 		formatString: 0
-		displayFolder: visual_measures
+		displayFolder: visual_measures_tooltip
 		lineageTag: c5d02df5-ef42-44ec-ab7e-c0075dfc2e00
 
-	measure tool_tip_heavy =
+	measure tooltip_heavy =
 			
 			COUNTROWS(
 			    FILTER(
@@ -357,10 +357,10 @@ table calculations
 			    )
 			)
 		formatString: 0
-		displayFolder: visual_measures
+		displayFolder: visual_measures_tooltip
 		lineageTag: 641a1226-1192-40a4-ae22-ca33f840a7b1
 
-	measure tool_tip_standard =
+	measure tooltip_standard =
 			
 			COUNTROWS(
 			    FILTER(
@@ -369,10 +369,10 @@ table calculations
 			    )
 			)
 		formatString: 0
-		displayFolder: visual_measures
+		displayFolder: visual_measures_tooltip
 		lineageTag: fd54c690-a1fa-4d44-9193-a6a3cdb1a028
 
-	measure tool_tip_small =
+	measure tooltip_small =
 			
 			COUNTROWS(
 			    FILTER(
@@ -381,7 +381,7 @@ table calculations
 			    )
 			)
 		formatString: 0
-		displayFolder: visual_measures
+		displayFolder: visual_measures_tooltip
 		lineageTag: 58b932ba-937d-4c51-a955-947f6ae14994
 
 	partition calculations = m

@@ -85,7 +85,7 @@
                           "Entity": "calculations"
                         }
                       },
-                      "Property": "revenue_exposed"
+                      "Property": "tooltip_revenue_exposed"
                     }
                   },
                   "howCreated": 0
@@ -276,7 +276,7 @@
                           "Entity": "calculations"
                         }
                       },
-                      "Property": "revenue_exposed"
+                      "Property": "tooltip_revenue_exposed"
                     }
                   },
                   "howCreated": 1

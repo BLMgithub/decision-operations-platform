@@ -22,7 +22,7 @@
                       "Entity": "calculations"
                     }
                   },
-                  "Property": "tool_tip_week_start_date"
+                  "Property": "tooltip_week_start_date"
                 }
               },
               "queryRef": "calculations.tool_tip_week_start_date",
@@ -41,7 +41,7 @@
                     "Entity": "calculations"
                   }
                 },
-                "Property": "tool_tip_week_start_date"
+                "Property": "tooltip_week_start_date"
               }
             },
             "direction": "Ascending"

@@ -13,5 +13,6 @@
     "displayName": "month-filter",
     "groupMode": "ScaleMode"
   },
-  "parentGroupName": "5640163d3c3070e3da51"
+  "parentGroupName": "5640163d3c3070e3da51",
+  "isHidden": true
 }

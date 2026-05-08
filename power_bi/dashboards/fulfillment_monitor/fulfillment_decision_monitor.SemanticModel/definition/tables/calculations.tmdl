@@ -41,14 +41,14 @@ table calculations
 			    [latency]
 			)
 			```
-		displayFolder: visual_measures
+		displayFolder: _prerequisites_measures
 		lineageTag: 55c60c01-ab5e-4e92-8556-94460e9dd752
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
-	measure tool_tip_week_start_date = SELECTEDVALUE(calendar_dates[Week Start Date])
+	measure tooltip_week_start_date = SELECTEDVALUE(calendar_dates[Week Start Date])
 		formatString: Short Date
-		displayFolder: tooltips_measures
+		displayFolder: visual_measures_tooltips
 		lineageTag: 28178188-cfc3-48c6-a749-b8df1bdf8dd6
 
 	measure total_order_volume = SUM(seller_weekly_fact[weekly_order_count])
@@ -74,7 +74,7 @@ table calculations
 			VAR delta = [latency_current_week] - [latency_4w_rolling_avg]
 			RETURN
 			    IF([is_outlier] = 1, delta, BLANK())
-		displayFolder: visual_measures
+		displayFolder: _prerequisites_measures
 		lineageTag: 9d7e77f6-68af-4cfa-b461-cb1055c82c80
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
@@ -113,7 +113,7 @@ table calculations
 			RETURN
 			    outlier_flags
 		formatString: 0
-		displayFolder: visual_measures
+		displayFolder: _prerequisites_measures
 		lineageTag: 38c2f255-e5dc-451a-bdf1-3dbe0dfc897d
 
 	measure seller_at_risk = ```
@@ -130,7 +130,7 @@ table calculations
 		displayFolder: KPI_measures
 		lineageTag: ff481b53-f15f-4f7b-92a8-8b8991868c2c
 
-	measure revenue_exposed = ```
+	measure tooltip_revenue_exposed = ```
 			
 			VAR result = 
 			SUMX(
@@ -151,7 +151,7 @@ table calculations
 			    mask_blank
 			```
 		formatString: \$#,0;(\$#,0);\$#,0
-		displayFolder: tooltips_measures
+		displayFolder: visual_measures_tooltips
 		lineageTag: 57b5b9af-aa8a-4551-8a57-8a49460b2ff8
 
 	measure systemic_drift_pct =
@@ -204,7 +204,7 @@ table calculations
 			RETURN
 			    IF([seller_at_risk] > 0, result, BLANK())
 			```
-		displayFolder: visual_measures
+		displayFolder: _prerequisites_measures
 		lineageTag: 41ecc5d8-3c35-433d-802c-c8e556044ff3
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
@@ -242,7 +242,7 @@ table calculations
 			    ALLSELECTED(calendar_dates)
 			)
 		formatString: 0
-		displayFolder: visual_measures
+		displayFolder: _prerequisites_measures
 		lineageTag: c908f2d0-f3df-4583-9866-998dea86632d
 
 	measure matrix_slippage_tracker = ```
@@ -259,7 +259,7 @@ table calculations
 			RETURN
 			    result
 			```
-		displayFolder: visual_measures
+		displayFolder: _prerequisites_measures
 		lineageTag: 1a56b5a8-3985-4adc-a97e-886801cddaf6
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
@@ -290,7 +290,7 @@ table calculations
 			    SELECTEDVALUE(seller_dim[seller_id_int])
 			```
 		formatString: 0
-		displayFolder: visual_measures
+		displayFolder: visual_measures_tooltips
 		lineageTag: 4cd6ae0d-5073-4ea4-acad-e2db64f5f31c
 
 	measure bubble_size_sensivity = [latency_slippage] ^ 4.5

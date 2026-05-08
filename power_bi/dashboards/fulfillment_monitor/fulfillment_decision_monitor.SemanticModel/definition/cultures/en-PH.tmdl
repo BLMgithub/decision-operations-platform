@@ -2981,22 +2981,22 @@ cultureInfo en-PH
 			        }
 			      ]
 			    },
-			    "calculation.tool_tip_week_start_date": {
+			    "calculation.tooltip_week_start_date": {
 			      "Definition": {
 			        "Binding": {
 			          "ConceptualEntity": "calculations",
-			          "ConceptualProperty": "tool_tip_week_start_date"
+			          "ConceptualProperty": "tooltip_week_start_date"
 			        }
 			      },
 			      "State": "Generated",
 			      "Terms": [
 			        {
-			          "tool tip week start date": {
+			          "tooltip week start date": {
 			            "State": "Generated"
 			          }
 			        },
 			        {
-			          "tool_tip_week_start_date": {
+			          "tooltip_week_start_date": {
 			            "Type": "Noun",
 			            "State": "Generated",
 			            "Weight": 0.99
@@ -3015,39 +3015,13 @@ cultureInfo en-PH
 			          }
 			        },
 			        {
-			          "tip week start date": {
-			            "State": "Generated",
-			            "Weight": 0.97
-			          }
-			        },
-			        {
-			          "tool tip week start moment": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.78
-			          }
-			        },
-			        {
-			          "tip week start moment": {
+			          "tooltip week start moment": {
 			            "Type": "Noun",
 			            "State": "Suggested",
 			            "Source": {
 			              "Agent": "Thesaurus"
 			            },
 			            "Weight": 0.771
-			          }
-			        },
-			        {
-			          "tool tip week start period": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.757
 			          }
 			        },
 			        {
@@ -3061,7 +3035,7 @@ cultureInfo en-PH
 			          }
 			        },
 			        {
-			          "tip week start period": {
+			          "tooltip week start period": {
 			            "Type": "Noun",
 			            "State": "Suggested",
 			            "Source": {
@@ -3081,43 +3055,63 @@ cultureInfo en-PH
 			          }
 			        },
 			        {
-			          "tool tip week commencement date": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.64
-			          }
-			        },
-			        {
-			          "tool tip week inception date": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.64
-			          }
-			        },
-			        {
-			          "tool tip week kickoff date": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.64
-			          }
-			        },
-			        {
-			          "tip week commencement date": {
+			          "tooltip week commencement date": {
 			            "Type": "Noun",
 			            "State": "Suggested",
 			            "Source": {
 			              "Agent": "Thesaurus"
 			            },
 			            "Weight": 0.629
+			          }
+			        },
+			        {
+			          "tooltip week inception date": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.629
+			          }
+			        },
+			        {
+			          "tooltip week kickoff date": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.629
+			          }
+			        },
+			        {
+			          "tooltip week beginning date": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.61
+			          }
+			        },
+			        {
+			          "tooltip week first date": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.61
+			          }
+			        },
+			        {
+			          "tooltip week initiation date": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.61
 			          }
 			        }
 			      ],
@@ -3598,69 +3592,79 @@ cultureInfo en-PH
 			        }
 			      ]
 			    },
-			    "calculation.revenue_exposed": {
+			    "calculation.tooltip_revenue_exposed": {
 			      "Definition": {
 			        "Binding": {
 			          "ConceptualEntity": "calculations",
-			          "ConceptualProperty": "revenue_exposed"
+			          "ConceptualProperty": "tooltip_revenue_exposed"
 			        }
 			      },
 			      "State": "Generated",
 			      "Terms": [
 			        {
-			          "revenue exposed": {
+			          "tooltip revenue exposed": {
 			            "State": "Generated"
 			          }
 			        },
 			        {
-			          "revenue_exposed": {
+			          "tooltip_revenue_exposed": {
 			            "Type": "Noun",
 			            "State": "Generated",
 			            "Weight": 0.99
 			          }
 			        },
 			        {
-			          "income exposed": {
+			          "tooltip income exposed": {
 			            "Type": "Noun",
 			            "State": "Suggested",
 			            "Source": {
 			              "Agent": "Thesaurus"
 			            },
-			            "Weight": 0.75
+			            "Weight": 0.762
 			          }
 			        },
 			        {
-			          "profit exposed": {
+			          "tooltip profit exposed": {
 			            "Type": "Noun",
 			            "State": "Suggested",
 			            "Source": {
 			              "Agent": "Thesaurus"
 			            },
-			            "Weight": 0.727
+			            "Weight": 0.739
 			          }
 			        },
 			        {
-			          "turnover exposed": {
+			          "tooltip turnover exposed": {
 			            "Type": "Noun",
 			            "State": "Suggested",
 			            "Source": {
 			              "Agent": "Thesaurus"
 			            },
-			            "Weight": 0.727
+			            "Weight": 0.739
 			          }
 			        },
 			        {
-			          "yield exposed": {
+			          "tooltip yield exposed": {
 			            "Type": "Noun",
 			            "State": "Suggested",
 			            "Source": {
 			              "Agent": "Thesaurus"
 			            },
-			            "Weight": 0.727
+			            "Weight": 0.739
 			          }
 			        },
 			        {
 			          "Revenue at Risk": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        },
+			        {
+			          "Revenue Exposed": {
 			            "State": "Suggested",
 			            "Source": {
 			              "Type": "External",
@@ -5613,7 +5617,7 @@ cultureInfo en-PH
 			      ],
 			      "SemanticType": "Time"
 			    },
-			    "calculation.selected_seller_id": {
+			    "calculation.tooltip_seller_id": {
 			      "Definition": {
 			        "Binding": {
 			          "ConceptualEntity": "calculations",
@@ -5623,12 +5627,12 @@ cultureInfo en-PH
 			      "State": "Generated",
 			      "Terms": [
 			        {
-			          "selected seller id": {
+			          "tooltip seller id": {
 			            "State": "Generated"
 			          }
 			        },
 			        {
-			          "selected_seller_id": {
+			          "tooltip_seller_id": {
 			            "Type": "Noun",
 			            "State": "Generated",
 			            "Weight": 0.99
@@ -5641,7 +5645,13 @@ cultureInfo en-PH
 			          }
 			        },
 			        {
-			          "selected seller identification": {
+			          "tooltip seller": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        },
+			        {
+			          "tooltip seller identification": {
 			            "Type": "Noun",
 			            "State": "Suggested",
 			            "Source": {
@@ -5651,7 +5661,7 @@ cultureInfo en-PH
 			          }
 			        },
 			        {
-			          "selected seller identity": {
+			          "tooltip seller identity": {
 			            "Type": "Noun",
 			            "State": "Suggested",
 			            "Source": {
@@ -5661,7 +5671,7 @@ cultureInfo en-PH
 			          }
 			        },
 			        {
-			          "selected seller identifier": {
+			          "tooltip seller identifier": {
 			            "Type": "Noun",
 			            "State": "Suggested",
 			            "Source": {
@@ -5671,7 +5681,7 @@ cultureInfo en-PH
 			          }
 			        },
 			        {
-			          "selected seller credential": {
+			          "tooltip seller credential": {
 			            "Type": "Noun",
 			            "State": "Suggested",
 			            "Source": {
@@ -5681,63 +5691,63 @@ cultureInfo en-PH
 			          }
 			        },
 			        {
-			          "vender": {
+			          "tooltip vender": {
 			            "Type": "Noun",
 			            "State": "Suggested",
 			            "Source": {
 			              "Agent": "Thesaurus"
 			            },
-			            "Weight": 0.491
+			            "Weight": 0.5
 			          }
 			        },
 			        {
-			          "vendor": {
+			          "tooltip vendor": {
 			            "Type": "Noun",
 			            "State": "Suggested",
 			            "Source": {
 			              "Agent": "Thesaurus"
 			            },
-			            "Weight": 0.491
+			            "Weight": 0.5
 			          }
 			        },
 			        {
-			          "retailer": {
+			          "tooltip retailer": {
 			            "Type": "Noun",
 			            "State": "Suggested",
 			            "Source": {
 			              "Agent": "Thesaurus"
 			            },
-			            "Weight": 0.491
+			            "Weight": 0.5
 			          }
 			        },
 			        {
-			          "wholesaler": {
+			          "tooltip wholesaler": {
 			            "Type": "Noun",
 			            "State": "Suggested",
 			            "Source": {
 			              "Agent": "Thesaurus"
 			            },
-			            "Weight": 0.491
+			            "Weight": 0.5
 			          }
 			        },
 			        {
-			          "supplier": {
+			          "tooltip supplier": {
 			            "Type": "Noun",
 			            "State": "Suggested",
 			            "Source": {
 			              "Agent": "Thesaurus"
 			            },
-			            "Weight": 0.491
+			            "Weight": 0.5
 			          }
 			        },
 			        {
-			          "trader": {
+			          "tooltip trader": {
 			            "Type": "Noun",
 			            "State": "Suggested",
 			            "Source": {
 			              "Agent": "Thesaurus"
 			            },
-			            "Weight": 0.491
+			            "Weight": 0.5
 			          }
 			        },
 			        {
@@ -5751,207 +5761,490 @@ cultureInfo en-PH
 			          }
 			        }
 			      ]
+			    },
+			    "seller_dim.string_seller_id": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "seller_dim",
+			          "ConceptualProperty": "string_seller_id"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "string seller id": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "string_seller_id": {
+			            "Type": "Noun",
+			            "State": "Generated",
+			            "Weight": 0.99
+			          }
+			        },
+			        {
+			          "seller": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        },
+			        {
+			          "string seller": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        },
+			        {
+			          "string seller identification": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.762
+			          }
+			        },
+			        {
+			          "string seller identity": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.762
+			          }
+			        },
+			        {
+			          "string seller identifier": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.762
+			          }
+			        },
+			        {
+			          "string seller credential": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.739
+			          }
+			        },
+			        {
+			          "string vender": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "string vendor": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "string retailer": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "string wholesaler": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "string supplier": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "string trader": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        }
+			      ]
+			    },
+			    "calculation.bubble_size_sensivity": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "calculations",
+			          "ConceptualProperty": "bubble_size_sensivity"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "bubble size sensivity": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "bubble_size_sensivity": {
+			            "Type": "Noun",
+			            "State": "Generated",
+			            "Weight": 0.99
+			          }
+			        }
+			      ]
+			    },
+			    "calculation.seller_highlight_rank": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "calculations",
+			          "ConceptualProperty": "seller_highlight_rank"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "seller highlight rank": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "seller_highlight_rank": {
+			            "Type": "Noun",
+			            "State": "Generated",
+			            "Weight": 0.99
+			          }
+			        },
+			        {
+			          "highlight rank": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        }
+			      ]
+			    },
+			    "calculation.top_10_seller_id": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "calculations",
+			          "ConceptualProperty": "top_10_seller_id"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "top 10 seller id": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "top_10_seller_id": {
+			            "Type": "Noun",
+			            "State": "Generated",
+			            "Weight": 0.99
+			          }
+			        },
+			        {
+			          "seller": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        },
+			        {
+			          "10 seller": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        },
+			        {
+			          "top 10 seller": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        },
+			        {
+			          "10 seller id": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        },
+			        {
+			          "top 10 seller identification": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.771
+			          }
+			        },
+			        {
+			          "top 10 seller identity": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.771
+			          }
+			        },
+			        {
+			          "top 10 seller identifier": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.771
+			          }
+			        },
+			        {
+			          "10 seller identification": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.762
+			          }
+			        },
+			        {
+			          "10 seller identity": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.762
+			          }
+			        },
+			        {
+			          "10 seller identifier": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.762
+			          }
+			        },
+			        {
+			          "top 10 seller credential": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.748
+			          }
+			        },
+			        {
+			          "10 seller credential": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.739
+			          }
+			        },
+			        {
+			          "best 10 seller id": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.599
+			          }
+			        },
+			        {
+			          "first 10 seller id": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.599
+			          }
+			        }
+			      ]
+			    },
+			    "calculation.top_20_seller_id": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "calculations",
+			          "ConceptualProperty": "top_20_seller_id"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "top 20 seller id": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "top_20_seller_id": {
+			            "Type": "Noun",
+			            "State": "Generated",
+			            "Weight": 0.99
+			          }
+			        },
+			        {
+			          "seller": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        },
+			        {
+			          "20 seller": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        },
+			        {
+			          "top 20 seller": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        },
+			        {
+			          "20 seller id": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        },
+			        {
+			          "top 20 seller identification": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.771
+			          }
+			        },
+			        {
+			          "top 20 seller identity": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.771
+			          }
+			        },
+			        {
+			          "top 20 seller identifier": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.771
+			          }
+			        },
+			        {
+			          "20 seller identification": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.762
+			          }
+			        },
+			        {
+			          "20 seller identity": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.762
+			          }
+			        },
+			        {
+			          "20 seller identifier": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.762
+			          }
+			        },
+			        {
+			          "top 20 seller credential": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.748
+			          }
+			        },
+			        {
+			          "20 seller credential": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.739
+			          }
+			        },
+			        {
+			          "best 20 seller id": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.599
+			          }
+			        },
+			        {
+			          "first 20 seller id": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.599
+			          }
+			        }
+			      ]
 			    }
 			  },
 			  "Relationships": {
-			    "source_last_update_time_last_update_time_date_hierarchy_has_source_last_update_time_last_update_time_day": {
-			      "Binding": {
-			        "ConceptualEntity": "source_last_update_time"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "source_last_update_time.last_update_time.date_hierarchy": {
-			          "Target": {
-			            "Entity": "source_last_update_time.last_update_time.date_hierarchy"
-			          }
-			        },
-			        "source_last_update_time.last_update_time.day": {
-			          "Target": {
-			            "Entity": "source_last_update_time.last_update_time.day"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "source_last_update_time.last_update_time.date_hierarchy"
-			            },
-			            "Object": {
-			              "Role": "source_last_update_time.last_update_time.day"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "last_update_time_date_hierarchies_have_last_update_time_days"
-			        }
-			      ]
-			    },
-			    "source_last_update_time_last_update_time_date_hierarchy_has_source_last_update_time_last_update_time_month": {
-			      "Binding": {
-			        "ConceptualEntity": "source_last_update_time"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "source_last_update_time.last_update_time.date_hierarchy": {
-			          "Target": {
-			            "Entity": "source_last_update_time.last_update_time.date_hierarchy"
-			          }
-			        },
-			        "source_last_update_time.last_update_time.month": {
-			          "Target": {
-			            "Entity": "source_last_update_time.last_update_time.month"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "source_last_update_time.last_update_time.date_hierarchy"
-			            },
-			            "Object": {
-			              "Role": "source_last_update_time.last_update_time.month"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "last_update_time_date_hierarchies_have_last_update_time_months"
-			        }
-			      ]
-			    },
-			    "source_last_update_time_last_update_time_date_hierarchy_has_source_last_update_time_last_update_time_quarter": {
-			      "Binding": {
-			        "ConceptualEntity": "source_last_update_time"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "source_last_update_time.last_update_time.date_hierarchy": {
-			          "Target": {
-			            "Entity": "source_last_update_time.last_update_time.date_hierarchy"
-			          }
-			        },
-			        "source_last_update_time.last_update_time.quarter": {
-			          "Target": {
-			            "Entity": "source_last_update_time.last_update_time.quarter"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "source_last_update_time.last_update_time.date_hierarchy"
-			            },
-			            "Object": {
-			              "Role": "source_last_update_time.last_update_time.quarter"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "last_update_time_date_hierarchies_have_last_update_time_quarters"
-			        }
-			      ]
-			    },
-			    "source_last_update_time_last_update_time_date_hierarchy_has_source_last_update_time_last_update_time_year": {
-			      "Binding": {
-			        "ConceptualEntity": "source_last_update_time"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "source_last_update_time.last_update_time.date_hierarchy": {
-			          "Target": {
-			            "Entity": "source_last_update_time.last_update_time.date_hierarchy"
-			          }
-			        },
-			        "source_last_update_time.last_update_time.year": {
-			          "Target": {
-			            "Entity": "source_last_update_time.last_update_time.year"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "source_last_update_time.last_update_time.date_hierarchy"
-			            },
-			            "Object": {
-			              "Role": "source_last_update_time.last_update_time.year"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "last_update_time_date_hierarchies_have_last_update_time_years"
-			        }
-			      ]
-			    },
-			    "source_last_update_time_last_update_time_has_date_hierarchy": {
-			      "Binding": {
-			        "ConceptualEntity": "source_last_update_time"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "source_last_update_time.last_update_time": {
-			          "Target": {
-			            "Entity": "source_last_update_time.last_update_time"
-			          }
-			        },
-			        "source_last_update_time.last_update_time.date_hierarchy": {
-			          "Target": {
-			            "Entity": "source_last_update_time.last_update_time.date_hierarchy"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "source_last_update_time.last_update_time"
-			            },
-			            "Object": {
-			              "Role": "source_last_update_time.last_update_time.date_hierarchy"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "last_update_times_have_last_update_time_date_hierarchies"
-			        }
-			      ]
-			    },
-			    "seller_dim_first_order_date_date_hierarchy_has_seller_dim_first_order_date_day": {
-			      "Binding": {
-			        "ConceptualEntity": "seller_dim"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "seller_dim.first_order_date.date_hierarchy": {
-			          "Target": {
-			            "Entity": "seller_dim.first_order_date.date_hierarchy"
-			          }
-			        },
-			        "seller_dim.first_order_date.day": {
-			          "Target": {
-			            "Entity": "seller_dim.first_order_date.day"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "seller_dim.first_order_date.date_hierarchy"
-			            },
-			            "Object": {
-			              "Role": "seller_dim.first_order_date.day"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "first_order_date_hierarchies_have_first_order_days"
-			        }
-			      ]
-			    },
 			    "seller_dim_first_order_date_date_hierarchy_has_seller_dim_first_order_date_month": {
 			      "Binding": {
 			        "ConceptualEntity": "seller_dim"
@@ -6176,7 +6469,139 @@ cultureInfo en-PH
 			        }
 			      ]
 			    },
-			    "seller_dim_has_calculation_selected_seller_id": {
+			    "calculation_has_top_20_seller_id": {
+			      "Binding": {
+			        "ConceptualEntity": "calculations"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "calculation": {
+			          "Target": {
+			            "Entity": "calculation"
+			          }
+			        },
+			        "calculation.top_20_seller_id": {
+			          "Target": {
+			            "Entity": "calculation.top_20_seller_id"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "calculation"
+			            },
+			            "Object": {
+			              "Role": "calculation.top_20_seller_id"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "calculations_have_top_20_seller_id"
+			        }
+			      ]
+			    },
+			    "calculation_has_top_10_seller_id": {
+			      "Binding": {
+			        "ConceptualEntity": "calculations"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "calculation": {
+			          "Target": {
+			            "Entity": "calculation"
+			          }
+			        },
+			        "calculation.top_10_seller_id": {
+			          "Target": {
+			            "Entity": "calculation.top_10_seller_id"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "calculation"
+			            },
+			            "Object": {
+			              "Role": "calculation.top_10_seller_id"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "calculations_have_top_10_seller_id"
+			        }
+			      ]
+			    },
+			    "calculation_has_seller_highlight_rank": {
+			      "Binding": {
+			        "ConceptualEntity": "calculations"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "calculation": {
+			          "Target": {
+			            "Entity": "calculation"
+			          }
+			        },
+			        "calculation.seller_highlight_rank": {
+			          "Target": {
+			            "Entity": "calculation.seller_highlight_rank"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "calculation"
+			            },
+			            "Object": {
+			              "Role": "calculation.seller_highlight_rank"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "calculations_have_seller_highlight_rank"
+			        }
+			      ]
+			    },
+			    "calculation_has_bubble_size_sensivity": {
+			      "Binding": {
+			        "ConceptualEntity": "calculations"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "calculation": {
+			          "Target": {
+			            "Entity": "calculation"
+			          }
+			        },
+			        "calculation.bubble_size_sensivity": {
+			          "Target": {
+			            "Entity": "calculation.bubble_size_sensivity"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "calculation"
+			            },
+			            "Object": {
+			              "Role": "calculation.bubble_size_sensivity"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "calculations_have_bubble_size_sensivity"
+			        }
+			      ]
+			    },
+			    "seller_dim_has_string_seller_id": {
 			      "Binding": {
 			        "ConceptualEntity": "seller_dim"
 			      },
@@ -6187,9 +6612,9 @@ cultureInfo en-PH
 			            "Entity": "seller_dim"
 			          }
 			        },
-			        "calculation.selected_seller_id": {
+			        "seller_dim.string_seller_id": {
 			          "Target": {
-			            "Entity": "calculation.selected_seller_id"
+			            "Entity": "seller_dim.string_seller_id"
 			          }
 			        }
 			      },
@@ -6200,12 +6625,78 @@ cultureInfo en-PH
 			              "Role": "seller_dim"
 			            },
 			            "Object": {
-			              "Role": "calculation.selected_seller_id"
+			              "Role": "seller_dim.string_seller_id"
 			            }
 			          },
 			          "State": "Generated",
 			          "Weight": 0.99,
-			          "ID": "seller_dims_have_selected_seller_id"
+			          "ID": "seller_dims_have_string_seller_ids"
+			        },
+			        {
+			          "Verb": {
+			            "Subject": {
+			              "Role": "seller_dim.string_seller_id"
+			            },
+			            "Verbs": [
+			              {
+			                "sell": {
+			                  "State": "Generated"
+			                }
+			              }
+			            ],
+			            "Object": {
+			              "Role": "seller_dim"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.75,
+			          "ID": "string_seller_ids_sell_seller_dims"
+			        },
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "seller_dim.string_seller_id"
+			            },
+			            "Object": {
+			              "Role": "seller_dim"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "string_seller_ids_have_seller_dims"
+			        }
+			      ]
+			    },
+			    "seller_dim_has_calculation_tooltip_seller_id": {
+			      "Binding": {
+			        "ConceptualEntity": "seller_dim"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "seller_dim": {
+			          "Target": {
+			            "Entity": "seller_dim"
+			          }
+			        },
+			        "calculation.tooltip_seller_id": {
+			          "Target": {
+			            "Entity": "calculation.tooltip_seller_id"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "seller_dim"
+			            },
+			            "Object": {
+			              "Role": "calculation.tooltip_seller_id"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "seller_dims_have_tooltip_seller_id"
 			        }
 			      ]
 			    },
@@ -6638,7 +7129,7 @@ cultureInfo en-PH
 			        }
 			      ]
 			    },
-			    "seller_weekly_fact_has_calculation_revenue_exposed": {
+			    "seller_weekly_fact_has_calculation_tooltip_revenue_exposed": {
 			      "Binding": {
 			        "ConceptualEntity": "seller_weekly_fact"
 			      },
@@ -6649,9 +7140,9 @@ cultureInfo en-PH
 			            "Entity": "seller_weekly_fact"
 			          }
 			        },
-			        "calculation.revenue_exposed": {
+			        "calculation.tooltip_revenue_exposed": {
 			          "Target": {
-			            "Entity": "calculation.revenue_exposed"
+			            "Entity": "calculation.tooltip_revenue_exposed"
 			          }
 			        }
 			      },
@@ -6662,16 +7153,16 @@ cultureInfo en-PH
 			              "Role": "seller_weekly_fact"
 			            },
 			            "Object": {
-			              "Role": "calculation.revenue_exposed"
+			              "Role": "calculation.tooltip_revenue_exposed"
 			            }
 			          },
 			          "State": "Generated",
 			          "Weight": 0.99,
-			          "ID": "seller_weekly_facts_have_revenue_exposed"
+			          "ID": "seller_weekly_facts_have_tooltip_revenue_exposed"
 			        }
 			      ]
 			    },
-			    "calendar_date_has_calculation_revenue_exposed": {
+			    "calendar_date_has_calculation_tooltip_revenue_exposed": {
 			      "Binding": {
 			        "ConceptualEntity": "calendar_dates"
 			      },
@@ -6682,9 +7173,9 @@ cultureInfo en-PH
 			            "Entity": "calendar_date"
 			          }
 			        },
-			        "calculation.revenue_exposed": {
+			        "calculation.tooltip_revenue_exposed": {
 			          "Target": {
-			            "Entity": "calculation.revenue_exposed"
+			            "Entity": "calculation.tooltip_revenue_exposed"
 			          }
 			        }
 			      },
@@ -6695,12 +7186,12 @@ cultureInfo en-PH
 			              "Role": "calendar_date"
 			            },
 			            "Object": {
-			              "Role": "calculation.revenue_exposed"
+			              "Role": "calculation.tooltip_revenue_exposed"
 			            }
 			          },
 			          "State": "Generated",
 			          "Weight": 0.99,
-			          "ID": "calendar_dates_have_revenue_exposed"
+			          "ID": "calendar_dates_have_tooltip_revenue_exposed"
 			        }
 			      ]
 			    },
@@ -6869,7 +7360,7 @@ cultureInfo en-PH
 			        }
 			      ]
 			    },
-			    "calendar_date_has_calculation_tool_tip_week_start_date": {
+			    "calendar_date_has_calculation_tooltip_week_start_date": {
 			      "Binding": {
 			        "ConceptualEntity": "calendar_dates"
 			      },
@@ -6880,9 +7371,9 @@ cultureInfo en-PH
 			            "Entity": "calendar_date"
 			          }
 			        },
-			        "calculation.tool_tip_week_start_date": {
+			        "calculation.tooltip_week_start_date": {
 			          "Target": {
-			            "Entity": "calculation.tool_tip_week_start_date"
+			            "Entity": "calculation.tooltip_week_start_date"
 			          }
 			        }
 			      },
@@ -6893,12 +7384,12 @@ cultureInfo en-PH
 			              "Role": "calendar_date"
 			            },
 			            "Object": {
-			              "Role": "calculation.tool_tip_week_start_date"
+			              "Role": "calculation.tooltip_week_start_date"
 			            }
 			          },
 			          "State": "Generated",
 			          "Weight": 0.99,
-			          "ID": "calendar_dates_have_tool_tip_week_start_date"
+			          "ID": "calendar_dates_have_tooltip_week_start_date"
 			        }
 			      ]
 			    },
@@ -7769,7 +8260,7 @@ cultureInfo en-PH
 			        }
 			      ]
 			    },
-			    "calendar_date_is_started_on_calculation_tool_tip_week_start_date": {
+			    "calendar_date_is_started_on_calculation_tooltip_week_start_date": {
 			      "Binding": {
 			        "ConceptualEntity": "calendar_dates"
 			      },
@@ -7780,15 +8271,15 @@ cultureInfo en-PH
 			            "Entity": "calendar_date"
 			          }
 			        },
-			        "calculation.tool_tip_week_start_date": {
+			        "calculation.tooltip_week_start_date": {
 			          "Target": {
-			            "Entity": "calculation.tool_tip_week_start_date"
+			            "Entity": "calculation.tooltip_week_start_date"
 			          }
 			        }
 			      },
 			      "SemanticSlots": {
 			        "When": {
-			          "Role": "calculation.tool_tip_week_start_date"
+			          "Role": "calculation.tooltip_week_start_date"
 			        }
 			      },
 			      "Phrasings": [
@@ -7807,7 +8298,7 @@ cultureInfo en-PH
 			          },
 			          "State": "Generated",
 			          "Weight": 0.9,
-			          "ID": "calendar_dates_are_started_on_tool_tip_week_start_date"
+			          "ID": "calendar_dates_are_started_on_tooltip_week_start_date"
 			        }
 			      ]
 			    },
@@ -7934,6 +8425,204 @@ cultureInfo en-PH
 			          "State": "Generated",
 			          "Weight": 0.9,
 			          "ID": "seller_dims_are_ordered_on_first_order_dates"
+			        }
+			      ]
+			    },
+			    "seller_dim_first_order_date_date_hierarchy_has_seller_dim_first_order_date_day": {
+			      "Binding": {
+			        "ConceptualEntity": "seller_dim"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "seller_dim.first_order_date.date_hierarchy": {
+			          "Target": {
+			            "Entity": "seller_dim.first_order_date.date_hierarchy"
+			          }
+			        },
+			        "seller_dim.first_order_date.day": {
+			          "Target": {
+			            "Entity": "seller_dim.first_order_date.day"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "seller_dim.first_order_date.date_hierarchy"
+			            },
+			            "Object": {
+			              "Role": "seller_dim.first_order_date.day"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "first_order_date_hierarchies_have_first_order_days"
+			        }
+			      ]
+			    },
+			    "source_last_update_time_last_update_time_has_date_hierarchy": {
+			      "Binding": {
+			        "ConceptualEntity": "source_last_update_time"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "source_last_update_time.last_update_time": {
+			          "Target": {
+			            "Entity": "source_last_update_time.last_update_time"
+			          }
+			        },
+			        "source_last_update_time.last_update_time.date_hierarchy": {
+			          "Target": {
+			            "Entity": "source_last_update_time.last_update_time.date_hierarchy"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "source_last_update_time.last_update_time"
+			            },
+			            "Object": {
+			              "Role": "source_last_update_time.last_update_time.date_hierarchy"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "last_update_times_have_last_update_time_date_hierarchies"
+			        }
+			      ]
+			    },
+			    "source_last_update_time_last_update_time_date_hierarchy_has_source_last_update_time_last_update_time_year": {
+			      "Binding": {
+			        "ConceptualEntity": "source_last_update_time"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "source_last_update_time.last_update_time.date_hierarchy": {
+			          "Target": {
+			            "Entity": "source_last_update_time.last_update_time.date_hierarchy"
+			          }
+			        },
+			        "source_last_update_time.last_update_time.year": {
+			          "Target": {
+			            "Entity": "source_last_update_time.last_update_time.year"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "source_last_update_time.last_update_time.date_hierarchy"
+			            },
+			            "Object": {
+			              "Role": "source_last_update_time.last_update_time.year"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "last_update_time_date_hierarchies_have_last_update_time_years"
+			        }
+			      ]
+			    },
+			    "source_last_update_time_last_update_time_date_hierarchy_has_source_last_update_time_last_update_time_quarter": {
+			      "Binding": {
+			        "ConceptualEntity": "source_last_update_time"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "source_last_update_time.last_update_time.date_hierarchy": {
+			          "Target": {
+			            "Entity": "source_last_update_time.last_update_time.date_hierarchy"
+			          }
+			        },
+			        "source_last_update_time.last_update_time.quarter": {
+			          "Target": {
+			            "Entity": "source_last_update_time.last_update_time.quarter"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "source_last_update_time.last_update_time.date_hierarchy"
+			            },
+			            "Object": {
+			              "Role": "source_last_update_time.last_update_time.quarter"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "last_update_time_date_hierarchies_have_last_update_time_quarters"
+			        }
+			      ]
+			    },
+			    "source_last_update_time_last_update_time_date_hierarchy_has_source_last_update_time_last_update_time_month": {
+			      "Binding": {
+			        "ConceptualEntity": "source_last_update_time"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "source_last_update_time.last_update_time.date_hierarchy": {
+			          "Target": {
+			            "Entity": "source_last_update_time.last_update_time.date_hierarchy"
+			          }
+			        },
+			        "source_last_update_time.last_update_time.month": {
+			          "Target": {
+			            "Entity": "source_last_update_time.last_update_time.month"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "source_last_update_time.last_update_time.date_hierarchy"
+			            },
+			            "Object": {
+			              "Role": "source_last_update_time.last_update_time.month"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "last_update_time_date_hierarchies_have_last_update_time_months"
+			        }
+			      ]
+			    },
+			    "source_last_update_time_last_update_time_date_hierarchy_has_source_last_update_time_last_update_time_day": {
+			      "Binding": {
+			        "ConceptualEntity": "source_last_update_time"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "source_last_update_time.last_update_time.date_hierarchy": {
+			          "Target": {
+			            "Entity": "source_last_update_time.last_update_time.date_hierarchy"
+			          }
+			        },
+			        "source_last_update_time.last_update_time.day": {
+			          "Target": {
+			            "Entity": "source_last_update_time.last_update_time.day"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "source_last_update_time.last_update_time.date_hierarchy"
+			            },
+			            "Object": {
+			              "Role": "source_last_update_time.last_update_time.day"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "last_update_time_date_hierarchies_have_last_update_time_days"
 			        }
 			      ]
 			    }

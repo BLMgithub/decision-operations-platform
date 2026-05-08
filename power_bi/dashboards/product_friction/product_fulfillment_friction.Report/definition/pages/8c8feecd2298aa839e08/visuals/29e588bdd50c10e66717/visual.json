@@ -23,7 +23,7 @@
                       "Entity": "calculations"
                     }
                   },
-                  "Property": "tool_tip_product_id"
+                  "Property": "tooltip_product_id"
                 }
               },
               "queryRef": "calculations.tool_tip_product_id",
