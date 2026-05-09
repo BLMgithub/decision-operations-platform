@@ -19,17 +19,9 @@
               {
                 "textRuns": [
                   {
-                    "value": "Lost Speed (Days) History - ",
+                    "value": "Lost Speed (Days) History ",
                     "textStyle": {
                       "fontSize": "14pt"
-                    }
-                  },
-                  {
-                    "value": "All Sellers",
-                    "textStyle": {
-                      "fontWeight": "bold",
-                      "fontSize": "14pt",
-                      "color": "#45657e"
                     }
                   }
                 ]

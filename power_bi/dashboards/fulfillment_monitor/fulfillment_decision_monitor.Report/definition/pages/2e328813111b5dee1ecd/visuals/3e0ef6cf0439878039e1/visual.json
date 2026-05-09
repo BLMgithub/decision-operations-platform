@@ -5,8 +5,8 @@
     "x": 0,
     "y": 0,
     "z": 1000,
-    "height": 305,
-    "width": 506.36363636363632,
+    "height": 301.744966442953,
+    "width": 506.8456375838926,
     "tabOrder": 0
   },
   "visual": {
@@ -35,6 +35,21 @@
         },
         "Values": {
           "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "calculations"
+                    }
+                  },
+                  "Property": "item_rank_string"
+                }
+              },
+              "queryRef": "calculations.item_rank_string",
+              "nativeQueryRef": "#",
+              "displayName": "#"
+            },
             {
               "field": {
                 "Measure": {
@@ -77,8 +92,8 @@
                 }
               },
               "queryRef": "calculations.total_order_volume",
-              "nativeQueryRef": "Order Volume",
-              "displayName": "Order Volume"
+              "nativeQueryRef": "Orders",
+              "displayName": "Orders"
             },
             {
               "field": {
@@ -245,6 +260,20 @@
           },
           "selector": {
             "metadata": "calculations.is_new_seller"
+          }
+        },
+        {
+          "properties": {
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Center'"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "calculations.item_rank_string"
           }
         }
       ],
@@ -560,6 +589,56 @@
             }
           }
         }
+      ],
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "112.32900912352794D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "calculations.latency_slippage"
+          }
+        },
+        {
+          "properties": {},
+          "selector": {
+            "metadata": "calculations.item_rank_string"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "101.29529969161912D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "calculations.revenue_exposed"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "55.92617424969788D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "seller_dim.seller_id_int"
+          }
+        }
       ]
     },
     "visualContainerObjects": {
@@ -702,7 +781,14 @@
             "left": {
               "expr": {
                 "Literal": {
-                  "Value": "10D"
+                  "Value": "5D"
+                }
+              }
+            },
+            "right": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
                 }
               }
             }
@@ -867,6 +953,125 @@
           }
         },
         "type": "Advanced"
+      },
+      {
+        "name": "bc6b2ce565e83f4e56ad",
+        "ordinal": 7,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "calculations"
+              }
+            },
+            "Property": "item_rank_string"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "b873322fb06880524ad8",
+        "ordinal": 8,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "calculations"
+              }
+            },
+            "Property": "item_rank_filter"
+          }
+        },
+        "type": "Advanced",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "c",
+              "Entity": "calculations",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "Comparison": {
+                  "ComparisonKind": 0,
+                  "Left": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Source": "c"
+                        }
+                      },
+                      "Property": "item_rank_filter"
+                    }
+                  },
+                  "Right": {
+                    "Literal": {
+                      "Value": "1L"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "User"
+      },
+      {
+        "name": "f2af5bdc06db2c53ac9b",
+        "ordinal": 9,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "calculations"
+              }
+            },
+            "Property": "revenue_at_risk"
+          }
+        },
+        "type": "Advanced",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "c",
+              "Entity": "calculations",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "Not": {
+                  "Expression": {
+                    "Comparison": {
+                      "ComparisonKind": 0,
+                      "Left": {
+                        "Measure": {
+                          "Expression": {
+                            "SourceRef": {
+                              "Source": "c"
+                            }
+                          },
+                          "Property": "revenue_at_risk"
+                        }
+                      },
+                      "Right": {
+                        "Literal": {
+                          "Value": "0L"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "User"
       }
     ],
     "filterSortOrder": "Custom"

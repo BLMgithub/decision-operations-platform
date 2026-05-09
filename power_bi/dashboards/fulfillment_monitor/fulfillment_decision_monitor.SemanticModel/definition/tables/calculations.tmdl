@@ -79,19 +79,24 @@ table calculations
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
-	measure is_outlier =
+	measure is_outlier = ```
 			
 			VAR current_latency = [latency_current_week]
 			VAR _4w_avg_latency = [latency_4w_rolling_avg]
 			VAR current_year = SELECTEDVALUE(calendar_dates[Year])
 			VAR is_valid_year = IF(current_year > 2022, TRUE(), FALSE())
 			
-			// Filter outliers to only show meaningful ones
-			VAR slippage_delta = current_latency - _4w_avg_latency
-			VAR is_meaningful = IF(slippage_delta > 0.5, 1, 0)
+			VAR _std_dev_boundary = [std_dev_boundary Value]
+			VAR _slippage_threshold = [slippage_threshold Value]
 			
-			// Standard deviation for current sellers across all weeks, except 2022 (incomplete date)
-			VAR _stdev=
+			VAR slippage_delta = current_latency - _4w_avg_latency
+			VAR is_meaningful = 
+			    IF(
+			        slippage_delta >  _slippage_threshold, 
+			        1, 0
+			    )
+			
+			VAR _std_dev=
 			    CALCULATE(
 			        STDEVX.S(
 			            seller_weekly_fact,
@@ -101,17 +106,17 @@ table calculations
 			        ALLEXCEPT(seller_weekly_fact, seller_weekly_fact[seller_id_int])
 			    )
 			
-			// flag seller ("1") if current week is more than 1 std dev away from rolling mean (4w avg latency)
 			VAR outlier_flags =
 			    IF(
 			        is_meaningful &&
 			        is_valid_year &&
-			        current_latency > (_4w_avg_latency + (1 * _stdev)),
+			        current_latency > (_4w_avg_latency + (_std_dev_boundary * _std_dev)),
 			     1, 0
 			     )
 			
 			RETURN
 			    outlier_flags
+			```
 		formatString: 0
 		displayFolder: _prerequisites_measures
 		lineageTag: 38c2f255-e5dc-451a-bdf1-3dbe0dfc897d
@@ -219,22 +224,6 @@ table calculations
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
-	measure top_10_filter_color = ```
-			
-			VAR CurrentRank = 
-			    RANKX(
-			        ALLSELECTED('seller_dim'[seller_id_int]),
-			        [latency_slippage],
-			        ,
-			        DESC,
-			        Dense
-			    )
-			RETURN 
-			    IF(CurrentRank <= 10, "#5C86A8", "#999999")
-			```
-		displayFolder: visual_measures
-		lineageTag: 2349a8a2-63f6-4db4-8a46-231f5d4cc6c1
-
 	measure is_outlier_global =
 			
 			CALCULATE(
@@ -256,29 +245,26 @@ table calculations
 			        cell_slippage,
 			        BLANK()
 			    )
+			
+			// Remove calendar context
+			VAR _is_on_page = 
+			    CALCULATE(
+			        [item_rank_filter],
+			        REMOVEFILTERS('calendar_dates'[Week Number])
+			    )
+			
+			
 			RETURN
-			    result
+			IF(
+			    _is_on_page = 1,
+			    result,
+			    BLANK()
+			)
 			```
 		displayFolder: _prerequisites_measures
 		lineageTag: 1a56b5a8-3985-4adc-a97e-886801cddaf6
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
-
-	measure top_20_filter_color = ```
-			
-			VAR CurrentRank = 
-			    RANKX(
-			        ALLSELECTED('seller_dim'[seller_id_int]),
-			        [latency_slippage],
-			        ,
-			        DESC,
-			        Dense
-			    )
-			RETURN 
-			    IF(CurrentRank <= 20, "#5C86A8", "#999999")
-			```
-		displayFolder: visual_measures
-		lineageTag: 9ced56b7-07df-4ad3-94a0-ccdd1d1099b8
 
 	measure last_source_update = MAX(source_last_update_time[Last_Update_Time])
 		formatString: General Date
@@ -298,72 +284,118 @@ table calculations
 		displayFolder: visual_measures
 		lineageTag: 690696e6-d4ff-4229-bcb5-a8857ccca39b
 
-	measure seller_highlight_rank =
+	measure item_rank = ```
 			
-			RANK(
-			    DENSE,
-			    FILTER(
-			        ALLSELECTED(seller_dim[seller_id_int]),
-			        [is_outlier] = 1),
-			    ORDERBY([latency_slippage], DESC)
+			CALCULATE(
+			    RANKX(
+			        FILTER(
+			            ALL(seller_dim[seller_id_int]),
+			            [revenue_at_risk] > 0
+			        ),                
+			        [latency_slippage],
+			        ,
+			        DESC
+			    )
 			)
+			```
 		formatString: 0
-		displayFolder: visual_measures
-		lineageTag: 44807533-cecf-4430-a45b-c5d1a2223314
+		displayFolder: _paging_measures
+		lineageTag: afdefe4f-aa32-4815-8cff-b4d019cf3360
 
-	measure top_10_seller_id = ```
+	measure revenue_at_risk = ```
 			
-			VAR _rank = 
-			    RANK(
-			        DENSE,
-			        FILTER(
-			            ALLSELECTED('seller_dim'[seller_id_int]),
-			            [seller_at_risk] = 1
-			            ),
-			        ORDERBY([latency_slippage], 
-			        DESC)
+			SUMX(
+			    VALUES(calendar_dates[Week Start Date]),
+			    CALCULATE(
+			        SUM(seller_weekly_fact[weekly_revenue]),
+			        KEEPFILTERS(
+			            FILTER(
+			                VALUES(seller_weekly_fact[seller_id_int]),
+			                [is_outlier] = 1 
+			            )
+			        )
 			    )
+			)
+			```
+		displayFolder: _paging_measures
+		lineageTag: a18e05b0-0b9f-4664-9480-12d9c014b683
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure item_rank_string = CONCATENATE("#",[item_rank])
+		displayFolder: _paging_measures
+		lineageTag: 6b73db65-b9c9-44f9-b8d1-9ac44190f01b
+
+	measure item_rank_filter = ```
 			
-			VAR _top_10 = 
+			VAR _page = [paging_helper Value]
+			VAR _page_size = [table_items Value]
+			
+			VAR item_rank = [item_rank]
+			
+			VAR _start = (_page - 1) * _page_size + 1
+			VAR _end = _page * _page_size
+			
+			VAR is_in_range = 
 			    IF(
-			        _rank <= 10 
-			        && [seller_at_risk] = 1, 
-			        1, BLANK()
+			        item_rank >= _start && 
+			        item_rank <= _end, 
+			        1, 
+			        0
 			    )
 			
 			RETURN
-			    _top_10
+			    is_in_range
 			```
 		formatString: 0
-		displayFolder: visual_measures
-		lineageTag: 0aaa748b-af8c-4697-92d7-cc984e5480f5
+		displayFolder: _paging_measures
+		lineageTag: 0243d4b8-225a-4dee-ae9e-acaabc0ff951
 
-	measure top_20_seller_id = ```
+	measure page_filter = ```
 			
-			VAR _rank = 
-			    RANK(
-			        DENSE,
-			        FILTER(
-			            ALLSELECTED('seller_dim'[seller_id_int]),
-			            [seller_at_risk] = 1
-			            ),
-			        ORDERBY([latency_slippage], 
-			        DESC)
+			VAR _total_items = VALUE([seller_at_risk])
+			VAR items_per_page = [table_items Value]
+			VAR max_page = 
+			    ROUNDUP(
+			        DIVIDE(_total_items, items_per_page),
+			        0
 			    )
-			
-			VAR _top_10 = 
+			VAR _page_filter =
 			    IF(
-			        _rank <= 20 
-			        && [seller_at_risk] = 1, 
-			        1, BLANK()
+			        paging_helper[paging_helper Value] <= max_page,
+			        1, 0
 			    )
+			RETURN
+			    _page_filter
+			```
+		formatString: 0
+		displayFolder: _paging_measures
+		lineageTag: cc9b9adc-0006-42fc-9c3d-a2a6f361fa1e
+
+	measure current_viewed_filter =
+			
+			VAR _is_at_risk = [seller_at_risk]
+			VAR _is_on_page = [item_rank_filter] -- This is your 1/0 measure
 			
 			RETURN
-			    _top_10
-			```
-		formatString: 0
+			IF(
+			    _is_at_risk = 1 && _is_on_page = 1,
+			    "#5C86A8", -- Highlight Color
+			    "#999999"  -- Default Gray
+			)
 		displayFolder: visual_measures
-		lineageTag: d50245ea-ef79-46bc-b575-8929b75edf57
+		lineageTag: ce102df7-e4ba-493f-add1-d78dd6ab32eb
+
+	measure max_page =
+			
+			ROUNDUP(
+			    DIVIDE(VALUE([seller_at_risk]),  [table_items Value]),
+			    0
+			)
+		displayFolder: _paging_measures
+		lineageTag: 41761774-df94-4c01-8629-007dd4127cab
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	partition calculations = m
 		mode: import

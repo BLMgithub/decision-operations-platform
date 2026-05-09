@@ -2,16 +2,15 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
   "name": "42008df0d2e180d76150",
   "position": {
-    "x": 270,
-    "y": 0,
-    "z": 2500,
+    "x": 657.77777777777737,
+    "y": 102.33058984853352,
+    "z": 4000,
     "height": 270,
     "width": 600,
-    "tabOrder": 0
+    "tabOrder": 2000
   },
   "visualGroup": {
     "displayName": "impact-vs-delay-top20",
     "groupMode": "ScaleMode"
-  },
-  "parentGroupName": "0a9682438c2674d0407c"
+  }
 }

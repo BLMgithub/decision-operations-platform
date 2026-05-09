@@ -4,7 +4,7 @@
     {
       "ordinal": 0,
       "scrollPosition": {
-        "x": 0,
+        "x": 336.35080924218022,
         "y": 0
       },
       "nodes": [
@@ -72,6 +72,71 @@
             "width": 234
           },
           "zIndex": 5
+        },
+        {
+          "location": {
+            "x": 1279.1197583807805,
+            "y": 183.26159104434038
+          },
+          "nodeIndex": "view_seller_at_risk",
+          "nodeLineageTag": "c7d096b7-b4c8-4a7b-95cd-eb9a4adbec08",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1436.4860884399227,
+            "y": 147.26159104434038
+          },
+          "nodeIndex": "paging_helper",
+          "nodeLineageTag": "e4d3f0b8-a6cb-44f4-9e94-87b55f9ba573",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1593.8524184990649,
+            "y": 147.26159104434038
+          },
+          "nodeIndex": "table_items",
+          "nodeLineageTag": "45770a82-8b76-4165-9c1d-7dbe870818d8",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1751.2187485582072,
+            "y": 147.26159104434038
+          },
+          "nodeIndex": "std_dev_boundary",
+          "nodeLineageTag": "728d3a74-ab69-45d9-bd7f-596af23b196e",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1908.5850786173494,
+            "y": 147.26159104434038
+          },
+          "nodeIndex": "slippage_threshold",
+          "nodeLineageTag": "384899dc-5822-4f22-9231-4e2d4b72d54e",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 0
         }
       ],
       "name": "All tables",

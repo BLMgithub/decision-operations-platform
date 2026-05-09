@@ -10,7 +10,7 @@ annotation __PBI_TimeIntelligenceEnabled = 1
 
 annotation PBI_QueryOrder = ["seller_dim","seller_weekly_fact","calendar_dates","calculations","source_last_update_time"]
 
-annotation PBI_ProTooling = ["DevMode","DaxQueryView_Desktop"]
+annotation PBI_ProTooling = ["DevMode","DaxQueryView_Desktop","TMDLView_Desktop"]
 
 ref table seller_dim
 ref table DateTableTemplate_a5151ec5-b8e2-46fa-9a13-8e1d7b08ceb2
@@ -20,6 +20,11 @@ ref table calendar_dates
 ref table calculations
 ref table source_last_update_time
 ref table LocalDateTable_3beb9ab2-5a81-4331-a944-2c8989d3c762
+ref table view_seller_at_risk
+ref table paging_helper
+ref table table_items
+ref table std_dev_boundary
+ref table slippage_threshold
 
 ref cultureInfo en-PH
 

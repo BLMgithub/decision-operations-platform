@@ -3,12 +3,16 @@ relationship 8f1d8ce6-49c4-4922-b215-9fd683f8b6ec
 	fromColumn: customer_dim.account_creation_date
 	toColumn: LocalDateTable_ac18b08d-e573-46e4-b21a-1fa80555f5f9.Date
 
-relationship 1fcc5e67-86e1-45ff-b58d-0ced2d3e27f6
-	joinOnDateBehavior: datePartOnly
-	fromColumn: customer_weekly_fact.week_start_date
-	toColumn: LocalDateTable_3efc0a78-eeed-46c2-87eb-4f16a1acb131.Date
-
 relationship AutoDetected_c957b328-9d9d-465d-a864-86aed1141323
 	fromColumn: customer_weekly_fact.customer_id_int
 	toColumn: customer_dim.customer_id_int
+
+relationship d3f46110-f339-4dca-8c28-b54631c959db
+	joinOnDateBehavior: datePartOnly
+	fromColumn: source_last_update.Last_Update_Time
+	toColumn: LocalDateTable_603487f3-a6af-4cf2-87ed-b339d8f0451c.Date
+
+relationship af4b2d48-1bd5-12a2-d875-b5828e4da113
+	fromColumn: customer_weekly_fact.week_start_date
+	toColumn: calendar_table.Date
 

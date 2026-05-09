@@ -2,7 +2,7 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
   "name": "0fa9ed493b3e82d0b1bd",
   "position": {
-    "x": 114.89840581598351,
+    "x": 123.97909303529167,
     "y": 0,
     "z": 0,
     "height": 38.304239401496261,
@@ -51,13 +51,6 @@
       "general": [
         {
           "properties": {
-            "orientation": {
-              "expr": {
-                "Literal": {
-                  "Value": "1D"
-                }
-              }
-            },
             "filter": {
               "filter": {
                 "Version": 2,
@@ -88,7 +81,7 @@
                           [
                             {
                               "Literal": {
-                                "Value": "'January'"
+                                "Value": "'March'"
                               }
                             }
                           ]
@@ -112,6 +105,13 @@
               }
             },
             "outlineWeight": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
+            },
+            "orientation": {
               "expr": {
                 "Literal": {
                   "Value": "1D"
@@ -157,17 +157,10 @@
                 }
               }
             },
-            "padding": {
+            "italic": {
               "expr": {
                 "Literal": {
-                  "Value": "4D"
-                }
-              }
-            },
-            "outlineStyle": {
-              "expr": {
-                "Literal": {
-                  "Value": "0D"
+                  "Value": "false"
                 }
               }
             },
@@ -195,10 +188,17 @@
                 }
               }
             },
-            "italic": {
+            "outlineStyle": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "0D"
+                }
+              }
+            },
+            "padding": {
+              "expr": {
+                "Literal": {
+                  "Value": "4D"
                 }
               }
             }
@@ -227,6 +227,13 @@
               "expr": {
                 "Literal": {
                   "Value": "'month-slicer'"
+                }
+              }
+            },
+            "titleWrap": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
                 }
               }
             }

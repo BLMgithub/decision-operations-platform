@@ -4,10 +4,10 @@
   "position": {
     "x": 20.845053717649872,
     "y": 101.94710604566374,
-    "z": 6000,
+    "z": 10000,
     "height": 269.23076923076923,
     "width": 615.38461538461536,
-    "tabOrder": 3000
+    "tabOrder": 6000
   },
   "visualGroup": {
     "displayName": "network-speed",

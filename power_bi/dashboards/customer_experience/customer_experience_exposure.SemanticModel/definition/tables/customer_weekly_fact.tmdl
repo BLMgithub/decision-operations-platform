@@ -25,11 +25,6 @@ table customer_weekly_fact
 		summarizeBy: none
 		sourceColumn: week_start_date
 
-		variation Variation
-			isDefault
-			relationship: 1fcc5e67-86e1-45ff-b58d-0ced2d3e27f6
-			defaultHierarchy: LocalDateTable_3efc0a78-eeed-46c2-87eb-4f16a1acb131.'Date Hierarchy'
-
 		annotation SummarizationSetBy = Automatic
 
 	column weekly_order_count
@@ -117,13 +112,28 @@ table customer_weekly_fact
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
+	column delay_severity_bracket
+		dataType: string
+		lineageTag: bfb58a9b-33e1-4111-aecc-b74f0489d169
+		summarizeBy: none
+		sourceColumn: delay_severity_bracket
+
+		annotation SummarizationSetBy = Automatic
+
 	partition customer_weekly_fact = m
 		mode: import
 		source =
 				let
-				    Source = Value.NativeQuery(GoogleBigQuery.Database([Implementation="2.0", UseStorageApi=false]){[Name="project-877b0f21-c8c1-4367-888"]}[Data], "SELECT * FROM `project-877b0f21-c8c1-4367-888.customer_semantic.published_customer_weekly_fact`", null, [EnableFolding=true])
+				    Source = Value.NativeQuery(GoogleBigQuery.Database([Implementation="2.0", UseStorageApi=false]){[Name="project-877b0f21-c8c1-4367-888"]}[Data], "SELECT * FROM `project-877b0f21-c8c1-4367-888.customer_semantic.published_customer_weekly_fact`", null, [EnableFolding=true]),
+				    #"Added Custom" = Table.AddColumn(Source, "delay_severity_bracket", each let
+				_delay =[weekly_avg_delivery_delay]
 				in
-				    Source
+				if _delay <= 0 then "On Time / Early"
+				else if _delay <= 2 then "1-2 Days Late"
+				else if _delay <= 5 then "3-5 Days Late"
+				else "5+ Days Late")
+				in
+				    #"Added Custom"
 
 	annotation PBI_NavigationStepName = Navigation
 

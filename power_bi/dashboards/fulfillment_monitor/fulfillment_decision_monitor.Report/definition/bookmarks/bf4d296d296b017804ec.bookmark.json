@@ -3,7 +3,28 @@
   "displayName": "open-info-dashboard",
   "name": "bf4d296d296b017804ec",
   "options": {
-    "targetVisualNames": [],
+    "targetVisualNames": [
+      "58b0240798e70804e4cc",
+      "510646c6c9c0bcb108a9",
+      "650fa1a7ff015b90c8b0",
+      "9c33078c3069c93d1080",
+      "9fc084fedf187e7a17aa",
+      "007cb0e05000e0b944b5",
+      "f94332010b9bdafe2006",
+      "8903e967658de7ae6930",
+      "3de1c47ed05f855bd0ee",
+      "bcf6f97f3a20089c4917",
+      "36eb3d9dd943c080489e",
+      "065b9039c0abc13ad937",
+      "e491b8221206d2039618",
+      "6f19b91b2155de097930",
+      "fb0d8ba2660bb95a0ab0",
+      "5b0f56050dbdb470210e",
+      "df9fab883009014ace60",
+      "0fa9ed493b3e82d0b1bd",
+      "96565c707c95146e0603",
+      "c3f3f69a3953a31c7a91"
+    ],
     "suppressActiveSection": true,
     "suppressData": true
   },
@@ -13,233 +34,15 @@
     "sections": {
       "2e328813111b5dee1ecd": {
         "visualContainers": {
-          "93252d4b05e81b92eb92": {
-            "filters": {
-              "byExpr": [
-                {
-                  "name": "72b8b5814260660bc9d7",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "logistics_delay"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "ae80a3d7007960b736e9",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "internal_delay"
-                    }
-                  },
-                  "howCreated": 0
-                }
-              ]
-            },
-            "singleVisual": {
-              "visualType": "clusteredColumnChart",
-              "objects": {},
-              "orderBy": [
-                {
-                  "Direction": 2,
-                  "Expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "logistics_delay"
-                    }
-                  }
-                }
-              ]
-            }
-          },
-          "08a89be683a31748ee77": {
-            "singleVisual": {
-              "visualType": "textbox",
-              "objects": {}
-            }
-          },
-          "c4b76cfa4c3474e41212": {
-            "filters": {
-              "byExpr": [
-                {
-                  "name": "002a60ba4b146a5ae18e",
-                  "type": "Categorical",
-                  "expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calendar_dates"
-                        }
-                      },
-                      "Property": "Week Start Date"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "d4fed618242951503e6b",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "latency_4w_rolling_avg"
-                    }
-                  },
-                  "howCreated": 0
-                }
-              ]
-            },
-            "singleVisual": {
-              "visualType": "lineChart",
-              "objects": {},
-              "orderBy": [
-                {
-                  "Direction": 1,
-                  "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calendar_dates"
-                        }
-                      },
-                      "Property": "Week Start Date"
-                    }
-                  }
-                }
-              ],
-              "activeProjections": {
-                "Category": [
-                  {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calendar_dates"
-                        }
-                      },
-                      "Property": "Week Start Date"
-                    }
-                  }
-                ]
-              }
-            }
-          },
-          "f85d6d49202230c44b6e": {
-            "filters": {
-              "byExpr": [
-                {
-                  "name": "b695ffc2c59ca616772e",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "fulfillment_instability_index"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "8c0ea68303174653cae0",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "systemic_drift_pct"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "2165d82bb3029409e62a",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "seller_at_risk"
-                    }
-                  },
-                  "howCreated": 0
-                }
-              ]
-            },
-            "singleVisual": {
-              "visualType": "cardVisual",
-              "objects": {},
-              "orderBy": [
-                {
-                  "Direction": 2,
-                  "Expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "fulfillment_instability_index"
-                    }
-                  }
-                }
-              ]
-            }
-          },
-          "6055d50e29307b14ba7d": {
-            "singleVisual": {
-              "visualType": "textbox",
-              "objects": {}
-            }
-          },
-          "a82a36ca72087594eb87": {
+          "065b9039c0abc13ad937": {
             "singleVisual": {
               "visualType": "image",
               "objects": {}
             }
           },
-          "42184fa8cbd6adc25240": {
+          "36eb3d9dd943c080489e": {
             "singleVisual": {
-              "visualType": "image",
-              "objects": {}
-            }
-          },
-          "c3f3f69a3953a31c7a91": {
-            "singleVisual": {
-              "visualType": "shape",
-              "objects": {}
-            }
-          },
-          "96565c707c95146e0603": {
-            "singleVisual": {
-              "visualType": "shape",
+              "visualType": "textbox",
               "objects": {}
             }
           },
@@ -247,7 +50,7 @@
             "filters": {
               "byExpr": [
                 {
-                  "name": "e62aa4642067e9c277e0",
+                  "name": "acd461bf7ddd7b2d6a8a",
                   "type": "Categorical",
                   "expression": {
                     "Column": {
@@ -364,9 +167,21 @@
               "objects": {}
             }
           },
-          "065b9039c0abc13ad937": {
+          "96565c707c95146e0603": {
+            "singleVisual": {
+              "visualType": "shape",
+              "objects": {}
+            }
+          },
+          "bcf6f97f3a20089c4917": {
             "singleVisual": {
               "visualType": "image",
+              "objects": {}
+            }
+          },
+          "c3f3f69a3953a31c7a91": {
+            "singleVisual": {
+              "visualType": "shape",
               "objects": {}
             }
           },
@@ -476,7 +291,7 @@
                                       [
                                         {
                                           "Literal": {
-                                            "Value": "2026L"
+                                            "Value": "2024L"
                                           }
                                         }
                                       ]
@@ -549,519 +364,20 @@
               }
             }
           },
-          "36eb3d9dd943c080489e": {
-            "singleVisual": {
-              "visualType": "textbox",
-              "objects": {}
-            }
-          },
-          "ba4eae222086ee386747": {
-            "singleVisual": {
-              "visualType": "actionButton",
-              "objects": {}
-            }
-          },
-          "bcf6f97f3a20089c4917": {
-            "singleVisual": {
-              "visualType": "image",
-              "objects": {}
-            }
-          },
-          "31b7b078d2729253eba3": {
-            "singleVisual": {
-              "visualType": "actionButton",
-              "objects": {}
-            }
-          },
-          "cdd3119fd7dc1b253be0": {
-            "singleVisual": {
-              "visualType": "actionButton",
-              "objects": {}
-            }
-          },
-          "aed42e400ae1882454bd": {
+          "349a8374ce4a98733a97": {
             "filters": {
               "byExpr": [
                 {
-                  "name": "755398fd704b03d17013",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "last_source_update"
-                    }
-                  },
-                  "howCreated": 0
-                }
-              ]
-            },
-            "singleVisual": {
-              "visualType": "card",
-              "objects": {}
-            }
-          },
-          "9861c14cb6079ebe60d0": {
-            "singleVisual": {
-              "visualType": "textbox",
-              "objects": {}
-            }
-          },
-          "4ae95fb700078e398cc8": {
-            "filters": {
-              "byExpr": [
-                {
-                  "name": "2fabd932b2a131c11a1c",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "latency_slippage"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "d6db660685daa1c3cd37",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "is_new_seller"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "d31e2e287b2006520984",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "total_order_volume"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "752c852609a8a9164580",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "wrapper_is_outlier"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "411c62ef0669009320ee",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "tooltip_revenue_exposed"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "54382fbc075d0603a190",
-                  "type": "TopN",
-                  "filter": {
-                    "Version": 2,
-                    "From": [
-                      {
-                        "Name": "subquery",
-                        "Expression": {
-                          "Subquery": {
-                            "Query": {
-                              "Version": 2,
-                              "From": [
-                                {
-                                  "Name": "s",
-                                  "Entity": "seller_dim",
-                                  "Type": 0
-                                },
-                                {
-                                  "Name": "c",
-                                  "Entity": "calculations",
-                                  "Type": 0
-                                }
-                              ],
-                              "Select": [
-                                {
-                                  "Column": {
-                                    "Expression": {
-                                      "SourceRef": {
-                                        "Source": "s"
-                                      }
-                                    },
-                                    "Property": "seller_id_int"
-                                  },
-                                  "Name": "field"
-                                }
-                              ],
-                              "OrderBy": [
-                                {
-                                  "Direction": 2,
-                                  "Expression": {
-                                    "Measure": {
-                                      "Expression": {
-                                        "SourceRef": {
-                                          "Source": "c"
-                                        }
-                                      },
-                                      "Property": "latency_slippage"
-                                    }
-                                  }
-                                }
-                              ],
-                              "Top": 10
-                            }
-                          }
-                        },
-                        "Type": 2
-                      },
-                      {
-                        "Name": "s",
-                        "Entity": "seller_dim",
-                        "Type": 0
-                      }
-                    ],
-                    "Where": [
-                      {
-                        "Condition": {
-                          "In": {
-                            "Expressions": [
-                              {
-                                "Column": {
-                                  "Expression": {
-                                    "SourceRef": {
-                                      "Source": "s"
-                                    }
-                                  },
-                                  "Property": "seller_id_int"
-                                }
-                              }
-                            ],
-                            "Table": {
-                              "SourceRef": {
-                                "Source": "subquery"
-                              }
-                            }
-                          }
-                        }
-                      }
-                    ]
-                  },
-                  "expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "seller_dim"
-                        }
-                      },
-                      "Property": "seller_id_int"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "a73f3137314d0568564c",
-                  "type": "Advanced",
-                  "filter": {
-                    "Version": 2,
-                    "From": [
-                      {
-                        "Name": "c",
-                        "Entity": "calculations",
-                        "Type": 0
-                      }
-                    ],
-                    "Where": [
-                      {
-                        "Condition": {
-                          "Comparison": {
-                            "ComparisonKind": 0,
-                            "Left": {
-                              "Measure": {
-                                "Expression": {
-                                  "SourceRef": {
-                                    "Source": "c"
-                                  }
-                                },
-                                "Property": "seller_at_risk"
-                              }
-                            },
-                            "Right": {
-                              "Literal": {
-                                "Value": "1L"
-                              }
-                            }
-                          }
-                        }
-                      }
-                    ]
-                  },
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "seller_at_risk"
-                    }
-                  },
-                  "howCreated": 1
-                }
-              ]
-            },
-            "singleVisual": {
-              "visualType": "tableEx",
-              "objects": {},
-              "orderBy": [
-                {
-                  "Direction": 2,
-                  "Expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "latency_slippage"
-                    }
-                  }
-                }
-              ]
-            }
-          },
-          "0b0fe090e4dc7d62a776": {
-            "singleVisual": {
-              "visualType": "textbox",
-              "objects": {}
-            }
-          },
-          "e333f46fd96ac78a2bb3": {
-            "filters": {
-              "byExpr": [
-                {
-                  "name": "6179c2a366bb3b527646",
-                  "type": "TopN",
-                  "filter": {
-                    "Version": 2,
-                    "From": [
-                      {
-                        "Name": "subquery",
-                        "Expression": {
-                          "Subquery": {
-                            "Query": {
-                              "Version": 2,
-                              "From": [
-                                {
-                                  "Name": "s",
-                                  "Entity": "seller_dim",
-                                  "Type": 0
-                                },
-                                {
-                                  "Name": "c",
-                                  "Entity": "calculations",
-                                  "Type": 0
-                                }
-                              ],
-                              "Select": [
-                                {
-                                  "Column": {
-                                    "Expression": {
-                                      "SourceRef": {
-                                        "Source": "s"
-                                      }
-                                    },
-                                    "Property": "seller_id_int"
-                                  },
-                                  "Name": "field"
-                                }
-                              ],
-                              "OrderBy": [
-                                {
-                                  "Direction": 2,
-                                  "Expression": {
-                                    "Measure": {
-                                      "Expression": {
-                                        "SourceRef": {
-                                          "Source": "c"
-                                        }
-                                      },
-                                      "Property": "latency_slippage"
-                                    }
-                                  }
-                                }
-                              ],
-                              "Top": 10
-                            }
-                          }
-                        },
-                        "Type": 2
-                      },
-                      {
-                        "Name": "s",
-                        "Entity": "seller_dim",
-                        "Type": 0
-                      }
-                    ],
-                    "Where": [
-                      {
-                        "Condition": {
-                          "In": {
-                            "Expressions": [
-                              {
-                                "Column": {
-                                  "Expression": {
-                                    "SourceRef": {
-                                      "Source": "s"
-                                    }
-                                  },
-                                  "Property": "seller_id_int"
-                                }
-                              }
-                            ],
-                            "Table": {
-                              "SourceRef": {
-                                "Source": "subquery"
-                              }
-                            }
-                          }
-                        }
-                      }
-                    ]
-                  },
-                  "expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "seller_dim"
-                        }
-                      },
-                      "Property": "seller_id_int"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "365ba621879740d0ce4c",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "seller_at_risk"
-                    }
-                  },
-                  "howCreated": 1
-                },
-                {
-                  "name": "ac4d7cc09ac073e8c5b5",
-                  "type": "Advanced",
-                  "filter": {
-                    "Version": 2,
-                    "From": [
-                      {
-                        "Name": "c",
-                        "Entity": "calculations",
-                        "Type": 0
-                      }
-                    ],
-                    "Where": [
-                      {
-                        "Condition": {
-                          "Comparison": {
-                            "ComparisonKind": 0,
-                            "Left": {
-                              "Measure": {
-                                "Expression": {
-                                  "SourceRef": {
-                                    "Source": "c"
-                                  }
-                                },
-                                "Property": "seller_at_risk"
-                              }
-                            },
-                            "Right": {
-                              "Literal": {
-                                "Value": "1L"
-                              }
-                            }
-                          }
-                        }
-                      }
-                    ]
-                  },
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "seller_at_risk"
-                    }
-                  },
-                  "howCreated": 1
-                },
-                {
-                  "name": "47cce1e70dee048eae34",
+                  "name": "1b29a0fd57b381c2dacc",
                   "type": "Categorical",
                   "expression": {
                     "Column": {
                       "Expression": {
                         "SourceRef": {
-                          "Entity": "calendar_dates"
+                          "Entity": "seller_dim"
                         }
                       },
-                      "Property": "Week Number"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "5909b8e73bd0b8ad411e",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "matrix_slippage_tracker"
+                      "Property": "string_seller_id"
                     }
                   },
                   "howCreated": 0
@@ -1069,77 +385,11 @@
               ]
             },
             "singleVisual": {
-              "visualType": "pivotTable",
-              "objects": {},
-              "orderBy": [
-                {
-                  "Direction": 2,
-                  "Expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "matrix_slippage_tracker"
-                    }
-                  }
-                }
-              ],
-              "activeProjections": {
-                "Rows": [
-                  {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "seller_dim"
-                        }
-                      },
-                      "Property": "seller_id_int"
-                    }
-                  }
-                ],
-                "Columns": [
-                  {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calendar_dates"
-                        }
-                      },
-                      "Property": "Week Number"
-                    }
-                  }
-                ]
-              },
-              "expansionStates": [
-                {
-                  "roles": [
-                    "Rows"
-                  ],
-                  "levels": [
-                    {
-                      "queryRefs": [
-                        "seller_dim.seller_id_int"
-                      ],
-                      "isCollapsed": true,
-                      "isPinned": true
-                    }
-                  ],
-                  "root": {
-                    "identityValues": null
-                  }
-                }
-              ]
-            }
-          },
-          "5f5eeb2ca58889073069": {
-            "singleVisual": {
-              "visualType": "textbox",
+              "visualType": "textSlicer",
               "objects": {}
             }
           },
-          "804522ccd68900a33a22": {
+          "3eefb0b5102008549e37": {
             "filters": {
               "byExpr": [
                 {
@@ -1207,7 +457,7 @@
                   "howCreated": 1
                 },
                 {
-                  "name": "32f8b09f39b199a03210",
+                  "name": "427c4f83915accd4554f",
                   "type": "Advanced",
                   "expression": {
                     "Column": {
@@ -1222,7 +472,22 @@
                   "howCreated": 0
                 },
                 {
-                  "name": "37a8ba9d8d1d56ccc940",
+                  "name": "9a5d15bff385e5608f5a",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "calculations"
+                        }
+                      },
+                      "Property": "bubble_size_sensivity"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "a117a9de3670c7c19dba",
                   "type": "Advanced",
                   "expression": {
                     "Measure": {
@@ -1237,7 +502,7 @@
                   "howCreated": 0
                 },
                 {
-                  "name": "5ed1c6277cde9b88ad25",
+                  "name": "4d70f22130d4dd1e278a",
                   "type": "Advanced",
                   "expression": {
                     "Measure": {
@@ -1250,6 +515,59 @@
                     }
                   },
                   "howCreated": 0
+                },
+                {
+                  "name": "9ce6bcc4dae76948ccf9",
+                  "type": "Advanced",
+                  "filter": {
+                    "Version": 2,
+                    "From": [
+                      {
+                        "Name": "c",
+                        "Entity": "calculations",
+                        "Type": 0
+                      }
+                    ],
+                    "Where": [
+                      {
+                        "Condition": {
+                          "Not": {
+                            "Expression": {
+                              "Comparison": {
+                                "ComparisonKind": 0,
+                                "Left": {
+                                  "Measure": {
+                                    "Expression": {
+                                      "SourceRef": {
+                                        "Source": "c"
+                                      }
+                                    },
+                                    "Property": "revenue_at_risk"
+                                  }
+                                },
+                                "Right": {
+                                  "Literal": {
+                                    "Value": "0L"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "calculations"
+                        }
+                      },
+                      "Property": "revenue_at_risk"
+                    }
+                  },
+                  "howCreated": 1
                 }
               ]
             },
@@ -1284,684 +602,10 @@
               }
             }
           },
-          "ae216ce80d1b8727049d": {
+          "e4051eb1320e0b004380": {
             "singleVisual": {
               "visualType": "textbox",
               "objects": {}
-            }
-          },
-          "43d2fa92dce4d366da07": {
-            "filters": {
-              "byExpr": [
-                {
-                  "name": "6179c2a366bb3b527646",
-                  "type": "TopN",
-                  "filter": {
-                    "Version": 2,
-                    "From": [
-                      {
-                        "Name": "subquery",
-                        "Expression": {
-                          "Subquery": {
-                            "Query": {
-                              "Version": 2,
-                              "From": [
-                                {
-                                  "Name": "s",
-                                  "Entity": "seller_dim",
-                                  "Type": 0
-                                },
-                                {
-                                  "Name": "c",
-                                  "Entity": "calculations",
-                                  "Type": 0
-                                }
-                              ],
-                              "Select": [
-                                {
-                                  "Column": {
-                                    "Expression": {
-                                      "SourceRef": {
-                                        "Source": "s"
-                                      }
-                                    },
-                                    "Property": "seller_id_int"
-                                  },
-                                  "Name": "field"
-                                }
-                              ],
-                              "OrderBy": [
-                                {
-                                  "Direction": 2,
-                                  "Expression": {
-                                    "Measure": {
-                                      "Expression": {
-                                        "SourceRef": {
-                                          "Source": "c"
-                                        }
-                                      },
-                                      "Property": "latency_slippage"
-                                    }
-                                  }
-                                }
-                              ],
-                              "Top": 20
-                            }
-                          }
-                        },
-                        "Type": 2
-                      },
-                      {
-                        "Name": "s",
-                        "Entity": "seller_dim",
-                        "Type": 0
-                      }
-                    ],
-                    "Where": [
-                      {
-                        "Condition": {
-                          "In": {
-                            "Expressions": [
-                              {
-                                "Column": {
-                                  "Expression": {
-                                    "SourceRef": {
-                                      "Source": "s"
-                                    }
-                                  },
-                                  "Property": "seller_id_int"
-                                }
-                              }
-                            ],
-                            "Table": {
-                              "SourceRef": {
-                                "Source": "subquery"
-                              }
-                            }
-                          }
-                        }
-                      }
-                    ]
-                  },
-                  "expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "seller_dim"
-                        }
-                      },
-                      "Property": "seller_id_int"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "365ba621879740d0ce4c",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "seller_at_risk"
-                    }
-                  },
-                  "howCreated": 1
-                },
-                {
-                  "name": "ac4d7cc09ac073e8c5b5",
-                  "type": "Advanced",
-                  "filter": {
-                    "Version": 2,
-                    "From": [
-                      {
-                        "Name": "c",
-                        "Entity": "calculations",
-                        "Type": 0
-                      }
-                    ],
-                    "Where": [
-                      {
-                        "Condition": {
-                          "Comparison": {
-                            "ComparisonKind": 0,
-                            "Left": {
-                              "Measure": {
-                                "Expression": {
-                                  "SourceRef": {
-                                    "Source": "c"
-                                  }
-                                },
-                                "Property": "seller_at_risk"
-                              }
-                            },
-                            "Right": {
-                              "Literal": {
-                                "Value": "1L"
-                              }
-                            }
-                          }
-                        }
-                      }
-                    ]
-                  },
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "seller_at_risk"
-                    }
-                  },
-                  "howCreated": 1
-                },
-                {
-                  "name": "106b22e3ea6805ec2a3a",
-                  "type": "Categorical",
-                  "expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calendar_dates"
-                        }
-                      },
-                      "Property": "Week Number"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "928590b48742168a6ea7",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "matrix_slippage_tracker"
-                    }
-                  },
-                  "howCreated": 0
-                }
-              ]
-            },
-            "singleVisual": {
-              "visualType": "pivotTable",
-              "objects": {},
-              "orderBy": [
-                {
-                  "Direction": 2,
-                  "Expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "matrix_slippage_tracker"
-                    }
-                  }
-                }
-              ],
-              "activeProjections": {
-                "Rows": [
-                  {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "seller_dim"
-                        }
-                      },
-                      "Property": "seller_id_int"
-                    }
-                  }
-                ],
-                "Columns": [
-                  {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calendar_dates"
-                        }
-                      },
-                      "Property": "Week Number"
-                    }
-                  }
-                ]
-              },
-              "expansionStates": [
-                {
-                  "roles": [
-                    "Rows"
-                  ],
-                  "levels": [
-                    {
-                      "queryRefs": [
-                        "seller_dim.seller_id_int"
-                      ],
-                      "isCollapsed": true,
-                      "isPinned": true
-                    }
-                  ],
-                  "root": {
-                    "identityValues": null
-                  }
-                }
-              ]
-            }
-          },
-          "97cf7f8724a3205408b0": {
-            "singleVisual": {
-              "visualType": "textbox",
-              "objects": {}
-            }
-          },
-          "25565215759aca68bd31": {
-            "filters": {
-              "byExpr": [
-                {
-                  "name": "2fabd932b2a131c11a1c",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "latency_slippage"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "d6db660685daa1c3cd37",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "is_new_seller"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "d31e2e287b2006520984",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "total_order_volume"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "752c852609a8a9164580",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "wrapper_is_outlier"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "411c62ef0669009320ee",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "tooltip_revenue_exposed"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "54382fbc075d0603a190",
-                  "type": "TopN",
-                  "filter": {
-                    "Version": 2,
-                    "From": [
-                      {
-                        "Name": "subquery",
-                        "Expression": {
-                          "Subquery": {
-                            "Query": {
-                              "Version": 2,
-                              "From": [
-                                {
-                                  "Name": "s",
-                                  "Entity": "seller_dim",
-                                  "Type": 0
-                                },
-                                {
-                                  "Name": "c",
-                                  "Entity": "calculations",
-                                  "Type": 0
-                                }
-                              ],
-                              "Select": [
-                                {
-                                  "Column": {
-                                    "Expression": {
-                                      "SourceRef": {
-                                        "Source": "s"
-                                      }
-                                    },
-                                    "Property": "seller_id_int"
-                                  },
-                                  "Name": "field"
-                                }
-                              ],
-                              "OrderBy": [
-                                {
-                                  "Direction": 2,
-                                  "Expression": {
-                                    "Measure": {
-                                      "Expression": {
-                                        "SourceRef": {
-                                          "Source": "c"
-                                        }
-                                      },
-                                      "Property": "latency_slippage"
-                                    }
-                                  }
-                                }
-                              ],
-                              "Top": 20
-                            }
-                          }
-                        },
-                        "Type": 2
-                      },
-                      {
-                        "Name": "s",
-                        "Entity": "seller_dim",
-                        "Type": 0
-                      }
-                    ],
-                    "Where": [
-                      {
-                        "Condition": {
-                          "In": {
-                            "Expressions": [
-                              {
-                                "Column": {
-                                  "Expression": {
-                                    "SourceRef": {
-                                      "Source": "s"
-                                    }
-                                  },
-                                  "Property": "seller_id_int"
-                                }
-                              }
-                            ],
-                            "Table": {
-                              "SourceRef": {
-                                "Source": "subquery"
-                              }
-                            }
-                          }
-                        }
-                      }
-                    ]
-                  },
-                  "expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "seller_dim"
-                        }
-                      },
-                      "Property": "seller_id_int"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "a73f3137314d0568564c",
-                  "type": "Advanced",
-                  "filter": {
-                    "Version": 2,
-                    "From": [
-                      {
-                        "Name": "c",
-                        "Entity": "calculations",
-                        "Type": 0
-                      }
-                    ],
-                    "Where": [
-                      {
-                        "Condition": {
-                          "Comparison": {
-                            "ComparisonKind": 0,
-                            "Left": {
-                              "Measure": {
-                                "Expression": {
-                                  "SourceRef": {
-                                    "Source": "c"
-                                  }
-                                },
-                                "Property": "seller_at_risk"
-                              }
-                            },
-                            "Right": {
-                              "Literal": {
-                                "Value": "1L"
-                              }
-                            }
-                          }
-                        }
-                      }
-                    ]
-                  },
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "seller_at_risk"
-                    }
-                  },
-                  "howCreated": 1
-                }
-              ]
-            },
-            "singleVisual": {
-              "visualType": "tableEx",
-              "objects": {},
-              "orderBy": [
-                {
-                  "Direction": 2,
-                  "Expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "latency_slippage"
-                    }
-                  }
-                }
-              ]
-            }
-          },
-          "4c75f22a87314a02ca9c": {
-            "singleVisual": {
-              "visualType": "textbox",
-              "objects": {}
-            }
-          },
-          "cf850b009861687d0807": {
-            "filters": {
-              "byExpr": [
-                {
-                  "name": "9bd102373836ca7948ae",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "tooltip_revenue_exposed"
-                    }
-                  },
-                  "howCreated": 1
-                },
-                {
-                  "name": "19b494ec000c9ce0509e",
-                  "type": "Advanced",
-                  "filter": {
-                    "Version": 2,
-                    "From": [
-                      {
-                        "Name": "c",
-                        "Entity": "calculations",
-                        "Type": 0
-                      }
-                    ],
-                    "Where": [
-                      {
-                        "Condition": {
-                          "Comparison": {
-                            "ComparisonKind": 0,
-                            "Left": {
-                              "Measure": {
-                                "Expression": {
-                                  "SourceRef": {
-                                    "Source": "c"
-                                  }
-                                },
-                                "Property": "seller_at_risk"
-                              }
-                            },
-                            "Right": {
-                              "Literal": {
-                                "Value": "1L"
-                              }
-                            }
-                          }
-                        }
-                      }
-                    ]
-                  },
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "seller_at_risk"
-                    }
-                  },
-                  "howCreated": 1
-                },
-                {
-                  "name": "7c59cd5da465141ba0e5",
-                  "type": "Advanced",
-                  "expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "seller_dim"
-                        }
-                      },
-                      "Property": "seller_id_int"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "1d860818572dcc98a3ce",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "latency_slippage"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "df130c40d81a0b9a010a",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "total_order_volume"
-                    }
-                  },
-                  "howCreated": 0
-                }
-              ]
-            },
-            "singleVisual": {
-              "visualType": "scatterChart",
-              "objects": {},
-              "activeProjections": {
-                "Category": [
-                  {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "seller_dim"
-                        }
-                      },
-                      "Property": "seller_id_int"
-                    }
-                  }
-                ],
-                "X": [
-                  {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "latency_slippage"
-                    }
-                  }
-                ]
-              }
             }
           },
           "6154222c990bb7087052": {
@@ -2038,22 +682,7 @@
                   "howCreated": 1
                 },
                 {
-                  "name": "478bdc9084386b229930",
-                  "type": "Advanced",
-                  "expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "seller_dim"
-                        }
-                      },
-                      "Property": "seller_id_int"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "ac38f7b0c30edb40a789",
+                  "name": "7006471a18b2c10bf03a",
                   "type": "Categorical",
                   "expression": {
                     "Column": {
@@ -2068,7 +697,22 @@
                   "howCreated": 0
                 },
                 {
-                  "name": "db92e8061540661d3ec0",
+                  "name": "1065245ad129bedefb5d",
+                  "type": "Advanced",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "seller_dim"
+                        }
+                      },
+                      "Property": "seller_id_int"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "5b95bbe9295728f0c05d",
                   "type": "Advanced",
                   "expression": {
                     "Measure": {
@@ -2103,18 +747,6 @@
                 }
               ],
               "activeProjections": {
-                "Rows": [
-                  {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "seller_dim"
-                        }
-                      },
-                      "Property": "seller_id_int"
-                    }
-                  }
-                ],
                 "Columns": [
                   {
                     "Column": {
@@ -2124,6 +756,18 @@
                         }
                       },
                       "Property": "Week Number"
+                    }
+                  }
+                ],
+                "Rows": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "seller_dim"
+                        }
+                      },
+                      "Property": "seller_id_int"
                     }
                   }
                 ]
@@ -2143,111 +787,15 @@
                     }
                   ],
                   "root": {
-                    "identityValues": null
+                    "identityValues": []
                   }
                 }
               ]
             }
           },
-          "4ef6c2f1c7e573a3066a": {
-            "singleVisual": {
-              "visualType": "textbox",
-              "objects": {}
-            }
-          },
           "3e0ef6cf0439878039e1": {
             "filters": {
               "byExpr": [
-                {
-                  "name": "2fabd932b2a131c11a1c",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "latency_slippage"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "d6db660685daa1c3cd37",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "is_new_seller"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "d31e2e287b2006520984",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "total_order_volume"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "752c852609a8a9164580",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "wrapper_is_outlier"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "411c62ef0669009320ee",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "tooltip_revenue_exposed"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "54382fbc075d0603a190",
-                  "type": "TopN",
-                  "expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "seller_dim"
-                        }
-                      },
-                      "Property": "seller_id_int"
-                    }
-                  },
-                  "howCreated": 0
-                },
                 {
                   "name": "a73f3137314d0568564c",
                   "type": "Advanced",
@@ -2296,16 +844,26 @@
                     }
                   },
                   "howCreated": 1
-                }
-              ]
-            },
-            "singleVisual": {
-              "visualType": "tableEx",
-              "objects": {},
-              "orderBy": [
+                },
                 {
-                  "Direction": 1,
-                  "Expression": {
+                  "name": "4a68ee03ddc4349895d4",
+                  "type": "Advanced",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "seller_dim"
+                        }
+                      },
+                      "Property": "seller_id_int"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "4c083f4d4b084085cc10",
+                  "type": "Advanced",
+                  "expression": {
                     "Measure": {
                       "Expression": {
                         "SourceRef": {
@@ -2314,22 +872,41 @@
                       },
                       "Property": "wrapper_is_outlier"
                     }
-                  }
-                }
-              ]
-            }
-          },
-          "e4051eb1320e0b004380": {
-            "singleVisual": {
-              "visualType": "textbox",
-              "objects": {}
-            }
-          },
-          "3eefb0b5102008549e37": {
-            "filters": {
-              "byExpr": [
+                  },
+                  "howCreated": 0
+                },
                 {
-                  "name": "9bd102373836ca7948ae",
+                  "name": "e7ecadae05b9b7d1003b",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "calculations"
+                        }
+                      },
+                      "Property": "latency_slippage"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "e4865300767a4ed49525",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "calculations"
+                        }
+                      },
+                      "Property": "total_order_volume"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "af93d9e202c5d15c5b7b",
                   "type": "Advanced",
                   "expression": {
                     "Measure": {
@@ -2341,10 +918,40 @@
                       "Property": "tooltip_revenue_exposed"
                     }
                   },
-                  "howCreated": 1
+                  "howCreated": 0
                 },
                 {
-                  "name": "19b494ec000c9ce0509e",
+                  "name": "252f0b100530099c6c8d",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "calculations"
+                        }
+                      },
+                      "Property": "is_new_seller"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "bc6b2ce565e83f4e56ad",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "calculations"
+                        }
+                      },
+                      "Property": "item_rank_string"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "b873322fb06880524ad8",
                   "type": "Advanced",
                   "filter": {
                     "Version": 2,
@@ -2367,7 +974,7 @@
                                     "Source": "c"
                                   }
                                 },
-                                "Property": "seller_at_risk"
+                                "Property": "item_rank_filter"
                               }
                             },
                             "Right": {
@@ -2387,30 +994,73 @@
                           "Entity": "calculations"
                         }
                       },
-                      "Property": "seller_at_risk"
+                      "Property": "item_rank_filter"
                     }
                   },
                   "howCreated": 1
                 },
                 {
-                  "name": "20b6c68dc92e0eae0e7b",
+                  "name": "f2af5bdc06db2c53ac9b",
                   "type": "Advanced",
+                  "filter": {
+                    "Version": 2,
+                    "From": [
+                      {
+                        "Name": "c",
+                        "Entity": "calculations",
+                        "Type": 0
+                      }
+                    ],
+                    "Where": [
+                      {
+                        "Condition": {
+                          "Not": {
+                            "Expression": {
+                              "Comparison": {
+                                "ComparisonKind": 0,
+                                "Left": {
+                                  "Measure": {
+                                    "Expression": {
+                                      "SourceRef": {
+                                        "Source": "c"
+                                      }
+                                    },
+                                    "Property": "revenue_at_risk"
+                                  }
+                                },
+                                "Right": {
+                                  "Literal": {
+                                    "Value": "0L"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
                   "expression": {
-                    "Column": {
+                    "Measure": {
                       "Expression": {
                         "SourceRef": {
-                          "Entity": "seller_dim"
+                          "Entity": "calculations"
                         }
                       },
-                      "Property": "seller_id_int"
+                      "Property": "revenue_at_risk"
                     }
                   },
-                  "howCreated": 0
-                },
+                  "howCreated": 1
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "pivotTable",
+              "objects": {},
+              "orderBy": [
                 {
-                  "name": "5c9eaae56e77e8850c40",
-                  "type": "Advanced",
-                  "expression": {
+                  "Direction": 2,
+                  "Expression": {
                     "Measure": {
                       "Expression": {
                         "SourceRef": {
@@ -2419,11 +1069,42 @@
                       },
                       "Property": "latency_slippage"
                     }
-                  },
-                  "howCreated": 0
-                },
+                  }
+                }
+              ],
+              "activeProjections": {
+                "Rows": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "seller_dim"
+                        }
+                      },
+                      "Property": "seller_id_int"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "4ef6c2f1c7e573a3066a": {
+            "singleVisual": {
+              "visualType": "textbox",
+              "objects": {}
+            }
+          },
+          "a45253283861c44e465e": {
+            "singleVisual": {
+              "visualType": "textbox",
+              "objects": {}
+            }
+          },
+          "aed42e400ae1882454bd": {
+            "filters": {
+              "byExpr": [
                 {
-                  "name": "3614022154244c77e7ae",
+                  "name": "63387b3df6ecdd762cf9",
                   "type": "Advanced",
                   "expression": {
                     "Measure": {
@@ -2432,7 +1113,7 @@
                           "Entity": "calculations"
                         }
                       },
-                      "Property": "total_order_volume"
+                      "Property": "last_source_update"
                     }
                   },
                   "howCreated": 0
@@ -2440,46 +1121,23 @@
               ]
             },
             "singleVisual": {
-              "visualType": "scatterChart",
-              "objects": {},
-              "activeProjections": {
-                "Category": [
-                  {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "seller_dim"
-                        }
-                      },
-                      "Property": "seller_id_int"
-                    }
-                  }
-                ],
-                "X": [
-                  {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "latency_slippage"
-                    }
-                  }
-                ]
-              }
-            }
-          },
-          "a5f65499ae19de27c04a": {
-            "singleVisual": {
-              "visualType": "image",
-              "objects": {},
-              "display": {
-                "mode": "hidden"
-              }
+              "visualType": "card",
+              "objects": {}
             }
           },
           "301cf49611206647817b": {
+            "singleVisual": {
+              "visualType": "shape",
+              "objects": {}
+            }
+          },
+          "36b183ef293480915703": {
+            "singleVisual": {
+              "visualType": "textbox",
+              "objects": {}
+            }
+          },
+          "c506dd3f424070963a7e": {
             "singleVisual": {
               "visualType": "shape",
               "objects": {}
@@ -2491,13 +1149,533 @@
               "objects": {}
             }
           },
-          "c506dd3f424070963a7e": {
+          "42184fa8cbd6adc25240": {
             "singleVisual": {
-              "visualType": "shape",
+              "visualType": "image",
+              "objects": {},
+              "display": {
+                "mode": "hidden"
+              }
+            }
+          },
+          "08a89be683a31748ee77": {
+            "singleVisual": {
+              "visualType": "textbox",
               "objects": {}
             }
           },
-          "36b183ef293480915703": {
+          "c4b76cfa4c3474e41212": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "351a2b699c118000722a",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "calendar_dates"
+                        }
+                      },
+                      "Property": "Week Start Date"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "555401d0882004cd102b",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "calculations"
+                        }
+                      },
+                      "Property": "latency_4w_rolling_avg"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "lineChart",
+              "objects": {},
+              "orderBy": [
+                {
+                  "Direction": 1,
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "calendar_dates"
+                        }
+                      },
+                      "Property": "Week Start Date"
+                    }
+                  }
+                }
+              ],
+              "activeProjections": {
+                "Category": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "calendar_dates"
+                        }
+                      },
+                      "Property": "Week Start Date"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "93252d4b05e81b92eb92": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "d1bc468c4dec1ceddfa7",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "calculations"
+                        }
+                      },
+                      "Property": "logistics_delay"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "76a577badc1e9d0606bd",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "calculations"
+                        }
+                      },
+                      "Property": "internal_delay"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "clusteredColumnChart",
+              "objects": {},
+              "orderBy": [
+                {
+                  "Direction": 2,
+                  "Expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "calculations"
+                        }
+                      },
+                      "Property": "logistics_delay"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "6055d50e29307b14ba7d": {
+            "singleVisual": {
+              "visualType": "textbox",
+              "objects": {}
+            }
+          },
+          "a82a36ca72087594eb87": {
+            "singleVisual": {
+              "visualType": "image",
+              "objects": {}
+            }
+          },
+          "a5f65499ae19de27c04a": {
+            "singleVisual": {
+              "visualType": "image",
+              "objects": {}
+            }
+          },
+          "f85d6d49202230c44b6e": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "24c66798d6d4932b5f1b",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "calculations"
+                        }
+                      },
+                      "Property": "fulfillment_instability_index"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "30c530c766f5c3ac5df0",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "calculations"
+                        }
+                      },
+                      "Property": "systemic_drift_pct"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "cd3d2f3d01d8a97bd2dd",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "calculations"
+                        }
+                      },
+                      "Property": "seller_at_risk"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "cardVisual",
+              "objects": {},
+              "orderBy": [
+                {
+                  "Direction": 2,
+                  "Expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "calculations"
+                        }
+                      },
+                      "Property": "fulfillment_instability_index"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "3de1c47ed05f855bd0ee": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "6cb990c7c7ff3a8702bf",
+                  "type": "Advanced",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "table_items"
+                        }
+                      },
+                      "Property": "table_items"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "slicer",
+              "objects": {
+                "merge": {
+                  "general": [
+                    {
+                      "properties": {
+                        "filter": {
+                          "filter": {
+                            "Version": 2,
+                            "From": [
+                              {
+                                "Name": "t",
+                                "Entity": "table_items",
+                                "Type": 0
+                              }
+                            ],
+                            "Where": [
+                              {
+                                "Condition": {
+                                  "In": {
+                                    "Expressions": [
+                                      {
+                                        "Column": {
+                                          "Expression": {
+                                            "SourceRef": {
+                                              "Source": "t"
+                                            }
+                                          },
+                                          "Property": "table_items"
+                                        }
+                                      }
+                                    ],
+                                    "Values": [
+                                      [
+                                        {
+                                          "Literal": {
+                                            "Value": "20L"
+                                          }
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "data": [
+                    {
+                      "properties": {
+                        "numericStart": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "10D"
+                            }
+                          }
+                        },
+                        "mode": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "'Dropdown'"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "selection": [
+                    {
+                      "properties": {
+                        "strictSingleSelect": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "true"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "activeProjections": {
+                "Values": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "table_items"
+                        }
+                      },
+                      "Property": "table_items"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "510646c6c9c0bcb108a9": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "94e29709e79960200308",
+                  "type": "Advanced",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "paging_helper"
+                        }
+                      },
+                      "Property": "paging_helper"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "0068fe4efca3552029c4",
+                  "type": "Advanced",
+                  "filter": {
+                    "Version": 2,
+                    "From": [
+                      {
+                        "Name": "c",
+                        "Entity": "calculations",
+                        "Type": 0
+                      }
+                    ],
+                    "Where": [
+                      {
+                        "Condition": {
+                          "Comparison": {
+                            "ComparisonKind": 0,
+                            "Left": {
+                              "Measure": {
+                                "Expression": {
+                                  "SourceRef": {
+                                    "Source": "c"
+                                  }
+                                },
+                                "Property": "page_filter"
+                              }
+                            },
+                            "Right": {
+                              "Literal": {
+                                "Value": "1L"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "calculations"
+                        }
+                      },
+                      "Property": "page_filter"
+                    }
+                  },
+                  "howCreated": 1
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "slicer",
+              "objects": {
+                "merge": {
+                  "general": [
+                    {
+                      "properties": {
+                        "filter": {
+                          "filter": {
+                            "Version": 2,
+                            "From": [
+                              {
+                                "Name": "p",
+                                "Entity": "paging_helper",
+                                "Type": 0
+                              }
+                            ],
+                            "Where": [
+                              {
+                                "Condition": {
+                                  "In": {
+                                    "Expressions": [
+                                      {
+                                        "Column": {
+                                          "Expression": {
+                                            "SourceRef": {
+                                              "Source": "p"
+                                            }
+                                          },
+                                          "Property": "paging_helper"
+                                        }
+                                      }
+                                    ],
+                                    "Values": [
+                                      [
+                                        {
+                                          "Literal": {
+                                            "Value": "2L"
+                                          }
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "data": [
+                    {
+                      "properties": {
+                        "numericStart": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "1D"
+                            }
+                          }
+                        },
+                        "mode": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "'Dropdown'"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "selection": [
+                    {
+                      "properties": {
+                        "strictSingleSelect": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "true"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "activeProjections": {
+                "Values": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "paging_helper"
+                        }
+                      },
+                      "Property": "paging_helper"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "f94332010b9bdafe2006": {
+            "singleVisual": {
+              "visualType": "textbox",
+              "objects": {}
+            }
+          },
+          "9fc084fedf187e7a17aa": {
             "singleVisual": {
               "visualType": "textbox",
               "objects": {}
@@ -2506,52 +1684,27 @@
         },
         "visualContainerGroups": {
           "007cb0e05000e0b944b5": {
-            "isHidden": true
-          },
-          "fc76a961a534ddb1e2d9": {
-            "isHidden": true,
-            "children": {
-              "b343684d821311796cad": {
-                "isHidden": false
-              },
-              "ffb4d760030aa555cb00": {
-                "isHidden": false
-              },
-              "99fb12dc7a81ee37bc55": {
-                "isHidden": false
-              }
-            }
-          },
-          "24e1a866e4c70d150885": {
-            "isHidden": true,
-            "children": {
-              "a45df608693718ab8647": {
-                "isHidden": false
-              },
-              "143464b34edb565358de": {
-                "isHidden": false
-              },
-              "db8fe54f9900e3336110": {
-                "isHidden": false
-              }
-            }
+            "isHidden": false
           },
           "0a9682438c2674d0407c": {
             "isHidden": false,
             "children": {
+              "42008df0d2e180d76150": {
+                "isHidden": false
+              },
               "499b8cb9679768a84d99": {
                 "isHidden": false
               },
               "aeb24701e160eb3a67cb": {
                 "isHidden": false
-              },
-              "42008df0d2e180d76150": {
-                "isHidden": false
               }
             }
           },
           "41ca79e24136041ed8d8": {
-            "isHidden": false
+            "isHidden": true
+          },
+          "58b0240798e70804e4cc": {
+            "isHidden": true
           }
         }
       }

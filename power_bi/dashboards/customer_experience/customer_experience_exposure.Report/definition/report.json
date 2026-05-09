@@ -9,6 +9,15 @@
         "page": "2.3.1"
       },
       "type": "SharedResources"
+    },
+    "customTheme": {
+      "name": "minimalist-theme1383008664405534.json",
+      "reportVersionAtImport": {
+        "visual": "2.8.0",
+        "report": "3.2.0",
+        "page": "2.3.1"
+      },
+      "type": "RegisteredResources"
     }
   },
   "objects": {
@@ -19,6 +28,19 @@
             "expr": {
               "Literal": {
                 "Value": "'Top'"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "outspacePane": [
+      {
+        "properties": {
+          "expanded": {
+            "expr": {
+              "Literal": {
+                "Value": "false"
               }
             }
           }
@@ -35,6 +57,47 @@
           "name": "CY26SU04",
           "path": "BaseThemes/CY26SU04.json",
           "type": "BaseTheme"
+        }
+      ]
+    },
+    {
+      "name": "RegisteredResources",
+      "type": "RegisteredResources",
+      "items": [
+        {
+          "name": "apply-filter-button35829700029501377.svg",
+          "path": "apply-filter-button35829700029501377.svg",
+          "type": "Image"
+        },
+        {
+          "name": "close-icon12461263277331158.svg",
+          "path": "close-icon12461263277331158.svg",
+          "type": "Image"
+        },
+        {
+          "name": "filter-icon3263512696981191.svg",
+          "path": "filter-icon3263512696981191.svg",
+          "type": "Image"
+        },
+        {
+          "name": "info-icon9544534813234956.svg",
+          "path": "info-icon9544534813234956.svg",
+          "type": "Image"
+        },
+        {
+          "name": "minimalist-theme1383008664405534.json",
+          "path": "minimalist-theme1383008664405534.json",
+          "type": "CustomTheme"
+        },
+        {
+          "name": "product-friction-DB-BG4561445605602329.svg",
+          "path": "product-friction-DB-BG4561445605602329.svg",
+          "type": "Image"
+        },
+        {
+          "name": "project-logo-5424117531488136.svg",
+          "path": "project-logo-5424117531488136.svg",
+          "type": "Image"
         }
       ]
     }

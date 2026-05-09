@@ -2,8 +2,8 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
   "name": "4ef6c2f1c7e573a3066a",
   "position": {
-    "x": 12.939166067038741,
-    "y": 6.1628787878788245,
+    "x": 12.903131654174395,
+    "y": 3.179229402716016,
     "z": 0,
     "height": 35.625,
     "width": 345.625,
@@ -19,17 +19,9 @@
               {
                 "textRuns": [
                   {
-                    "value": "Operation Intervention List - ",
+                    "value": "Operation Intervention List",
                     "textStyle": {
                       "fontSize": "14pt"
-                    }
-                  },
-                  {
-                    "value": "All Sellers",
-                    "textStyle": {
-                      "fontWeight": "bold",
-                      "fontSize": "14pt",
-                      "color": "#45657e"
                     }
                   }
                 ]

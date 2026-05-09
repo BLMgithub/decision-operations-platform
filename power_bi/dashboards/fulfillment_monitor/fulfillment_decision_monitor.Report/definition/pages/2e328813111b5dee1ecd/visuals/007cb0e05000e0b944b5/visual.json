@@ -4,7 +4,7 @@
   "position": {
     "x": 0,
     "y": 0,
-    "z": 10000,
+    "z": 11000,
     "height": 719.95518207282907,
     "width": 1280,
     "tabOrder": 11000
@@ -12,6 +12,5 @@
   "visualGroup": {
     "displayName": "filter-pane",
     "groupMode": "ScaleMode"
-  },
-  "isHidden": true
+  }
 }
