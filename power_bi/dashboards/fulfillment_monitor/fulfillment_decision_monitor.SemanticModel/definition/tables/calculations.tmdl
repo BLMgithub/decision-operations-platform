@@ -375,15 +375,15 @@ table calculations
 	measure current_viewed_filter =
 			
 			VAR _is_at_risk = [seller_at_risk]
-			VAR _is_on_page = [item_rank_filter] -- This is your 1/0 measure
+			VAR _is_on_page = [item_rank_filter]
 			
 			RETURN
 			IF(
 			    _is_at_risk = 1 && _is_on_page = 1,
-			    "#5C86A8", -- Highlight Color
-			    "#999999"  -- Default Gray
+			    "#5C86A8",
+			    "#999999"
 			)
-		displayFolder: visual_measures
+		displayFolder: _paging_measures
 		lineageTag: ce102df7-e4ba-493f-add1-d78dd6ab32eb
 
 	measure max_page =

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
+  "name": "30a40df80306c15e6e36",
+  "position": {
+    "x": 923.005825684351,
+    "y": 100.970847022892,
+    "z": 9000,
+    "height": 33.407904548844151,
+    "width": 331.9941743156495,
+    "tabOrder": 9000
+  },
+  "visualGroup": {
+    "displayName": "slippage-threshold",
+    "groupMode": "ScaleMode"
+  },
+  "parentGroupName": "007cb0e05000e0b944b5"
+}

@@ -7,10 +7,11 @@
     "z": 12000,
     "height": 720,
     "width": 1280,
-    "tabOrder": 12000
+    "tabOrder": 11000
   },
   "visualGroup": {
     "displayName": "filter-pane",
     "groupMode": "ScaleMode"
-  }
+  },
+  "isHidden": true
 }

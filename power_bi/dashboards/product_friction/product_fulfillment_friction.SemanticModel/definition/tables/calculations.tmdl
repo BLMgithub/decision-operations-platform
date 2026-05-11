@@ -87,8 +87,16 @@ table calculations
 
 	measure is_outlier = ```
 			
+			
+			VAR _slippage_threshold = [slippage_threshold Value]
+			VAR _std_dev_boundary = [std_dev_boundary Value]
+			
 			VAR slippage_delta = [current_lead_time] - [lead_time_4w_rolling_avg]
-			VAR is_meaningful = IF(slippage_delta > 0.5, 1, 0)
+			VAR is_meaningful = 
+			    IF(
+			        slippage_delta > _slippage_threshold, 
+			        1, 0
+			    )
 			
 			VAR _stddev =
 			    CALCULATE(
@@ -99,7 +107,7 @@ table calculations
 			VAR outlier_flags =
 			    IF(
 			        is_meaningful = 1 &&
-			        [current_lead_time] > ([lead_time_4w_rolling_avg] + (1 * _stddev)),
+			        [current_lead_time] > ([lead_time_4w_rolling_avg] + (_std_dev_boundary * _stddev)),
 			        1, 0
 			    )
 			    
@@ -181,102 +189,16 @@ table calculations
 		displayFolder: visual_measures
 		lineageTag: fc2ad2ba-cedc-43f5-a2ab-6be8495a2da7
 
-	measure bubble_size_sensitivity = [revenue_at_risk] ^ 1.5
+	measure bubble_size_sensitivity = [revenue_at_risk] ^ 3.5
 		displayFolder: visual_measures
 		lineageTag: 9ac3920f-fd02-4dc6-8c06-be4b28cee937
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
-	measure top_10_filter_color = ```
-			
-			VAR CurrentRank = 
-			    RANKX(
-			        ALLSELECTED(product_dim[product_id_int]),
-			        [revenue_at_risk],
-			        ,
-			        DESC,
-			        Dense
-			    )
-			RETURN 
-			    IF(CurrentRank <= 10, "#5C86A8", "#999999")
-			```
-		displayFolder: visual_measures
-		lineageTag: 3010a438-931d-4ab4-bf44-b9cd89e447b1
-
-	measure top_20_filter_color = ```
-			
-			VAR CurrentRank = 
-			    RANKX(
-			        ALLSELECTED(product_dim[product_id_int]),
-			        [revenue_at_risk],
-			        ,
-			        DESC,
-			        Dense
-			    )
-			RETURN 
-			    IF(CurrentRank <= 20, "#5C86A8", "#999999")
-			```
-		displayFolder: visual_measures
-		lineageTag: fe9c5db1-ce4c-416c-8619-640a9dbb6ceb
-
-	measure top_10_product_id = ```
-			
-			VAR _rank = 
-			    RANK(
-			        DENSE,
-			        FILTER(
-			            ALLSELECTED(product_dim[product_id_int]),
-			            [product_at_risk] = 1
-			            ),
-			        ORDERBY([revenue_at_risk], 
-			        DESC)
-			    )
-			
-			VAR _top_10 = 
-			    IF(
-			        _rank <= 10 
-			        && [product_at_risk] = 1, 
-			        1, BLANK()
-			    )
-			
-			RETURN
-			    _top_10
-			```
-		formatString: 0
-		displayFolder: visual_measures
-		lineageTag: a67cf9f1-c44e-45ef-873d-da6b6662007f
-
 	measure last_source_update = MAX(source_last_update_time[Last_Update_Time])
 		formatString: General Date
 		displayFolder: visual_measures
 		lineageTag: 5ec76ac2-a2c7-46c5-9662-62d3726df3b2
-
-	measure top_20_product_id = ```
-			
-			VAR _rank = 
-			    RANK(
-			        DENSE,
-			        FILTER(
-			            ALLSELECTED(product_dim[product_id_int]),
-			            [product_at_risk] = 1
-			            ),
-			        ORDERBY([revenue_at_risk], 
-			        DESC)
-			    )
-			
-			VAR _top_20 = 
-			    IF(
-			        _rank <= 20 
-			        && [product_at_risk] = 1, 
-			        1, BLANK()
-			    )
-			
-			RETURN
-			    _top_20
-			```
-		formatString: 0
-		displayFolder: visual_measures
-		lineageTag: d1eb6f69-82dd-4ef1-9b77-2674fc914066
 
 	measure tooltip_week_start_date = SELECTEDVALUE(calendar_date[Week Start Date])
 		formatString: Short Date
@@ -383,6 +305,105 @@ table calculations
 		formatString: 0
 		displayFolder: visual_measures_tooltip
 		lineageTag: 58b932ba-937d-4c51-a955-947f6ae14994
+
+	measure item_rank = ```
+			
+			CALCULATE(
+			    RANKX(
+			        FILTER(
+			            ALL(product_dim[product_id_int]),
+			            [revenue_at_risk] > 0
+			        ),                
+			        [revenue_at_risk],
+			        ,
+			        DESC
+			    )
+			)
+			```
+		formatString: 0
+		displayFolder: _paging_measures
+		lineageTag: 30c6ee81-29ef-48da-9463-572a9d3eec88
+
+	measure item_rank_filter = ```
+			
+			VAR _page = [paging_helper Value]
+			VAR _page_size = [table_items Value]
+			
+			VAR item_rank = [item_rank]
+			
+			VAR _start = (_page - 1) * _page_size + 1
+			VAR _end = _page * _page_size
+			
+			VAR is_in_range = 
+			    IF(
+			        item_rank >= _start && 
+			        item_rank <= _end, 
+			        1, 
+			        0
+			    )
+			
+			RETURN
+			    is_in_range
+			```
+		formatString: 0
+		displayFolder: _paging_measures
+		lineageTag: a4903fad-285f-4ea3-81c0-4e0502076e79
+
+	measure item_rank_string = CONCATENATE("#",[item_rank])
+		displayFolder: _paging_measures
+		lineageTag: 2bd6f813-81d9-40d3-b67e-8dd5bd0bbe75
+
+	measure max_page =
+			
+			ROUNDUP(
+			    DIVIDE(VALUE([product_at_risk]),  [table_items Value]),
+			    0
+			)
+		displayFolder: _paging_measures
+		lineageTag: eb2e2e69-5b90-495c-9f45-3d465ab363d6
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure page_filter = ```
+			
+			VAR _total_items = VALUE([product_at_risk])
+			VAR items_per_page = [table_items Value]
+			VAR max_page = 
+			    ROUNDUP(
+			        DIVIDE(_total_items, items_per_page),
+			        0
+			    )
+			VAR _page_filter =
+			    IF(
+			        paging_helper[paging_helper Value] <= max_page,
+			        1, 0
+			    )
+			RETURN
+			    _page_filter
+			```
+		formatString: 0
+		displayFolder: _paging_measures
+		lineageTag: 03fe11bf-0886-4946-9653-075bdafb6b5e
+
+	measure current_viewed_filter =
+			
+			VAR _is_at_risk = [product_at_risk]
+			VAR _is_on_page = [item_rank_filter]
+			
+			RETURN
+			IF(
+			    _is_at_risk = 1 && _is_on_page = 1,
+			    "#5C86A8",
+			    "#999999"
+			)
+		displayFolder: _paging_measures
+		lineageTag: 316a0377-b240-41ce-88af-8867465643ca
+
+	measure color_format_revenue_at_risk = DIVIDE([revenue_at_risk], [total_revenue])
+		displayFolder: visual_measures
+		lineageTag: dc3c0f2d-76fb-4ed8-a5fc-9591ccae5782
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	partition calculations = m
 		mode: import

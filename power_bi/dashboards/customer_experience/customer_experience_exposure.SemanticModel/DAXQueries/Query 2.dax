@@ -1,0 +1,8 @@
+EVALUATE
+{
+	COUNTROWS(
+		FILTER(
+			customer_weekly_fact, customer_weekly_fact[weekly_avg_delivery_delay] > 0
+		)
+	)
+}		

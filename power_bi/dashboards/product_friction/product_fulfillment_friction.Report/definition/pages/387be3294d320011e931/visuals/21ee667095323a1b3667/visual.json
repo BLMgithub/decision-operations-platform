@@ -3,11 +3,11 @@
   "name": "21ee667095323a1b3667",
   "position": {
     "x": 0,
-    "y": 3.3364928909952596,
+    "y": 3,
     "z": 1000,
-    "height": 29,
-    "width": 123,
-    "tabOrder": 2000
+    "height": 29.166666666666668,
+    "width": 155.83333333333334,
+    "tabOrder": 0
   },
   "visual": {
     "visualType": "textbox",
@@ -21,10 +21,11 @@
                   {
                     "value": "Select Month:",
                     "textStyle": {
-                      "fontSize": "14pt"
+                      "fontSize": "12pt"
                     }
                   }
-                ]
+                ],
+                "horizontalTextAlignment": "right"
               }
             ]
           }
@@ -69,6 +70,5 @@
     },
     "drillFilterOtherVisuals": true
   },
-  "parentGroupName": "776e247b86567c24368c",
-  "isHidden": true
+  "parentGroupName": "f2c6b4d01d34f9b3c489"
 }

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
+  "name": "e30dd3846787692f7d2d",
+  "position": {
+    "x": 656.48376259798431,
+    "y": 398.6564885496183,
+    "z": 10000,
+    "height": 295.09491122641759,
+    "width": 602.01567749160142,
+    "tabOrder": 6000
+  },
+  "visualGroup": {
+    "displayName": "geographic-bottlenecks",
+    "groupMode": "ScaleMode"
+  }
+}

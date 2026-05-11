@@ -4,7 +4,7 @@
   "position": {
     "x": 1169.2857142857144,
     "y": 35.714285714285715,
-    "z": 2000,
+    "z": 1000,
     "height": 35,
     "width": 35,
     "tabOrder": 1000
@@ -90,6 +90,33 @@
                   "Value": "true"
                 }
               }
+            },
+            "sourceFile": {
+              "image": {
+                "name": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'default-close-icon-white.svg'"
+                    }
+                  }
+                },
+                "url": {
+                  "expr": {
+                    "ResourcePackageItem": {
+                      "PackageName": "RegisteredResources",
+                      "PackageType": 1,
+                      "ItemName": "default-close-icon-white6449366741917931.svg"
+                    }
+                  }
+                },
+                "scaling": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'Normal'"
+                    }
+                  }
+                }
+              }
             }
           },
           "selector": {
@@ -103,7 +130,7 @@
                 "name": {
                   "expr": {
                     "Literal": {
-                      "Value": "'close-icon.svg'"
+                      "Value": "'close-icon-white.svg'"
                     }
                   }
                 },
@@ -112,7 +139,7 @@
                     "ResourcePackageItem": {
                       "PackageName": "RegisteredResources",
                       "PackageType": 1,
-                      "ItemName": "close-icon14917274980951856.svg"
+                      "ItemName": "close-icon-white5143105133109781.svg"
                     }
                   }
                 },
@@ -132,7 +159,7 @@
             "effects": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
                 }
               }
             },
@@ -154,6 +181,33 @@
               "expr": {
                 "Literal": {
                   "Value": "5L"
+                }
+              }
+            },
+            "sourceFile": {
+              "image": {
+                "name": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'close-icon-white.svg'"
+                    }
+                  }
+                },
+                "url": {
+                  "expr": {
+                    "ResourcePackageItem": {
+                      "PackageName": "RegisteredResources",
+                      "PackageType": 1,
+                      "ItemName": "close-icon-white6331215936427376.svg"
+                    }
+                  }
+                },
+                "scaling": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'Normal'"
+                    }
+                  }
                 }
               }
             }

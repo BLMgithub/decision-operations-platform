@@ -4,7 +4,7 @@
   "position": {
     "x": 1225,
     "y": 35,
-    "z": 6000,
+    "z": 3000,
     "height": 35,
     "width": 35,
     "tabOrder": 1000
@@ -132,7 +132,7 @@
             "effects": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
                 }
               }
             },
@@ -154,6 +154,33 @@
               "expr": {
                 "Literal": {
                   "Value": "5L"
+                }
+              }
+            },
+            "sourceFile": {
+              "image": {
+                "name": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'close-icon-white.svg'"
+                    }
+                  }
+                },
+                "url": {
+                  "expr": {
+                    "ResourcePackageItem": {
+                      "PackageName": "RegisteredResources",
+                      "PackageType": 1,
+                      "ItemName": "close-icon-white6450220777618487.svg"
+                    }
+                  }
+                },
+                "scaling": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'Normal'"
+                    }
+                  }
                 }
               }
             }
@@ -249,6 +276,5 @@
     },
     "drillFilterOtherVisuals": true
   },
-  "parentGroupName": "5640163d3c3070e3da51",
-  "isHidden": true
+  "parentGroupName": "5640163d3c3070e3da51"
 }

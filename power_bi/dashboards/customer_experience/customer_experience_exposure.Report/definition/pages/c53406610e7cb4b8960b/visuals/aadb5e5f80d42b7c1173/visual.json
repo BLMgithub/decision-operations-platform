@@ -1,0 +1,16 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
+  "name": "aadb5e5f80d42b7c1173",
+  "position": {
+    "x": 21.500559910414335,
+    "y": 113.23628219484883,
+    "z": 7000,
+    "height": 266.60694288913771,
+    "width": 618.49944008958573,
+    "tabOrder": 8000
+  },
+  "visualGroup": {
+    "displayName": "active-buyer-retention",
+    "groupMode": "ScaleMode"
+  }
+}

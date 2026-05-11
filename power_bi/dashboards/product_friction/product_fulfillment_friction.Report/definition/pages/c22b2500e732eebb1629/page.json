@@ -3,8 +3,8 @@
   "name": "c22b2500e732eebb1629",
   "displayName": "Tooltip- Stack Bar Chart",
   "displayOption": "ActualSize",
-  "height": 230,
-  "width": 185,
+  "height": 300,
+  "width": 250,
   "visibility": "HiddenInViewMode",
   "type": "Tooltip"
 }

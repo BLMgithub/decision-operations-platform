@@ -4,10 +4,10 @@
   "position": {
     "x": 21.437543614794137,
     "y": 393.02163293789249,
-    "z": 3000,
+    "z": 5000,
     "height": 300.12561060711789,
     "width": 619.00907187718065,
-    "tabOrder": 2000
+    "tabOrder": 3000
   },
   "visualGroup": {
     "displayName": "revenue-exposure",

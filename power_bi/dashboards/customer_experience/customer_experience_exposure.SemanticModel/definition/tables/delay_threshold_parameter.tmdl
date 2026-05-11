@@ -1,0 +1,26 @@
+table delay_threshold_parameter
+	lineageTag: d6e694d3-e943-4936-9edc-170e42c87cdc
+
+	measure parameter_value = SELECTEDVALUE('delay_threshold_parameter'[threshold_parameter])
+		formatString: 0
+		lineageTag: 9fc04848-c26f-4dc5-baff-4deba1a20c7f
+
+	column threshold_parameter
+		formatString: 0
+		lineageTag: e2bda2de-72fd-41ee-9359-cd658634c736
+		summarizeBy: none
+		sourceColumn: [Value]
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 0
+				}
+
+		annotation SummarizationSetBy = User
+
+	partition delay_threshold_parameter = calculated
+		mode: import
+		source = GENERATESERIES(3, 14, 1)
+
+	annotation PBI_Id = 618a543438864f81b642d78572374dc6
+

@@ -4,7 +4,7 @@
     {
       "ordinal": 0,
       "scrollPosition": {
-        "x": 241.0514132902295,
+        "x": 63.906653756014336,
         "y": 0
       },
       "nodes": [
@@ -69,6 +69,58 @@
           "nodeLineageTag": "d2e261c2-a54e-4359-b6d0-5789fc6ba4fb",
           "size": {
             "height": 104,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1339.1207728170934,
+            "y": 196.961693641406
+          },
+          "nodeIndex": "paging_helper",
+          "nodeLineageTag": "e60cd6af-9c59-4c12-8717-0ab0b239be99",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1339.1207728170934,
+            "y": 196.961693641406
+          },
+          "nodeIndex": "table_items",
+          "nodeLineageTag": "2a277bfd-e7bf-4351-8ab5-d1704bf40743",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1339.1207728170934,
+            "y": 196.961693641406
+          },
+          "nodeIndex": "slippage_threshold",
+          "nodeLineageTag": "ad466b8c-dd93-459c-91fa-09bd0a7902d7",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1339.1207728170934,
+            "y": 196.961693641406
+          },
+          "nodeIndex": "std_dev_boundary",
+          "nodeLineageTag": "41826d7f-4664-459c-96a9-c071d9be3bab",
+          "size": {
+            "height": 224,
             "width": 234
           },
           "zIndex": 0

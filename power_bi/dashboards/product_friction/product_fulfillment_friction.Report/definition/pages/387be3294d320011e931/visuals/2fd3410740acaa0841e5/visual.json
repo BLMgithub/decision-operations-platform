@@ -4,10 +4,10 @@
   "position": {
     "x": 985,
     "y": 27,
-    "z": 8000,
+    "z": 11000,
     "height": 56,
     "width": 189,
-    "tabOrder": 10000
+    "tabOrder": 8000
   },
   "visualGroup": {
     "displayName": "source-update",

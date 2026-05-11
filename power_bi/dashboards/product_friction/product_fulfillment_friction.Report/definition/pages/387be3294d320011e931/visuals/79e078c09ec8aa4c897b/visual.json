@@ -3,10 +3,10 @@
   "name": "79e078c09ec8aa4c897b",
   "position": {
     "x": 0,
-    "y": 0,
+    "y": 4,
     "z": 0,
-    "height": 29,
-    "width": 123,
+    "height": 28.333333333333336,
+    "width": 155.83333333333334,
     "tabOrder": 1000
   },
   "visual": {
@@ -21,10 +21,11 @@
                   {
                     "value": "Select Year:",
                     "textStyle": {
-                      "fontSize": "14pt"
+                      "fontSize": "12pt"
                     }
                   }
-                ]
+                ],
+                "horizontalTextAlignment": "right"
               }
             ]
           }
@@ -69,6 +70,5 @@
     },
     "drillFilterOtherVisuals": true
   },
-  "parentGroupName": "cdb2b14126414537060e",
-  "isHidden": true
+  "parentGroupName": "26cad898ec4e28b8e6ca"
 }

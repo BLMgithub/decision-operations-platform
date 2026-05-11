@@ -7,7 +7,7 @@
     "z": 0,
     "height": 96.344086021505376,
     "width": 510.05692599620494,
-    "tabOrder": 0
+    "tabOrder": 1000
   },
   "visual": {
     "visualType": "cardVisual",
@@ -128,7 +128,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Revenue Exposure'"
+                  "Value": "'Revenue at Risk'"
                 }
               }
             }
@@ -633,12 +633,12 @@
                                       "Entity": "calculations"
                                     }
                                   },
-                                  "Property": "revenue_at_risk"
+                                  "Property": "color_format_revenue_at_risk"
                                 }
                               },
                               "Right": {
                                 "Literal": {
-                                  "Value": "1000001D"
+                                  "Value": "0.16D"
                                 }
                               }
                             }
@@ -662,12 +662,12 @@
                                           "Entity": "calculations"
                                         }
                                       },
-                                      "Property": "revenue_at_risk"
+                                      "Property": "color_format_revenue_at_risk"
                                     }
                                   },
                                   "Right": {
                                     "Literal": {
-                                      "Value": "250001D"
+                                      "Value": "0.06D"
                                     }
                                   }
                                 }
@@ -682,12 +682,12 @@
                                           "Entity": "calculations"
                                         }
                                       },
-                                      "Property": "revenue_at_risk"
+                                      "Property": "color_format_revenue_at_risk"
                                     }
                                   },
                                   "Right": {
                                     "Literal": {
-                                      "Value": "1000000D"
+                                      "Value": "0.15D"
                                     }
                                   }
                                 }
@@ -702,21 +702,45 @@
                         },
                         {
                           "Condition": {
-                            "Comparison": {
-                              "ComparisonKind": 4,
+                            "And": {
                               "Left": {
-                                "Measure": {
-                                  "Expression": {
-                                    "SourceRef": {
-                                      "Entity": "calculations"
+                                "Comparison": {
+                                  "ComparisonKind": 2,
+                                  "Left": {
+                                    "Measure": {
+                                      "Expression": {
+                                        "SourceRef": {
+                                          "Entity": "calculations"
+                                        }
+                                      },
+                                      "Property": "color_format_revenue_at_risk"
                                     }
                                   },
-                                  "Property": "revenue_at_risk"
+                                  "Right": {
+                                    "Literal": {
+                                      "Value": "0D"
+                                    }
+                                  }
                                 }
                               },
                               "Right": {
-                                "Literal": {
-                                  "Value": "250000D"
+                                "Comparison": {
+                                  "ComparisonKind": 4,
+                                  "Left": {
+                                    "Measure": {
+                                      "Expression": {
+                                        "SourceRef": {
+                                          "Entity": "calculations"
+                                        }
+                                      },
+                                      "Property": "color_format_revenue_at_risk"
+                                    }
+                                  },
+                                  "Right": {
+                                    "Literal": {
+                                      "Value": "0.05D"
+                                    }
+                                  }
                                 }
                               }
                             }
@@ -1058,12 +1082,12 @@
                                       "Entity": "calculations"
                                     }
                                   },
-                                  "Property": "revenue_at_risk"
+                                  "Property": "color_format_revenue_at_risk"
                                 }
                               },
                               "Right": {
                                 "Literal": {
-                                  "Value": "1000001D"
+                                  "Value": "0.16D"
                                 }
                               }
                             }
@@ -1087,12 +1111,12 @@
                                           "Entity": "calculations"
                                         }
                                       },
-                                      "Property": "revenue_at_risk"
+                                      "Property": "color_format_revenue_at_risk"
                                     }
                                   },
                                   "Right": {
                                     "Literal": {
-                                      "Value": "250001D"
+                                      "Value": "0.06D"
                                     }
                                   }
                                 }
@@ -1107,12 +1131,12 @@
                                           "Entity": "calculations"
                                         }
                                       },
-                                      "Property": "revenue_at_risk"
+                                      "Property": "color_format_revenue_at_risk"
                                     }
                                   },
                                   "Right": {
                                     "Literal": {
-                                      "Value": "1000000D"
+                                      "Value": "0.15D"
                                     }
                                   }
                                 }
@@ -1127,21 +1151,45 @@
                         },
                         {
                           "Condition": {
-                            "Comparison": {
-                              "ComparisonKind": 4,
+                            "And": {
                               "Left": {
-                                "Measure": {
-                                  "Expression": {
-                                    "SourceRef": {
-                                      "Entity": "calculations"
+                                "Comparison": {
+                                  "ComparisonKind": 2,
+                                  "Left": {
+                                    "Measure": {
+                                      "Expression": {
+                                        "SourceRef": {
+                                          "Entity": "calculations"
+                                        }
+                                      },
+                                      "Property": "color_format_revenue_at_risk"
                                     }
                                   },
-                                  "Property": "revenue_at_risk"
+                                  "Right": {
+                                    "Literal": {
+                                      "Value": "0D"
+                                    }
+                                  }
                                 }
                               },
                               "Right": {
-                                "Literal": {
-                                  "Value": "250000D"
+                                "Comparison": {
+                                  "ComparisonKind": 4,
+                                  "Left": {
+                                    "Measure": {
+                                      "Expression": {
+                                        "SourceRef": {
+                                          "Entity": "calculations"
+                                        }
+                                      },
+                                      "Property": "color_format_revenue_at_risk"
+                                    }
+                                  },
+                                  "Right": {
+                                    "Literal": {
+                                      "Value": "0.05D"
+                                    }
+                                  }
                                 }
                               }
                             }

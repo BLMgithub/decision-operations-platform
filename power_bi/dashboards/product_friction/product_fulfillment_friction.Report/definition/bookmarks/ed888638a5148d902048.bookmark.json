@@ -5,21 +5,24 @@
   "options": {
     "applyOnlyToTargetVisuals": true,
     "targetVisualNames": [
-      "cdb2b14126414537060e",
-      "776e247b86567c24368c",
+      "32c839b6d40eee574935",
+      "f2c6b4d01d34f9b3c489",
+      "26cad898ec4e28b8e6ca",
+      "ba0056b460ba49d653b8",
       "30849915c3cac6e44266",
       "40d327d611b8a154dd01",
-      "94e24bce6c453baedbd3",
-      "a69a860a37e3223b3a2a",
-      "2f4cd8faa605700001cc",
       "82f75033deae7739b0aa",
       "bd4d083088dce894ea30",
       "674655ec067c7c4bb6b7",
       "a98435231599c7a86522",
-      "5d5f9f2c54d32396dcc3",
-      "79e078c09ec8aa4c897b",
+      "5640163d3c3070e3da51",
+      "a6d8e5b33826c8886562",
+      "a587c4b16e78a6f20828",
+      "95bdda00afeedb8cebb1",
       "21ee667095323a1b3667",
-      "7033eafa303326a6598b"
+      "7033eafa303326a6598b",
+      "79e078c09ec8aa4c897b",
+      "5d5f9f2c54d32396dcc3"
     ],
     "suppressData": true
   },
@@ -116,7 +119,7 @@
                   "howCreated": 1
                 },
                 {
-                  "name": "98b79fc6d4510a9a86d7",
+                  "name": "84c3b10c299bd6136c37",
                   "type": "Advanced",
                   "expression": {
                     "Column": {
@@ -131,7 +134,7 @@
                   "howCreated": 0
                 },
                 {
-                  "name": "2d11b362f164e0828897",
+                  "name": "76b45e994c605b67931d",
                   "type": "Advanced",
                   "expression": {
                     "Measure": {
@@ -146,7 +149,7 @@
                   "howCreated": 0
                 },
                 {
-                  "name": "f0358eea28d03c3ac604",
+                  "name": "c9b2a431b95d6639c8e4",
                   "type": "Advanced",
                   "expression": {
                     "Measure": {
@@ -161,152 +164,7 @@
                   "howCreated": 0
                 },
                 {
-                  "name": "25861dfb8945d5a47870",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "avg_lead_time"
-                    }
-                  },
-                  "howCreated": 0
-                }
-              ]
-            },
-            "singleVisual": {
-              "visualType": "scatterChart",
-              "objects": {},
-              "activeProjections": {
-                "Category": [
-                  {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "product_dim"
-                        }
-                      },
-                      "Property": "product_id_int"
-                    }
-                  }
-                ],
-                "X": [
-                  {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "product_weight"
-                    }
-                  }
-                ]
-              }
-            }
-          },
-          "14183701d04a887b1577": {
-            "filters": {
-              "byExpr": [
-                {
-                  "name": "05a3d810e30047e4400d",
-                  "type": "Advanced",
-                  "filter": {
-                    "Version": 2,
-                    "From": [
-                      {
-                        "Name": "c",
-                        "Entity": "calculations",
-                        "Type": 0
-                      }
-                    ],
-                    "Where": [
-                      {
-                        "Condition": {
-                          "Comparison": {
-                            "ComparisonKind": 0,
-                            "Left": {
-                              "Measure": {
-                                "Expression": {
-                                  "SourceRef": {
-                                    "Source": "c"
-                                  }
-                                },
-                                "Property": "product_at_risk"
-                              }
-                            },
-                            "Right": {
-                              "Literal": {
-                                "Value": "1L"
-                              }
-                            }
-                          }
-                        }
-                      }
-                    ]
-                  },
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "product_at_risk"
-                    }
-                  },
-                  "howCreated": 1
-                },
-                {
-                  "name": "3ea63477ecfa6fbef703",
-                  "type": "Advanced",
-                  "expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "product_dim"
-                        }
-                      },
-                      "Property": "product_id_int"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "0040872c55991de3831a",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "bubble_size_sensitivity"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "3b615daa3d9606a3bf1e",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "product_weight"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "21c085c677c76f0b3d02",
+                  "name": "5560def6d26a1b86c658",
                   "type": "Advanced",
                   "expression": {
                     "Measure": {
@@ -357,7 +215,7 @@
             "filters": {
               "byExpr": [
                 {
-                  "name": "958f3ebc22a84d534cc5",
+                  "name": "9bcc5d777feecd486143",
                   "type": "Categorical",
                   "expression": {
                     "Column": {
@@ -372,7 +230,7 @@
                   "howCreated": 0
                 },
                 {
-                  "name": "d158edb19bc7eabe3a0c",
+                  "name": "07384e7aea30467cb859",
                   "type": "Advanced",
                   "expression": {
                     "Measure": {
@@ -431,182 +289,19 @@
           "21ee667095323a1b3667": {
             "singleVisual": {
               "visualType": "textbox",
-              "objects": {},
-              "display": {
-                "mode": "hidden"
-              }
-            }
-          },
-          "2f4cd8faa605700001cc": {
-            "singleVisual": {
-              "visualType": "actionButton",
-              "objects": {},
-              "display": {
-                "mode": "hidden"
-              }
+              "objects": {}
             }
           },
           "30849915c3cac6e44266": {
             "singleVisual": {
               "visualType": "textbox",
-              "objects": {},
-              "display": {
-                "mode": "hidden"
-              }
+              "objects": {}
             }
           },
           "40d327d611b8a154dd01": {
             "singleVisual": {
               "visualType": "image",
-              "objects": {},
-              "display": {
-                "mode": "hidden"
-              }
-            }
-          },
-          "4329bdc60bd4800b90c0": {
-            "filters": {
-              "byExpr": [
-                {
-                  "name": "05a3d810e30047e4400d",
-                  "type": "Advanced",
-                  "filter": {
-                    "Version": 2,
-                    "From": [
-                      {
-                        "Name": "c",
-                        "Entity": "calculations",
-                        "Type": 0
-                      }
-                    ],
-                    "Where": [
-                      {
-                        "Condition": {
-                          "Comparison": {
-                            "ComparisonKind": 0,
-                            "Left": {
-                              "Measure": {
-                                "Expression": {
-                                  "SourceRef": {
-                                    "Source": "c"
-                                  }
-                                },
-                                "Property": "product_at_risk"
-                              }
-                            },
-                            "Right": {
-                              "Literal": {
-                                "Value": "1L"
-                              }
-                            }
-                          }
-                        }
-                      }
-                    ]
-                  },
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "product_at_risk"
-                    }
-                  },
-                  "howCreated": 1
-                },
-                {
-                  "name": "4e0ff16b696c7e4c497e",
-                  "type": "Advanced",
-                  "expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "product_dim"
-                        }
-                      },
-                      "Property": "product_id_int"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "8b00ec1d7acaf6b2fd24",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "bubble_size_sensitivity"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "92874255cce0908c3016",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "product_weight"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "208f0cdcca2f0c347caf",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "avg_lead_time"
-                    }
-                  },
-                  "howCreated": 0
-                }
-              ]
-            },
-            "singleVisual": {
-              "visualType": "scatterChart",
-              "objects": {},
-              "activeProjections": {
-                "Category": [
-                  {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "product_dim"
-                        }
-                      },
-                      "Property": "product_id_int"
-                    }
-                  }
-                ],
-                "X": [
-                  {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "product_weight"
-                    }
-                  }
-                ]
-              }
+              "objects": {}
             }
           },
           "4e23bf9882579c030dc2": {
@@ -619,7 +314,7 @@
             "filters": {
               "byExpr": [
                 {
-                  "name": "c49aafb6eff2ccb0ce57",
+                  "name": "4b63384c74b9e25b3e6e",
                   "type": "Advanced",
                   "expression": {
                     "Column": {
@@ -727,28 +422,16 @@
                     }
                   }
                 ]
-              },
-              "display": {
-                "mode": "hidden"
               }
             }
           },
           "674655ec067c7c4bb6b7": {
             "singleVisual": {
               "visualType": "shape",
-              "objects": {},
-              "display": {
-                "mode": "hidden"
-              }
-            }
-          },
-          "6ac3eff6a50bb9dab138": {
-            "singleVisual": {
-              "visualType": "textbox",
               "objects": {}
             }
           },
-          "6edb40b77bb147a84ae5": {
+          "6ac3eff6a50bb9dab138": {
             "singleVisual": {
               "visualType": "textbox",
               "objects": {}
@@ -758,7 +441,7 @@
             "filters": {
               "byExpr": [
                 {
-                  "name": "95554a460d5fb1c69ff0",
+                  "name": "5540a9e8b2eadcec8fc2",
                   "type": "Categorical",
                   "expression": {
                     "Column": {
@@ -866,22 +549,10 @@
                     }
                   }
                 ]
-              },
-              "display": {
-                "mode": "hidden"
               }
             }
           },
           "79e078c09ec8aa4c897b": {
-            "singleVisual": {
-              "visualType": "textbox",
-              "objects": {},
-              "display": {
-                "mode": "hidden"
-              }
-            }
-          },
-          "7e58de825e1697b87ee2": {
             "singleVisual": {
               "visualType": "textbox",
               "objects": {}
@@ -890,27 +561,12 @@
           "82f75033deae7739b0aa": {
             "singleVisual": {
               "visualType": "image",
-              "objects": {},
-              "display": {
-                "mode": "hidden"
-              }
+              "objects": {}
             }
           },
           "846ec8d0bde90b03a57c": {
             "singleVisual": {
               "visualType": "image",
-              "objects": {}
-            }
-          },
-          "8481f9381a93b081b432": {
-            "singleVisual": {
-              "visualType": "textbox",
-              "objects": {}
-            }
-          },
-          "91d8430016aed70076a2": {
-            "singleVisual": {
-              "visualType": "textbox",
               "objects": {}
             }
           },
@@ -924,15 +580,6 @@
             "singleVisual": {
               "visualType": "textbox",
               "objects": {}
-            }
-          },
-          "94e24bce6c453baedbd3": {
-            "singleVisual": {
-              "visualType": "actionButton",
-              "objects": {},
-              "display": {
-                "mode": "hidden"
-              }
             }
           },
           "953b2fc43bb07c417443": {
@@ -1029,7 +676,7 @@
             "filters": {
               "byExpr": [
                 {
-                  "name": "a93b3868d5b0d40cc9e2",
+                  "name": "547024255f8ff4864a3f",
                   "type": "Advanced",
                   "expression": {
                     "Measure": {
@@ -1044,7 +691,7 @@
                   "howCreated": 0
                 },
                 {
-                  "name": "0044cc182e018d2c39e9",
+                  "name": "a7d015371c26ef2dfe83",
                   "type": "Advanced",
                   "expression": {
                     "Measure": {
@@ -1059,7 +706,7 @@
                   "howCreated": 0
                 },
                 {
-                  "name": "3ada7f29099b84fc0a22",
+                  "name": "eed9580c677967790a9a",
                   "type": "Advanced",
                   "expression": {
                     "Measure": {
@@ -1099,7 +746,7 @@
             "filters": {
               "byExpr": [
                 {
-                  "name": "62c4821c60ffe4b0d899",
+                  "name": "1f30ecb9bbbf122ff97e",
                   "type": "Categorical",
                   "expression": {
                     "Column": {
@@ -1120,20 +767,11 @@
               "objects": {}
             }
           },
-          "a69a860a37e3223b3a2a": {
-            "singleVisual": {
-              "visualType": "actionButton",
-              "objects": {},
-              "display": {
-                "mode": "hidden"
-              }
-            }
-          },
           "a71f1a89eaac6b926945": {
             "filters": {
               "byExpr": [
                 {
-                  "name": "bdb2c76075c8c47adffc",
+                  "name": "572cb83d46c42eeacf6d",
                   "type": "Advanced",
                   "expression": {
                     "Measure": {
@@ -1163,10 +801,7 @@
           "bd4d083088dce894ea30": {
             "singleVisual": {
               "visualType": "shape",
-              "objects": {},
-              "display": {
-                "mode": "hidden"
-              }
+              "objects": {}
             }
           },
           "c288efabae8b5780911e": {
@@ -1222,7 +857,7 @@
                   "howCreated": 1
                 },
                 {
-                  "name": "ee9e0680fbed51e843de",
+                  "name": "580253c48ca6a3817fd5",
                   "type": "Advanced",
                   "expression": {
                     "Column": {
@@ -1237,7 +872,7 @@
                   "howCreated": 0
                 },
                 {
-                  "name": "dfbb44afb973997423b9",
+                  "name": "d3bc62c8003f8f799517",
                   "type": "Advanced",
                   "expression": {
                     "Measure": {
@@ -1252,7 +887,7 @@
                   "howCreated": 0
                 },
                 {
-                  "name": "211858f5fefa27e4f0e8",
+                  "name": "3531cd371d157a71b105",
                   "type": "Advanced",
                   "expression": {
                     "Measure": {
@@ -1267,7 +902,7 @@
                   "howCreated": 0
                 },
                 {
-                  "name": "880e719f22039bcb776f",
+                  "name": "d7f9228b279272b9acbb",
                   "type": "Advanced",
                   "expression": {
                     "Measure": {
@@ -1282,7 +917,7 @@
                   "howCreated": 0
                 },
                 {
-                  "name": "c4b75e8c42b231dd5314",
+                  "name": "a87b135e060fedfaba2f",
                   "type": "Advanced",
                   "expression": {
                     "Measure": {
@@ -1297,7 +932,7 @@
                   "howCreated": 0
                 },
                 {
-                  "name": "3b80e59c59b40872217a",
+                  "name": "f05038cbb368512da568",
                   "type": "Advanced",
                   "expression": {
                     "Measure": {
@@ -1312,7 +947,7 @@
                   "howCreated": 0
                 },
                 {
-                  "name": "bf020922990e5628f604",
+                  "name": "613025fd16783e50ac9c",
                   "type": "Advanced",
                   "expression": {
                     "Measure": {
@@ -1325,6 +960,70 @@
                     }
                   },
                   "howCreated": 0
+                },
+                {
+                  "name": "a24fc3a0fd2e72cd4d89",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "calculations"
+                        }
+                      },
+                      "Property": "item_rank"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "529f8fea941ccb615fb2",
+                  "type": "Advanced",
+                  "filter": {
+                    "Version": 2,
+                    "From": [
+                      {
+                        "Name": "c",
+                        "Entity": "calculations",
+                        "Type": 0
+                      }
+                    ],
+                    "Where": [
+                      {
+                        "Condition": {
+                          "Comparison": {
+                            "ComparisonKind": 0,
+                            "Left": {
+                              "Measure": {
+                                "Expression": {
+                                  "SourceRef": {
+                                    "Source": "c"
+                                  }
+                                },
+                                "Property": "item_rank_filter"
+                              }
+                            },
+                            "Right": {
+                              "Literal": {
+                                "Value": "1L"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "calculations"
+                        }
+                      },
+                      "Property": "item_rank_filter"
+                    }
+                  },
+                  "howCreated": 1
                 }
               ]
             },
@@ -1341,7 +1040,7 @@
                           "Entity": "calculations"
                         }
                       },
-                      "Property": "total_cancelled"
+                      "Property": "revenue_at_risk"
                     }
                   }
                 }
@@ -1368,233 +1067,6 @@
               "objects": {}
             }
           },
-          "d59cafd06a0907c70c53": {
-            "filters": {
-              "byExpr": [
-                {
-                  "name": "2f12f901ed93590ac472",
-                  "type": "Advanced",
-                  "filter": {
-                    "Version": 2,
-                    "From": [
-                      {
-                        "Name": "c",
-                        "Entity": "calculations",
-                        "Type": 0
-                      }
-                    ],
-                    "Where": [
-                      {
-                        "Condition": {
-                          "Comparison": {
-                            "ComparisonKind": 0,
-                            "Left": {
-                              "Measure": {
-                                "Expression": {
-                                  "SourceRef": {
-                                    "Source": "c"
-                                  }
-                                },
-                                "Property": "product_at_risk"
-                              }
-                            },
-                            "Right": {
-                              "Literal": {
-                                "Value": "1L"
-                              }
-                            }
-                          }
-                        }
-                      }
-                    ]
-                  },
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "product_at_risk"
-                    }
-                  },
-                  "howCreated": 1
-                },
-                {
-                  "name": "a643513a1b56abed4d34",
-                  "type": "Advanced",
-                  "filter": {
-                    "Version": 2,
-                    "From": [
-                      {
-                        "Name": "c",
-                        "Entity": "calculations",
-                        "Type": 0
-                      }
-                    ],
-                    "Where": [
-                      {
-                        "Condition": {
-                          "Comparison": {
-                            "ComparisonKind": 0,
-                            "Left": {
-                              "Measure": {
-                                "Expression": {
-                                  "SourceRef": {
-                                    "Source": "c"
-                                  }
-                                },
-                                "Property": "top_20_product_id"
-                              }
-                            },
-                            "Right": {
-                              "Literal": {
-                                "Value": "1L"
-                              }
-                            }
-                          }
-                        }
-                      }
-                    ]
-                  },
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "top_20_product_id"
-                    }
-                  },
-                  "howCreated": 1
-                },
-                {
-                  "name": "4c513a8a4d7c1e711c19",
-                  "type": "Advanced",
-                  "expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "product_dim"
-                        }
-                      },
-                      "Property": "product_id_int"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "07db87a74370e707e6d6",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "avg_lead_time"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "942c2a139e87ce016710",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "product_weight"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "100fee485da1a5dcd724",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "product_volume_categ"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "1de9865b91f53b5524e9",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "revenue_at_risk"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "322bb0fe10e7baa1e396",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "total_orders"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "57470b920c49d0aad04d",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "total_cancelled"
-                    }
-                  },
-                  "howCreated": 0
-                }
-              ]
-            },
-            "singleVisual": {
-              "visualType": "pivotTable",
-              "objects": {},
-              "activeProjections": {
-                "Rows": [
-                  {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "product_dim"
-                        }
-                      },
-                      "Property": "product_id_int"
-                    }
-                  }
-                ]
-              }
-            }
-          },
           "d7296d5581b10c59b3b0": {
             "singleVisual": {
               "visualType": "shape",
@@ -1613,125 +1085,67 @@
               "objects": {}
             }
           },
-          "f71028f17134297cd9a7": {
+          "f7affb03049000481693": {
+            "singleVisual": {
+              "visualType": "shape",
+              "objects": {}
+            }
+          },
+          "8548595146d9c6a98ef2": {
             "filters": {
               "byExpr": [
                 {
-                  "name": "2f12f901ed93590ac472",
-                  "type": "Advanced",
-                  "filter": {
-                    "Version": 2,
-                    "From": [
-                      {
-                        "Name": "c",
-                        "Entity": "calculations",
-                        "Type": 0
-                      }
-                    ],
-                    "Where": [
-                      {
-                        "Condition": {
-                          "Comparison": {
-                            "ComparisonKind": 0,
-                            "Left": {
-                              "Measure": {
-                                "Expression": {
-                                  "SourceRef": {
-                                    "Source": "c"
-                                  }
-                                },
-                                "Property": "product_at_risk"
-                              }
-                            },
-                            "Right": {
-                              "Literal": {
-                                "Value": "1L"
-                              }
-                            }
-                          }
-                        }
-                      }
-                    ]
-                  },
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "product_at_risk"
-                    }
-                  },
-                  "howCreated": 1
-                },
-                {
-                  "name": "f1e0e1ade589b7cd062a",
-                  "type": "Advanced",
-                  "filter": {
-                    "Version": 2,
-                    "From": [
-                      {
-                        "Name": "c",
-                        "Entity": "calculations",
-                        "Type": 0
-                      }
-                    ],
-                    "Where": [
-                      {
-                        "Condition": {
-                          "Comparison": {
-                            "ComparisonKind": 0,
-                            "Left": {
-                              "Measure": {
-                                "Expression": {
-                                  "SourceRef": {
-                                    "Source": "c"
-                                  }
-                                },
-                                "Property": "top_10_product_id"
-                              }
-                            },
-                            "Right": {
-                              "Literal": {
-                                "Value": "1L"
-                              }
-                            }
-                          }
-                        }
-                      }
-                    ]
-                  },
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
-                        }
-                      },
-                      "Property": "top_10_product_id"
-                    }
-                  },
-                  "howCreated": 1
-                },
-                {
-                  "name": "297b7fe0e33b583fa082",
+                  "name": "adb76156e5484f7e932a",
                   "type": "Advanced",
                   "expression": {
                     "Column": {
                       "Expression": {
                         "SourceRef": {
-                          "Entity": "product_dim"
+                          "Entity": "paging_helper"
                         }
                       },
-                      "Property": "product_id_int"
+                      "Property": "paging_helper"
                     }
                   },
                   "howCreated": 0
                 },
                 {
-                  "name": "fe2f15aec6aa906c9fbb",
+                  "name": "6f627f49f5b95d7c1a35",
                   "type": "Advanced",
+                  "filter": {
+                    "Version": 2,
+                    "From": [
+                      {
+                        "Name": "c",
+                        "Entity": "calculations",
+                        "Type": 0
+                      }
+                    ],
+                    "Where": [
+                      {
+                        "Condition": {
+                          "Comparison": {
+                            "ComparisonKind": 0,
+                            "Left": {
+                              "Measure": {
+                                "Expression": {
+                                  "SourceRef": {
+                                    "Source": "c"
+                                  }
+                                },
+                                "Property": "page_filter"
+                              }
+                            },
+                            "Right": {
+                              "Literal": {
+                                "Value": "1L"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
                   "expression": {
                     "Measure": {
                       "Expression": {
@@ -1739,82 +1153,129 @@
                           "Entity": "calculations"
                         }
                       },
-                      "Property": "avg_lead_time"
+                      "Property": "page_filter"
                     }
                   },
-                  "howCreated": 0
-                },
-                {
-                  "name": "bfdc7abd97168d0b74e7",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
+                  "howCreated": 1
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "slicer",
+              "objects": {
+                "merge": {
+                  "general": [
+                    {
+                      "properties": {
+                        "filter": {
+                          "filter": {
+                            "Version": 2,
+                            "From": [
+                              {
+                                "Name": "p",
+                                "Entity": "paging_helper",
+                                "Type": 0
+                              }
+                            ],
+                            "Where": [
+                              {
+                                "Condition": {
+                                  "In": {
+                                    "Expressions": [
+                                      {
+                                        "Column": {
+                                          "Expression": {
+                                            "SourceRef": {
+                                              "Source": "p"
+                                            }
+                                          },
+                                          "Property": "paging_helper"
+                                        }
+                                      }
+                                    ],
+                                    "Values": [
+                                      [
+                                        {
+                                          "Literal": {
+                                            "Value": "1L"
+                                          }
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                }
+                              }
+                            ]
+                          }
                         }
-                      },
-                      "Property": "product_weight"
+                      }
                     }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "e03049e16130b0df7e6e",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
+                  ],
+                  "data": [
+                    {
+                      "properties": {
+                        "numericStart": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "1D"
+                            }
+                          }
+                        },
+                        "mode": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "'Dropdown'"
+                            }
+                          }
                         }
-                      },
-                      "Property": "product_volume_categ"
+                      }
                     }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "ace769ca1a691263f9e3",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
+                  ],
+                  "selection": [
+                    {
+                      "properties": {
+                        "strictSingleSelect": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "true"
+                            }
+                          }
                         }
-                      },
-                      "Property": "revenue_at_risk"
+                      }
                     }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "db8c6fc2d27b2b107576",
-                  "type": "Advanced",
-                  "expression": {
-                    "Measure": {
+                  ]
+                }
+              },
+              "activeProjections": {
+                "Values": [
+                  {
+                    "Column": {
                       "Expression": {
                         "SourceRef": {
-                          "Entity": "calculations"
+                          "Entity": "paging_helper"
                         }
                       },
-                      "Property": "total_orders"
+                      "Property": "paging_helper"
                     }
-                  },
-                  "howCreated": 0
-                },
+                  }
+                ]
+              }
+            }
+          },
+          "95bdda00afeedb8cebb1": {
+            "filters": {
+              "byExpr": [
                 {
-                  "name": "543eea2c1467c2e86292",
+                  "name": "063d6ba03058b6b52d21",
                   "type": "Advanced",
                   "expression": {
-                    "Measure": {
+                    "Column": {
                       "Expression": {
                         "SourceRef": {
-                          "Entity": "calculations"
+                          "Entity": "table_items"
                         }
                       },
-                      "Property": "total_cancelled"
+                      "Property": "table_items"
                     }
                   },
                   "howCreated": 0
@@ -1822,50 +1283,127 @@
               ]
             },
             "singleVisual": {
-              "visualType": "pivotTable",
-              "objects": {},
-              "orderBy": [
-                {
-                  "Direction": 2,
-                  "Expression": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "calculations"
+              "visualType": "slicer",
+              "objects": {
+                "merge": {
+                  "general": [
+                    {
+                      "properties": {
+                        "filter": {
+                          "filter": {
+                            "Version": 2,
+                            "From": [
+                              {
+                                "Name": "t",
+                                "Entity": "table_items",
+                                "Type": 0
+                              }
+                            ],
+                            "Where": [
+                              {
+                                "Condition": {
+                                  "In": {
+                                    "Expressions": [
+                                      {
+                                        "Column": {
+                                          "Expression": {
+                                            "SourceRef": {
+                                              "Source": "t"
+                                            }
+                                          },
+                                          "Property": "table_items"
+                                        }
+                                      }
+                                    ],
+                                    "Values": [
+                                      [
+                                        {
+                                          "Literal": {
+                                            "Value": "10L"
+                                          }
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                }
+                              }
+                            ]
+                          }
                         }
-                      },
-                      "Property": "revenue_at_risk"
+                      }
                     }
-                  }
+                  ],
+                  "data": [
+                    {
+                      "properties": {
+                        "numericStart": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "10D"
+                            }
+                          }
+                        },
+                        "mode": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "'Dropdown'"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "selection": [
+                    {
+                      "properties": {
+                        "strictSingleSelect": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "true"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
                 }
-              ],
+              },
               "activeProjections": {
-                "Rows": [
+                "Values": [
                   {
                     "Column": {
                       "Expression": {
                         "SourceRef": {
-                          "Entity": "product_dim"
+                          "Entity": "table_items"
                         }
                       },
-                      "Property": "product_id_int"
+                      "Property": "table_items"
                     }
                   }
                 ]
               }
             }
           },
-          "f7affb03049000481693": {
+          "f836d37fdf827526d95c": {
             "singleVisual": {
-              "visualType": "shape",
+              "visualType": "textbox",
+              "objects": {}
+            }
+          },
+          "a587c4b16e78a6f20828": {
+            "singleVisual": {
+              "visualType": "textbox",
+              "objects": {}
+            }
+          },
+          "ba0056b460ba49d653b8": {
+            "singleVisual": {
+              "visualType": "textbox",
               "objects": {}
             }
           }
         },
         "visualContainerGroups": {
-          "008b7c3782402a365cc7": {
-            "isHidden": false
-          },
           "2baa8ea72a84cb23408b": {
             "isHidden": true,
             "children": {
@@ -1874,52 +1412,22 @@
               }
             }
           },
-          "309cdb28005db575d3a2": {
-            "isHidden": false
-          },
-          "4f86eb1e280900a93099": {
-            "isHidden": true,
-            "children": {
-              "53383a443c10091a5a8a": {
-                "isHidden": false
-              },
-              "cbd16d54db30e410e40d": {
-                "isHidden": false
-              }
-            }
-          },
           "5640163d3c3070e3da51": {
-            "isHidden": false,
-            "children": {
-              "776e247b86567c24368c": {
-                "isHidden": true
-              },
-              "cdb2b14126414537060e": {
-                "isHidden": true
-              }
-            }
-          },
-          "7db8628d0237759908aa": {
-            "isHidden": false,
-            "children": {
-              "4cd9682dd558110a8200": {
-                "isHidden": false
-              },
-              "ea541aba2750e2006060": {
-                "isHidden": false
-              }
-            }
-          },
-          "c17ecc674c848d430853": {
             "isHidden": true,
             "children": {
-              "6358c0d400c160b6e61c": {
+              "32c839b6d40eee574935": {
                 "isHidden": false
               },
-              "8d08ef2340a098e65447": {
+              "f2c6b4d01d34f9b3c489": {
+                "isHidden": false
+              },
+              "26cad898ec4e28b8e6ca": {
                 "isHidden": false
               }
             }
+          },
+          "39e93a573990dd594b70": {
+            "isHidden": false
           }
         }
       }

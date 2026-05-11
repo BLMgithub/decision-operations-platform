@@ -1,0 +1,26 @@
+table slippage_threshold
+	lineageTag: ad466b8c-dd93-459c-91fa-09bd0a7902d7
+
+	measure 'slippage_threshold Value' = SELECTEDVALUE('slippage_threshold'[slippage_threshold], 0.5)
+		formatString: 0.0
+		lineageTag: 9acf26ee-6a03-405e-96db-2b1523e5d29c
+
+	column slippage_threshold
+		formatString: 0.0
+		lineageTag: 08a807cb-65cf-4a2d-849e-0b2dedddfc73
+		summarizeBy: none
+		sourceColumn: [Value]
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 0
+				}
+
+		annotation SummarizationSetBy = User
+
+	partition slippage_threshold = calculated
+		mode: import
+		source = GENERATESERIES(0.5, 5, 0.5)
+
+	annotation PBI_Id = 7e493671c6fb4834a3943e339538ef52
+

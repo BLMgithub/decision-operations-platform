@@ -138,7 +138,24 @@
       ],
       "dataPoint": [
         {
-          "properties": {},
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "calculations"
+                        }
+                      },
+                      "Property": "current_viewed_filter"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "selector": {
             "data": [
               {
@@ -185,7 +202,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Correlation between product weight, order volume, and fulfillment delays'"
+                  "Value": "'Correlation between product weight and fulfillment delays'"
                 }
               }
             }

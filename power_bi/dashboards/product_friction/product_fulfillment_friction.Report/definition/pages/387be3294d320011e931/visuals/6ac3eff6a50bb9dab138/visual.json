@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
   "name": "6ac3eff6a50bb9dab138",
   "position": {
-    "x": 0,
+    "x": 6.0364381325772891,
     "y": 0,
     "z": 1000,
-    "height": 58.818587003405021,
-    "width": 455.55023900669175,
+    "height": 57.624045908107121,
+    "width": 455.39554886045312,
     "tabOrder": 0
   },
   "visual": {
@@ -19,17 +19,9 @@
               {
                 "textRuns": [
                   {
-                    "value": "Intervention Action List- ",
+                    "value": "Intervention Action List",
                     "textStyle": {
                       "fontSize": "14pt"
-                    }
-                  },
-                  {
-                    "value": "All Products",
-                    "textStyle": {
-                      "fontWeight": "bold",
-                      "fontSize": "14pt",
-                      "color": "#45657e"
                     }
                   }
                 ]

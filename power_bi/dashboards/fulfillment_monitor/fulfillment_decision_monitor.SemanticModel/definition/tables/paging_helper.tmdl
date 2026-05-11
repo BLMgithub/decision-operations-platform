@@ -1,0 +1,26 @@
+table paging_helper
+	lineageTag: e4d3f0b8-a6cb-44f4-9e94-87b55f9ba573
+
+	measure 'paging_helper Value' = SELECTEDVALUE('paging_helper'[paging_helper], 1)
+		formatString: 0
+		lineageTag: 882653c4-e1bc-4021-86af-e239c454ab24
+
+	column paging_helper
+		formatString: 0
+		lineageTag: fb994131-6902-4f5e-a00b-7f75880c681c
+		summarizeBy: none
+		sourceColumn: [Value]
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 0
+				}
+
+		annotation SummarizationSetBy = User
+
+	partition paging_helper = calculated
+		mode: import
+		source = GENERATESERIES(1, 5000, 1)
+
+	annotation PBI_Id = 151dff509ffc4c0d8bb00033457cd391
+

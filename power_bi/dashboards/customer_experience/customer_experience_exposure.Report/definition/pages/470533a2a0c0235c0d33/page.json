@@ -1,0 +1,10 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "470533a2a0c0235c0d33",
+  "displayName": "Tooltip Line Chart",
+  "displayOption": "ActualSize",
+  "height": 250,
+  "width": 255,
+  "visibility": "HiddenInViewMode",
+  "type": "Tooltip"
+}

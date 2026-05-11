@@ -1,0 +1,17 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
+  "name": "53a29928bd83091b0c67",
+  "position": {
+    "x": 983.95385848203534,
+    "y": 147.52721068927772,
+    "z": 8000,
+    "height": 38.18181818181818,
+    "width": 271.04614151796471,
+    "tabOrder": 10000
+  },
+  "visualGroup": {
+    "displayName": "std-dev-boundary-filter",
+    "groupMode": "ScaleMode"
+  },
+  "parentGroupName": "007cb0e05000e0b944b5"
+}

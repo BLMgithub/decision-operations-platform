@@ -100,7 +100,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "0–10% (Predictable)",
+                    "value": "<=10% (Predictable)",
                     "textStyle": {
                       "fontSize": "9pt",
                       "color": "#006400"
@@ -118,7 +118,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "11–25% (Unstable)",
+                    "value": "11% – 25% (Unstable)",
                     "textStyle": {
                       "fontSize": "9pt",
                       "color": "#f28c28"
@@ -161,7 +161,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "Revenue Exposure",
+                    "value": "Revenue at Risk",
                     "textStyle": {
                       "fontSize": "9pt"
                     }
@@ -171,7 +171,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "<$250K (Safe)",
+                    "value": "<=5% (Safe)",
                     "textStyle": {
                       "fontSize": "9pt",
                       "color": "#006400"
@@ -189,7 +189,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "$250K–$1M (At Risk)",
+                    "value": "6% –15% (At Risk)",
                     "textStyle": {
                       "fontSize": "9pt",
                       "color": "#f28c28"
@@ -207,7 +207,7 @@
               {
                 "textRuns": [
                   {
-                    "value": ">$1M (Critical)",
+                    "value": ">15% (Critical)",
                     "textStyle": {
                       "fontSize": "9pt",
                       "color": "#a1343c"

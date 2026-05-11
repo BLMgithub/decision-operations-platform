@@ -5,8 +5,8 @@
     "x": 0,
     "y": 0,
     "z": 0,
-    "height": 230,
-    "width": 185.33333333333334,
+    "height": 149,
+    "width": 245,
     "tabOrder": 0
   },
   "visual": {
@@ -59,66 +59,6 @@
               "queryRef": "calculations.format_product_id_count",
               "nativeQueryRef": "Count of Product",
               "displayName": "Count of Product"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "calculations"
-                    }
-                  },
-                  "Property": "tooltip_small"
-                }
-              },
-              "queryRef": "calculations.tool_tip_small",
-              "nativeQueryRef": "Small Product",
-              "displayName": "Small Product"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "calculations"
-                    }
-                  },
-                  "Property": "tooltip_standard"
-                }
-              },
-              "queryRef": "calculations.tool_tip_standard",
-              "nativeQueryRef": "Standard Product",
-              "displayName": "Standard Product"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "calculations"
-                    }
-                  },
-                  "Property": "tooltip_heavy"
-                }
-              },
-              "queryRef": "calculations.tool_tip_heavy",
-              "nativeQueryRef": "Heavy Product",
-              "displayName": "Heavy Product"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "calculations"
-                    }
-                  },
-                  "Property": "tooltip_oversize"
-                }
-              },
-              "queryRef": "calculations.tool_tip_oversize",
-              "nativeQueryRef": "Oversized Product",
-              "displayName": "Oversized Product"
             },
             {
               "field": {
@@ -290,62 +230,6 @@
           },
           "selector": {
             "metadata": "calculations.total_cancelled"
-          }
-        },
-        {
-          "properties": {
-            "alignment": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Center'"
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "calculations.tool_tip_small"
-          }
-        },
-        {
-          "properties": {
-            "alignment": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Center'"
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "calculations.tool_tip_standard"
-          }
-        },
-        {
-          "properties": {
-            "alignment": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Center'"
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "calculations.tool_tip_heavy"
-          }
-        },
-        {
-          "properties": {
-            "alignment": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Center'"
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "calculations.tool_tip_oversize"
           }
         }
       ],
@@ -574,48 +458,6 @@
           ]
         },
         "howCreated": "User"
-      },
-      {
-        "name": "28e0cbd998c3d6bce0bd",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "calculations"
-              }
-            },
-            "Property": "format_product_id_count"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "e36228408d39ee1eb00d",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "calculations"
-              }
-            },
-            "Property": "format_total_orders"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "381c57d0904a2c0b6acd",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "calculations"
-              }
-            },
-            "Property": "tooltip_format_revenue_at_risk"
-          }
-        },
-        "type": "Advanced"
       }
     ]
   }

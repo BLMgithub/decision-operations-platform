@@ -571,6 +571,62 @@
           ]
         },
         "howCreated": "User"
+      },
+      {
+        "name": "1a66b4d5f7e8f9b7e147",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "seller_dim"
+              }
+            },
+            "Property": "seller_id_int"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "c41d778c79f886fc75cb",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "calculations"
+              }
+            },
+            "Property": "bubble_size_sensivity"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "ee75ab27acef25404011",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "calculations"
+              }
+            },
+            "Property": "latency_slippage"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "4f2eec84444f7d91c46b",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "calculations"
+              }
+            },
+            "Property": "total_order_volume"
+          }
+        },
+        "type": "Advanced"
       }
     ]
   }

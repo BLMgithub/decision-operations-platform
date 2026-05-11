@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
   "name": "7033eafa303326a6598b",
   "position": {
-    "x": 115,
+    "x": 158.16666666666663,
     "y": 0,
     "z": 0,
     "height": 38,
     "width": 135,
-    "tabOrder": 0
+    "tabOrder": 1000
   },
   "visual": {
     "visualType": "slicer",
@@ -88,7 +88,7 @@
                           [
                             {
                               "Literal": {
-                                "Value": "'January'"
+                                "Value": "'March'"
                               }
                             }
                           ]
@@ -223,6 +223,5 @@
     },
     "drillFilterOtherVisuals": true
   },
-  "parentGroupName": "776e247b86567c24368c",
-  "isHidden": true
+  "parentGroupName": "f2c6b4d01d34f9b3c489"
 }

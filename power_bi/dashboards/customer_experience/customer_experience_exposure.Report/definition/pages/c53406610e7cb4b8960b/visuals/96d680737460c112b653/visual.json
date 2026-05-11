@@ -1,0 +1,17 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
+  "name": "96d680737460c112b653",
+  "position": {
+    "x": 928.10544026102787,
+    "y": 79.032933408487,
+    "z": 5000,
+    "height": 41.311026872345032,
+    "width": 318.99505430815645,
+    "tabOrder": 5000
+  },
+  "visualGroup": {
+    "displayName": "threshold-filter",
+    "groupMode": "ScaleMode"
+  },
+  "parentGroupName": "71ef0c62c2da648b3855"
+}

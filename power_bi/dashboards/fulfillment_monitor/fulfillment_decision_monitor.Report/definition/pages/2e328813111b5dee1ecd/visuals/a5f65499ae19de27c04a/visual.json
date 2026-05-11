@@ -20,7 +20,7 @@
                 "name": {
                   "expr": {
                     "Literal": {
-                      "Value": "'info-icon.svg'"
+                      "Value": "'info-icon-white.svg'"
                     }
                   }
                 },
@@ -29,7 +29,7 @@
                     "ResourcePackageItem": {
                       "PackageName": "RegisteredResources",
                       "PackageType": 1,
-                      "ItemName": "info-icon23483565090016834.svg"
+                      "ItemName": "info-icon-white1570507401104062.svg"
                     }
                   }
                 },
@@ -45,7 +45,7 @@
             "effects": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
                 }
               }
             },
