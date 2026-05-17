@@ -1,0 +1,2 @@
+EVALUATE
+	LASTDATE(seller_weekly_fact[week_start_date])

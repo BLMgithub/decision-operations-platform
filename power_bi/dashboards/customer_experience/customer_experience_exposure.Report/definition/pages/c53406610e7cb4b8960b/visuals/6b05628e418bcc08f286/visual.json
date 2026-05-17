@@ -1,0 +1,233 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
+  "name": "6b05628e418bcc08f286",
+  "position": {
+    "x": 0,
+    "y": 57,
+    "z": 1000,
+    "height": 198,
+    "width": 453.63636363636363,
+    "tabOrder": 15003
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Revenue at Risk",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "<=5% (Smooth):",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#004b00"
+                    }
+                  },
+                  {
+                    "value": " Minimal friction; lead times meet standard SLAs.",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  }
+                ],
+                "listType": "bullet"
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "6%–15% (At Risk):",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#f28c28"
+                    }
+                  },
+                  {
+                    "value": " High exposure; audit Segment units with 3+ day delays.",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  }
+                ],
+                "listType": "bullet"
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "> 15% (Critical)",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#a1343c"
+                    }
+                  },
+                  {
+                    "value": ": Systemic bottleneck; urgently reallocate carrier capacity.",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  }
+                ],
+                "listType": "bullet"
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": ""
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "MoM Buyer Drop-off Rate",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "<=15% (Healthy)",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#004b00"
+                    }
+                  },
+                  {
+                    "value": ": Natural cycle; drop-off is within expected range.",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  }
+                ],
+                "listType": "bullet"
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "16%–30% (Attrition):",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#f28c28"
+                    }
+                  },
+                  {
+                    "value": " Retention gap; likely delivery delay spillover.",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  }
+                ],
+                "listType": "bullet"
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "> 30% (Abandonment)",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#a1343c"
+                    }
+                  },
+                  {
+                    "value": ": Critical loss; CX failure requires LTV recovery plan.",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  }
+                ],
+                "listType": "bullet"
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": ""
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "Cancellation Rate",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "<=2% (Standard)",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#004b00"
+                    }
+                  },
+                  {
+                    "value": ": Baseline friction; payment issues or buyer remorse.",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  }
+                ],
+                "listType": "bullet"
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "3%–5% (Strained)",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#f28c28"
+                    }
+                  },
+                  {
+                    "value": ": Lead time and transparency issues driving churn.",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  }
+                ],
+                "listType": "bullet"
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "> 5% (Failure)",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#a1343c"
+                    }
+                  },
+                  {
+                    "value": ": Trust breakdown; systemic inventory or delivery lag.",
+                    "textStyle": {
+                      "fontSize": "9pt"
+                    }
+                  }
+                ],
+                "listType": "bullet"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "parentGroupName": "b2bc5fc0c4fceb9f1b98"
+}

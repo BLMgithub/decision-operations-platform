@@ -1,0 +1,120 @@
+DEFINE
+	VAR __DS0FilterTable = 
+		TREATAS({"February"}, 'calendar_dates'[Month Name])
+
+	VAR __DS0FilterTable2 = 
+		TREATAS({10}, 'table_items'[table_items])
+
+	VAR __DS0FilterTable3 = 
+		TREATAS({1}, 'paging_helper'[paging_helper])
+
+	VAR __DS0FilterTable4 = 
+		TREATAS({1}, 'std_dev_boundary'[std_dev_boundary])
+
+	VAR __DS0FilterTable5 = 
+		TREATAS({2024}, 'calendar_dates'[Year])
+
+	VAR __ValueFilterConstraintDM0 = 
+		SUMMARIZECOLUMNS(
+			'seller_dim'[seller_id_int],
+			'calendar_dates'[Week Number],
+			__DS0FilterTable,
+			__DS0FilterTable2,
+			__DS0FilterTable3,
+			__DS0FilterTable4,
+			__DS0FilterTable5,
+			"matrix_slippage_tracker", 'calculations'[matrix_slippage_tracker]
+		)
+
+	VAR __ValueFilterDM0 = 
+		FILTER(
+			KEEPFILTERS(
+				SUMMARIZECOLUMNS(
+					'seller_dim'[seller_id_int],
+					__DS0FilterTable,
+					__DS0FilterTable2,
+					__DS0FilterTable3,
+					__DS0FilterTable4,
+					__DS0FilterTable5,
+					__ValueFilterConstraintDM0,
+					"seller_at_risk", IGNORE('calculations'[seller_at_risk]),
+					"item_rank_filter", IGNORE('calculations'[item_rank_filter]),
+					"revenue_at_risk", IGNORE('calculations'[revenue_at_risk])
+				)
+			),
+			AND(AND([seller_at_risk] = 1, [item_rank_filter] = 1), [revenue_at_risk] <> 0)
+		)
+
+	VAR __DS0Core = 
+		SUMMARIZECOLUMNS(
+			'seller_dim'[seller_id_int],
+			ROLLUPADDISSUBTOTAL('calendar_dates'[Week Number], "IsGrandTotalColumnTotal"),
+			__DS0FilterTable,
+			__DS0FilterTable2,
+			__DS0FilterTable3,
+			__DS0FilterTable4,
+			__DS0FilterTable5,
+			__ValueFilterDM0,
+			"matrix_slippage_tracker", 'calculations'[matrix_slippage_tracker]
+		)
+
+	VAR __DS0CoreOnlyOutputTotals = 
+		SELECTCOLUMNS(
+			KEEPFILTERS(FILTER(KEEPFILTERS(__DS0Core), [IsGrandTotalColumnTotal] = FALSE)),
+			"'seller_dim'[seller_id_int]", 'seller_dim'[seller_id_int],
+			"'calendar_dates'[Week Number]", 'calendar_dates'[Week Number],
+			"matrix_slippage_tracker", [matrix_slippage_tracker]
+		)
+
+	VAR __DS0CoreTableByDM0 = 
+		SELECTCOLUMNS(
+			KEEPFILTERS(FILTER(KEEPFILTERS(__DS0Core), [IsGrandTotalColumnTotal] = TRUE)),
+			"'seller_dim'[seller_id_int]", 'seller_dim'[seller_id_int],
+			"SortBy_DM0_0", [matrix_slippage_tracker]
+		)
+
+	VAR __DS0PrimaryWithSortColumns = 
+		NATURALLEFTOUTERJOIN(
+			SUMMARIZE(__DS0Core, 'seller_dim'[seller_id_int]),
+			__DS0CoreTableByDM0
+		)
+
+	VAR __DS0PrimaryWindowed = 
+		TOPN(101, __DS0PrimaryWithSortColumns, [SortBy_DM0_0], 0, 'seller_dim'[seller_id_int], 1)
+
+	VAR __DS0SecondaryBase = 
+		SUMMARIZE(__DS0CoreOnlyOutputTotals, 'calendar_dates'[Week Number])
+
+	VAR __DS0Secondary = 
+		TOPN(102, __DS0SecondaryBase, 'calendar_dates'[Week Number], 1)
+
+	VAR __DS0BodyLimited = 
+		NATURALLEFTOUTERJOIN(
+			__DS0PrimaryWindowed,
+			SUBSTITUTEWITHINDEX(
+				__DS0CoreOnlyOutputTotals,
+				"ColumnIndex",
+				__DS0Secondary,
+				'calendar_dates'[Week Number],
+				ASC
+			)
+		)
+
+EVALUATE
+	GROUPBY(
+		__DS0CoreOnlyOutputTotals,
+		"Minmatrix_slippage_tracker", MINX(CURRENTGROUP(), [matrix_slippage_tracker]),
+		"Maxmatrix_slippage_tracker", MAXX(CURRENTGROUP(), [matrix_slippage_tracker])
+	)
+
+EVALUATE
+	__DS0Secondary
+
+ORDER BY
+	'calendar_dates'[Week Number]
+
+EVALUATE
+	__DS0BodyLimited
+
+ORDER BY
+	[SortBy_DM0_0] DESC, 'seller_dim'[seller_id_int], [ColumnIndex]

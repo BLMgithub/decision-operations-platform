@@ -1,0 +1,16 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
+  "name": "008b7c3782402a365cc7",
+  "position": {
+    "x": 21.437543614794137,
+    "y": 393.02163293789249,
+    "z": 5000,
+    "height": 300.12561060711789,
+    "width": 619.00907187718065,
+    "tabOrder": 3000
+  },
+  "visualGroup": {
+    "displayName": "revenue-exposure",
+    "groupMode": "ScaleMode"
+  }
+}

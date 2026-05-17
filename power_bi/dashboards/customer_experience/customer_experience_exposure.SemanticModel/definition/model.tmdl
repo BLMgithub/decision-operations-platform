@@ -1,0 +1,26 @@
+model Model
+	culture: en-PH
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_QueryOrder = ["customer_dim","customer_weekly_fact","calendar_table","source_last_update","calculations"]
+
+annotation PBI_ProTooling = ["DevMode","DaxQueryView_Desktop"]
+
+ref table customer_dim
+ref table DateTableTemplate_194af432-c826-4071-8692-34f439c2e3d5
+ref table LocalDateTable_ac18b08d-e573-46e4-b21a-1fa80555f5f9
+ref table customer_weekly_fact
+ref table calendar_table
+ref table source_last_update
+ref table LocalDateTable_603487f3-a6af-4cf2-87ed-b339d8f0451c
+ref table calculations
+ref table delay_threshold_parameter
+
+ref cultureInfo en-PH
+

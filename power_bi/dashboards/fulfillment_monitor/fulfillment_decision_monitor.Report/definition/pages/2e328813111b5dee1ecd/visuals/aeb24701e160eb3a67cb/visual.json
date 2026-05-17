@@ -1,0 +1,16 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
+  "name": "aeb24701e160eb3a67cb",
+  "position": {
+    "x": 754.44444444444525,
+    "y": 395.66240111185118,
+    "z": 0,
+    "height": 301.744966442953,
+    "width": 506.84563758389254,
+    "tabOrder": 7000
+  },
+  "visualGroup": {
+    "displayName": "intervention-list",
+    "groupMode": "ScaleMode"
+  }
+}

@@ -1,0 +1,108 @@
+table product_dim
+	lineageTag: 7b6f6765-cf09-4cc6-9991-373c278e0eae
+
+	column product_id_int
+		dataType: int64
+		formatString: 0
+		lineageTag: 4f8a878c-146c-4091-aadd-ed9390c44264
+		summarizeBy: none
+		sourceColumn: product_id_int
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_category_name
+		dataType: string
+		lineageTag: 10034688-a4d8-4857-ba89-4c482c95881a
+		summarizeBy: none
+		sourceColumn: product_category_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_length_cm
+		dataType: double
+		lineageTag: 7587d750-702e-4311-ba47-b58eb6488aad
+		summarizeBy: none
+		sourceColumn: product_length_cm
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column product_height_cm
+		dataType: double
+		lineageTag: d47e7c65-220b-414e-a69f-059d44b17935
+		summarizeBy: none
+		sourceColumn: product_height_cm
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column product_width_cm
+		dataType: double
+		lineageTag: 46172de0-4f5b-4a40-abc1-96dae8f7e2bd
+		summarizeBy: none
+		sourceColumn: product_width_cm
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column product_fragility_index
+		dataType: string
+		lineageTag: 8f2333ff-0d7a-4f45-9416-a755a9a3883f
+		summarizeBy: none
+		sourceColumn: product_fragility_index
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_weight_g
+		dataType: double
+		lineageTag: 8042e903-810a-4760-9b73-a8260072d5f2
+		summarizeBy: none
+		sourceColumn: product_weight_g
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column supplier_tier
+		dataType: string
+		lineageTag: f6bef4e7-6618-4bce-a56d-5b5fb791c089
+		summarizeBy: none
+		sourceColumn: supplier_tier
+
+		annotation SummarizationSetBy = Automatic
+
+	column size_bucket =
+			
+			SWITCH(
+			    TRUE(),
+			    [product_weight_g] < 1000, "Small",
+			    [product_weight_g] < 5000, "Standard",
+			    [product_weight_g] < 10000, "Heavy",
+			    "Oversize"
+			)
+		lineageTag: cb392f7a-7e82-4b12-a7a4-42772ca9b746
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column string_product_id = CONVERT(product_dim[product_id_int], STRING)
+		lineageTag: ffaa83ac-d6f3-4fb2-abb7-a3b6940e76f3
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition product_dim = m
+		mode: import
+		source =
+				let
+				    Source = Value.NativeQuery(GoogleBigQuery.Database([Implementation="2.0", UseStorageApi=false]){[Name="project-877b0f21-c8c1-4367-888"]}[Data], "SELECT * FROM `project-877b0f21-c8c1-4367-888.product_semantic.published_product_dim`", null, [EnableFolding=true])
+				in
+				    Source
+
+	annotation PBI_ResultType = Table
+

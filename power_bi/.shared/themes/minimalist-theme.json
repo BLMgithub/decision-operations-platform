@@ -1,0 +1,240 @@
+﻿{
+    "name": "minimalist-theme",
+    "dataColors": [
+        "#5C86A8",
+        "#BBBBBE",
+        "#333333",
+        "#006400",
+        "#A1343C",
+        "#C8C6C4",
+        "#F28C28",
+        "#D64550",
+        "#3599B8",
+        "#DFBFBF",
+        "#4AC5BB",
+        "#5F6B6D",
+        "#FB8281",
+        "#F4D25A",
+        "#7F898A",
+        "#A4DDEE",
+        "#FDAB89",
+        "#B687AC",
+        "#28738A",
+        "#A78F8F",
+        "#168980",
+        "#293537",
+        "#BB4A4A",
+        "#B59525",
+        "#475052",
+        "#6A9FB0",
+        "#BD7150",
+        "#7B4F71",
+        "#1B4D5C",
+        "#706060",
+        "#0F5C55",
+        "#1C2325"
+    ],
+    "neutral": "#FFFFFF",
+    "good": "#006400",
+    "bad": "#A1343C",
+    "textClasses": {
+        "label": {
+            "fontFace": "wf_standard-font",
+            "fontSize": 10
+        },
+        "title": {
+            "fontSize": 12
+        },
+        "header": {
+            "fontFace": "wf_standard-font"
+        },
+        "callout": {
+            "fontSize": 13,
+            "fontFace": "wf_standard-font"
+        }
+    },
+    "visualStyles": {
+        "*": {
+            "*": {
+                "border": [
+                    {
+                        "show": false
+                    }
+                ],
+                "background": [
+                    {
+                        "show": false
+                    }
+                ],
+                "visualTooltip": [
+                    {
+                        "type": "Default"
+                    }
+                ],
+                "padding": [
+                    {
+                        "top": 10,
+                        "left": 10,
+                        "bottom": 10,
+                        "right": 10
+                    }
+                ]
+            }
+        },
+        "page": {
+            "*": {
+                "outspace": [
+                    {
+                        "transparency": 0
+                    }
+                ]
+            }
+        },
+        "lineChart": {
+            "*": {
+                "valueAxis": [
+                    {
+                        "show": true,
+                        "showAxisTitle": true,
+                        "titleFontSize": 11,
+                        "titleBold": false
+                    }
+                ],
+                "categoryAxis": [
+                    {
+                        "showAxisTitle": false
+                    }
+                ],
+                "lineStyles": [
+                    {
+                        "showMarker": true
+                    }
+                ],
+                "seriesLabels": [
+                    {
+                        "show": false
+                    }
+                ]
+            }
+        },
+        "scatterChart": {
+            "*": {
+                "legend": [
+                    {
+                        "showGradientLegend": true
+                    }
+                ],
+                "categoryAxis": [
+                    {
+                        "showAxisTitle": true,
+                        "titleFontSize": 9
+                    }
+                ],
+                "valueAxis": [
+                    {
+                        "show": true,
+                        "showAxisTitle": true,
+                        "titleFontSize": 9
+                    }
+                ],
+                "bubbles": [
+                    {
+                        "bubbleSize": -5
+                    }
+                ],
+                "markers": [
+                    {
+                        "transparency": 50,
+                        "borderWidth": 1
+                    }
+                ]
+            }
+        },
+        "clusteredColumnChart": {
+            "*": {
+                "valueAxis": [
+                    {
+                        "showAxisTitle": true
+                    }
+                ],
+                "legend": [
+                    {
+                        "position": "TopCenter",
+                        "showTitle": false
+                    }
+                ]
+            }
+        },
+        "pivotTable": {
+            "*": {
+                "grid": [
+                    {
+                        "rowPadding": 4.5,
+                        "textSize": 10
+                    }
+                ],
+                "columnHeaders": [
+                    {
+                        "alignment": "Center",
+                        "columnAdjustment": "growToFit",
+                        "wordWrap": false
+                    }
+                ],
+                "values": [
+                    {
+                        "fontSize": 9,
+                        "bold": false,
+                        "wordWrap": true
+                    }
+                ],
+                "subTotals": [
+                    {
+                        "columnSubtotals": false,
+                        "rowSubtotals": false
+                    }
+                ],
+                "stylePreset": [
+                    {
+                        "name": "None"
+                    }
+                ]
+            }
+        },
+        "cardVisual": {
+            "*": {
+                "layout": [
+                    {
+                        "cellPadding": 10,
+                        "alignment": "center"
+                    }
+                ],
+                "outline": [
+                    {
+                        "show": true,
+                        "weight": 1
+                    }
+                ],
+                "accentBar": [
+                    {
+                        "show": true,
+                        "position": "Left",
+                        "width": 4,
+                        "transparency": 26
+                    }
+                ],
+                "value": [
+                    {
+                        "fontSize": 23,
+                        "horizontalAlignment": "left"
+                    }
+                ],
+                "label": [
+                    {
+                        "fontSize": 12,
+                        "position": "belowValue"
+                    }
+                ]
+            }
+        }
+    }
+}

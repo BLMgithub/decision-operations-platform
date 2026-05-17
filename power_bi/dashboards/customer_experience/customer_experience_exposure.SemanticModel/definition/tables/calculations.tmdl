@@ -1,0 +1,254 @@
+table calculations
+	lineageTag: ea7054fe-5371-46bb-b02b-24e1fb62819f
+
+	measure total_revenue = SUM(customer_weekly_fact[weekly_revenue])
+		displayFolder: _prerequisite_measures
+		lineageTag: 3929bc83-61ab-4f7c-882d-972a792340cf
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure total_order = SUM(customer_weekly_fact[weekly_order_count])
+		formatString: 0
+		displayFolder: _prerequisite_measures
+		lineageTag: db91d7e5-705c-41cc-af23-a2c7070641bb
+
+	measure total_delivered = SUM(customer_weekly_fact[weekly_delivered_orders])
+		formatString: 0
+		displayFolder: _prerequisite_measures
+		lineageTag: 15bc7c4f-705b-48c7-943d-e89b2fb6521e
+
+	measure total_cancelled = SUM(customer_weekly_fact[weekly_cancelled_orders])
+		formatString: 0
+		displayFolder: _prerequisite_measures
+		lineageTag: 0501b341-4035-48f1-9916-115657ef27cc
+
+	measure cancellation_rate = DIVIDE([total_cancelled], [total_order], 0)
+		displayFolder: KPI_measures
+		lineageTag: 45a9294d-fd79-4c1f-a480-c3fbdbbf653b
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure weighted_avg_delivery_delay = ```
+			
+			    DIVIDE(
+			        SUMX(customer_weekly_fact, 
+			        customer_weekly_fact[weekly_avg_delivery_delay] * customer_weekly_fact[weekly_order_count]),
+			        [total_order],
+			        0
+			    )
+			```
+		displayFolder: visual_measures
+		lineageTag: 6684ce45-9bf7-4eff-8f45-a10ec2ad61d0
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure weighted_avg_approval_lag = ```
+			
+			    DIVIDE(
+			        SUMX(customer_weekly_fact, 
+			        customer_weekly_fact[weekly_avg_approval_lag] * customer_weekly_fact[weekly_order_count]),
+			        [total_order],
+			        0
+			    )
+			```
+		displayFolder: visual_measures
+		lineageTag: 03542da5-3b1c-49ac-8056-a658d882fcdd
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure weighted_avg_lead_time = ```
+			
+			    DIVIDE(
+			        SUMX(customer_weekly_fact,
+			        customer_weekly_fact[weekly_avg_lead_time] * customer_weekly_fact[weekly_order_count]),
+			        [total_order],
+			        0
+			    )
+			```
+		formatString: 0
+		displayFolder: visual_measures
+		lineageTag: 6dfd2456-af49-4f3b-913c-9039909bef88
+
+	measure revenue_at_risk = ```
+			
+			VAR threshold = SELECTEDVALUE(delay_threshold_parameter[threshold_parameter], 3)
+			
+			VAR result = 
+			    CALCULATE(
+			        [total_revenue],
+			        FILTER(
+			            customer_weekly_fact,
+			            customer_weekly_fact[weekly_avg_delivery_delay] >= threshold
+			        )
+			    )
+			
+			RETURN
+			    IF(ISBLANK(result), 0, result)
+			```
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		displayFolder: KPI_measures
+		lineageTag: 7d6c2e30-d1a2-46ea-af51-1d6601d9f72c
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure bubble_size_sensitivity = [revenue_at_risk] ^ 0.8
+		displayFolder: visual_measures
+		lineageTag: caa3369c-5a1f-4577-a068-cd847c2c1b70
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure active_customer_prev_month =
+			
+			CALCULATE(
+			    DISTINCTCOUNT(customer_weekly_fact[customer_id_int]),
+			    DATEADD(calendar_table[Date], -1, MONTH)
+			)
+		formatString: 0
+		displayFolder: _prerequisite_measures
+		lineageTag: a893c41b-892a-43e5-bb50-bf41dd80b942
+
+	measure MoM_drop_off_customers = ```
+			
+			VAR prev_period_customer = 
+			    CALCULATETABLE(
+			        DISTINCT(customer_weekly_fact[customer_id_int]),
+			        DATEADD(calendar_table[Date], -1, MONTH)
+			    )
+			VAR current_period_customers =
+			    CALCULATETABLE(
+			        DISTINCT(customer_weekly_fact[customer_id_int]),
+			        calendar_table[Month Name] =  SELECTEDVALUE(calendar_table[Month Name])
+			    )
+			
+			VAR lost_customers =
+			    EXCEPT(prev_period_customer, current_period_customers)
+			
+			RETURN
+			    COUNTROWS(lost_customers)
+			```
+		formatString: 0
+		displayFolder: _prerequisite_measures
+		lineageTag: dfcf63e0-f71b-4e42-b50b-e4a8b4589a9a
+
+	measure MoM_drop_off_rate = DIVIDE([MoM_drop_off_customers], [active_customer_prev_month], 0)
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: KPI_measures
+		lineageTag: 2715454e-09da-470d-922b-fbb6f24da22f
+
+	measure tooltip_avg_approval_lag = ```
+			
+			    CONCATENATE(
+			        FORMAT([weighted_avg_approval_lag], "0.00"), 
+			        " Days"
+			    )
+			```
+		displayFolder: visual_measures_tooltip
+		lineageTag: 0754a743-8d90-4ccc-ac03-9f4bc756b103
+
+	measure tooltip_avg_lead_time = ```
+			
+			    CONCATENATE(
+			        FORMAT([weighted_avg_lead_time], "0.00"), 
+			        " Days"
+			    )
+			```
+		displayFolder: visual_measures_tooltip
+		lineageTag: c2763e7d-4ead-4ab6-a22d-2da66d89d4b0
+
+	measure tooltip_highlight_top_3 =
+			
+			VAR state_rank =
+			    RANKX(
+			        ALLSELECTED(customer_dim[customer_state]),
+			        [revenue_at_risk],
+			        ,
+			        DESC,
+			        Dense
+			    )
+			RETURN
+			    IF(state_rank <= 3, "#5C86A8", "#999999")
+		displayFolder: visual_measures_tooltip
+		lineageTag: fc1634de-7fbf-42bf-b9ec-5e5d5bd90d07
+
+	measure tooltip_revenue_at_risk = ```
+			
+			    IF(
+			        [revenue_at_risk] < 1000000, 
+			        FORMAT([revenue_at_risk], "$#,##0, K"), 
+			        FORMAT([revenue_at_risk], "$#,##0,, M")
+			    )
+			```
+		displayFolder: visual_measures_tooltip
+		lineageTag: 8ff5f460-04fa-47d9-a343-3bbd122747d1
+
+	measure last_source_update = MAX(source_last_update[Last_Update_Time])
+		formatString: General Date
+		displayFolder: visual_measures
+		lineageTag: cfe0b696-15ed-464d-aaa4-8944153ba858
+
+	measure tooltip_total_order = ```
+			
+			IF(
+			    FORMAT([total_order], "0"), 
+			    FORMAT([total_order], "#,##0,.00 K")
+			    ) 
+			```
+		displayFolder: visual_measures_tooltip
+		lineageTag: 6d10ab63-c1b1-4ef7-8fac-55052582eee2
+
+	measure tooltip_avg_delivery_delay = ```
+			
+			    CONCATENATE(
+			        FORMAT([weighted_avg_delivery_delay], "0.00"), 
+			        " Days"
+			    )
+			```
+		displayFolder: visual_measures_tooltip
+		lineageTag: 75e5f83f-799d-40af-97b7-2ba083b60bc6
+
+	measure active_customer_current =
+			
+			CALCULATE(
+			    DISTINCTCOUNT(customer_weekly_fact[customer_id_int]),
+			    calendar_table[Month Name] =  SELECTEDVALUE(calendar_table[Month Name])
+			)
+		formatString: 0
+		displayFolder: _prerequisite_measures
+		lineageTag: 76690043-3ed2-4951-a6b2-34b91208da98
+
+	measure tooltip_MoM_drop_off_customer = ```
+			
+			IF(
+			    FORMAT([MoM_drop_off_customers], "0"), 
+			    FORMAT([MoM_drop_off_customers], "#,##0,.00 K")
+			    ) 
+			```
+		displayFolder: visual_measures_tooltip
+		lineageTag: 9be18fbc-0031-4553-be85-70588e446576
+
+	measure scatter_view_adjustment = [weighted_avg_delivery_delay] * 1
+		displayFolder: visual_measures
+		lineageTag: 8d66a35c-41cc-4d90-b47e-6e348ace324d
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure color_format_revenue_at_risk = DIVIDE([revenue_at_risk], [total_revenue])
+		displayFolder: visual_measures
+		lineageTag: d78e2ffd-10af-464d-8e73-9e30362a9016
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition calculations = m
+		mode: import
+		source =
+				let
+				    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Column1 = _t]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Column1", type text}}),
+				    #"Removed Columns" = Table.RemoveColumns(#"Changed Type",{"Column1"})
+				in
+				    #"Removed Columns"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

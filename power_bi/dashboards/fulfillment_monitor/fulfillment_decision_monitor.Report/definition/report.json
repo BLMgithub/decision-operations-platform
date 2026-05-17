@@ -1,0 +1,143 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/report/3.2.0/schema.json",
+  "themeCollection": {
+    "baseTheme": {
+      "name": "CY26SU04",
+      "reportVersionAtImport": {
+        "visual": "2.8.0",
+        "report": "3.2.0",
+        "page": "2.3.1"
+      },
+      "type": "SharedResources"
+    },
+    "customTheme": {
+      "name": "minimalist-theme9017827215093651.json",
+      "reportVersionAtImport": {
+        "visual": "2.8.0",
+        "report": "3.2.0",
+        "page": "2.3.1"
+      },
+      "type": "RegisteredResources"
+    }
+  },
+  "objects": {
+    "section": [
+      {
+        "properties": {
+          "verticalAlignment": {
+            "expr": {
+              "Literal": {
+                "Value": "'Top'"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "outspacePane": [
+      {
+        "properties": {
+          "expanded": {
+            "expr": {
+              "Literal": {
+                "Value": "false"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "resourcePackages": [
+    {
+      "name": "SharedResources",
+      "type": "SharedResources",
+      "items": [
+        {
+          "name": "CY26SU04",
+          "path": "BaseThemes/CY26SU04.json",
+          "type": "BaseTheme"
+        }
+      ]
+    },
+    {
+      "name": "RegisteredResources",
+      "type": "RegisteredResources",
+      "items": [
+        {
+          "name": "apply-filter-button9453364507194122.svg",
+          "path": "apply-filter-button9453364507194122.svg",
+          "type": "Image"
+        },
+        {
+          "name": "close-icon-white45477472918630135.svg",
+          "path": "close-icon-white45477472918630135.svg",
+          "type": "Image"
+        },
+        {
+          "name": "close-icon-white9848681005486701.svg",
+          "path": "close-icon-white9848681005486701.svg",
+          "type": "Image"
+        },
+        {
+          "name": "close-icon36275792513021987.svg",
+          "path": "close-icon36275792513021987.svg",
+          "type": "Image"
+        },
+        {
+          "name": "default-close-icon-white8991304292905293.svg",
+          "path": "default-close-icon-white8991304292905293.svg",
+          "type": "Image"
+        },
+        {
+          "name": "filter-icon-white20816253170972043.svg",
+          "path": "filter-icon-white20816253170972043.svg",
+          "type": "Image"
+        },
+        {
+          "name": "filter-icon19591755421825552.svg",
+          "path": "filter-icon19591755421825552.svg",
+          "type": "Image"
+        },
+        {
+          "name": "info-icon-white1570507401104062.svg",
+          "path": "info-icon-white1570507401104062.svg",
+          "type": "Image"
+        },
+        {
+          "name": "info-icon1264730808586947.svg",
+          "path": "info-icon1264730808586947.svg",
+          "type": "Image"
+        },
+        {
+          "name": "info-icon41796530286320277.svg",
+          "path": "info-icon41796530286320277.svg",
+          "type": "Image"
+        },
+        {
+          "name": "minimalist-theme9017827215093651.json",
+          "path": "minimalist-theme9017827215093651.json",
+          "type": "CustomTheme"
+        },
+        {
+          "name": "project-logo-08595080001216826.svg",
+          "path": "project-logo-08595080001216826.svg",
+          "type": "Image"
+        },
+        {
+          "name": "seller-fulfillment-DB-BG4718430737174104.svg",
+          "path": "seller-fulfillment-DB-BG4718430737174104.svg",
+          "type": "Image"
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "useStylableVisualContainerHeader": true,
+    "exportDataMode": "AllowSummarized",
+    "defaultDrillFilterOtherVisuals": true,
+    "allowChangeFilterTypes": true,
+    "useEnhancedTooltips": true,
+    "useDefaultAggregateDisplayName": true
+  }
+}

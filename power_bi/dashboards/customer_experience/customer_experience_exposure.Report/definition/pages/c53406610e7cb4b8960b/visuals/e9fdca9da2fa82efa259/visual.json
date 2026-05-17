@@ -1,0 +1,17 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
+  "name": "e9fdca9da2fa82efa259",
+  "position": {
+    "x": 0,
+    "y": 0,
+    "z": 11000,
+    "height": 714.5454545454545,
+    "width": 1280,
+    "tabOrder": 15002
+  },
+  "visualGroup": {
+    "displayName": "info-pane",
+    "groupMode": "ScaleMode"
+  },
+  "isHidden": true
+}

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
+  "name": "5b0f56050dbdb470210e",
+  "position": {
+    "x": 996.02090696470827,
+    "y": 252.12598553506254,
+    "z": 5000,
+    "height": 38.304239401496261,
+    "width": 258.97909303529167,
+    "tabOrder": 2000
+  },
+  "visualGroup": {
+    "displayName": "month-filter",
+    "groupMode": "ScaleMode"
+  },
+  "parentGroupName": "007cb0e05000e0b944b5"
+}

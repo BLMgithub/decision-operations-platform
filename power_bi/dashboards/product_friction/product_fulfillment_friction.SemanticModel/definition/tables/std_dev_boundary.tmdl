@@ -1,0 +1,26 @@
+table std_dev_boundary
+	lineageTag: 41826d7f-4664-459c-96a9-c071d9be3bab
+
+	measure 'std_dev_boundary Value' = SELECTEDVALUE('std_dev_boundary'[std_dev_boundary], 1)
+		formatString: 0
+		lineageTag: a837702f-5714-4780-bd78-8c408849f1a1
+
+	column std_dev_boundary
+		formatString: 0.00
+		lineageTag: 98ffb39d-32bc-4530-bc7c-03f782067b64
+		summarizeBy: none
+		sourceColumn: [Value]
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 0
+				}
+
+		annotation SummarizationSetBy = User
+
+	partition std_dev_boundary = calculated
+		mode: import
+		source = GENERATESERIES(1, 3, 0.25)
+
+	annotation PBI_Id = b2768c75e9f54fdbb439616ec38b6c9e
+

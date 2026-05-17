@@ -1,0 +1,7 @@
+EVALUATE
+SELECTCOLUMNS(
+	INFO.MEASURES(),
+	"Measure Name", [Name],
+	"DAX Expression", [Expression],
+	"Display Folder", [DisplayFolder]
+)

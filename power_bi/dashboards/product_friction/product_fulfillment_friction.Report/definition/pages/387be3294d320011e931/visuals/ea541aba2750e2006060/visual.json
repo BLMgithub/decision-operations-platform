@@ -1,0 +1,16 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
+  "name": "ea541aba2750e2006060",
+  "position": {
+    "x": 662,
+    "y": 104,
+    "z": 4000,
+    "height": 273.32868108862527,
+    "width": 593.10537334263779,
+    "tabOrder": 0
+  },
+  "visualGroup": {
+    "displayName": "fulfillment-product-weight",
+    "groupMode": "ScaleMode"
+  }
+}

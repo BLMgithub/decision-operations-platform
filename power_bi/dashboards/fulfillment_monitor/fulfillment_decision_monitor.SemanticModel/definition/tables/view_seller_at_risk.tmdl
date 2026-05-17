@@ -1,0 +1,47 @@
+table view_seller_at_risk
+	lineageTag: c7d096b7-b4c8-4a7b-95cd-eb9a4adbec08
+
+	column view_seller_at_risk
+		lineageTag: a7fe5a62-9247-4507-907c-135d28016245
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'view_seller_at_risk Order'
+
+		relatedColumnDetails
+			groupByColumn: 'view_seller_at_risk Fields'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'view_seller_at_risk Fields'
+		isHidden
+		lineageTag: aaff20fa-c83b-4149-a2b4-84d3fd996c1b
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'view_seller_at_risk Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'view_seller_at_risk Order'
+		isHidden
+		formatString: 0
+		lineageTag: b25dd96d-e789-4270-95e6-2a3651a8ea02
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition view_seller_at_risk = calculated
+		mode: import
+		source =
+				{
+				    ("seller_at_risk", NAMEOF('calculations'[seller_at_risk]), 0)
+				}
+
+	annotation PBI_Id = 67ff014726614497b222165d01635fd9
+

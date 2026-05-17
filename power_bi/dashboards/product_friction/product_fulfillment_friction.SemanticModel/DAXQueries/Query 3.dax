@@ -1,0 +1,4 @@
+EVALUATE
+{
+	COUNTROWS(product_dim)
+}

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
+  "name": "a1f5b959b41dbfe9d54a",
+  "position": {
+    "x": 15.633587786259541,
+    "y": 398.6564885496183,
+    "z": 9000,
+    "height": 295.08396946564892,
+    "width": 624.36641221374043,
+    "tabOrder": 5000
+  },
+  "visualGroup": {
+    "displayName": "danger-zone-breakdown",
+    "groupMode": "ScaleMode"
+  }
+}

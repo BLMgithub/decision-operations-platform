@@ -1,0 +1,136 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "387be3294d320011e931",
+  "displayName": "Product Friction Monitoring",
+  "displayOption": "FitToPage",
+  "height": 720,
+  "width": 1280,
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "f35a2b09a9bd0bec2307",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "calendar_date"
+              }
+            },
+            "Property": "Year"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "User",
+        "objects": {
+          "general": [
+            {
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objects": {
+    "background": [
+      {
+        "properties": {
+          "image": {
+            "image": {
+              "name": {
+                "expr": {
+                  "Literal": {
+                    "Value": "'product-friction-DB-BG.svg'"
+                  }
+                }
+              },
+              "url": {
+                "expr": {
+                  "ResourcePackageItem": {
+                    "PackageName": "RegisteredResources",
+                    "PackageType": 1,
+                    "ItemName": "product-friction-DB-BG06606806428706213.svg"
+                  }
+                }
+              },
+              "scaling": {
+                "expr": {
+                  "Literal": {
+                    "Value": "'Fill'"
+                  }
+                }
+              }
+            }
+          },
+          "transparency": {
+            "expr": {
+              "Literal": {
+                "Value": "0D"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "outspacePane": [
+      {
+        "properties": {
+          "width": {
+            "expr": {
+              "Literal": {
+                "Value": "245L"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "visualInteractions": [
+    {
+      "source": "1917fc46409138079532",
+      "target": "9b0544fbe80d7674e454",
+      "type": "NoFilter"
+    },
+    {
+      "source": "1917fc46409138079532",
+      "target": "953b2fc43bb07c417443",
+      "type": "NoFilter"
+    },
+    {
+      "source": "1917fc46409138079532",
+      "target": "f0ab910b89032e00d090",
+      "type": "NoFilter"
+    },
+    {
+      "source": "1917fc46409138079532",
+      "target": "a71f1a89eaac6b926945",
+      "type": "NoFilter"
+    },
+    {
+      "source": "1917fc46409138079532",
+      "target": "a98435231599c7a86522",
+      "type": "NoFilter"
+    },
+    {
+      "source": "1917fc46409138079532",
+      "target": "0ca49f7eb7d9d5e029aa",
+      "type": "NoFilter"
+    },
+    {
+      "source": "1917fc46409138079532",
+      "target": "c288efabae8b5780911e",
+      "type": "NoFilter"
+    },
+    {
+      "source": "1917fc46409138079532",
+      "target": "a4ce757b6d0a90b86260",
+      "type": "NoFilter"
+    },
+    {
+      "source": "1917fc46409138079532",
+      "target": "a1d2ac45ea9db4b2078a",
+      "type": "NoFilter"
+    }
+  ]
+}

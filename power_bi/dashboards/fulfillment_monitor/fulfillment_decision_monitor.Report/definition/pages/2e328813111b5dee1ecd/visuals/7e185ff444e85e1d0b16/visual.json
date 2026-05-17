@@ -1,0 +1,16 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
+  "name": "7e185ff444e85e1d0b16",
+  "position": {
+    "x": 20.845053717649872,
+    "y": 101.94710604566374,
+    "z": 10000,
+    "height": 269.23076923076923,
+    "width": 615.38461538461536,
+    "tabOrder": 6000
+  },
+  "visualGroup": {
+    "displayName": "network-speed",
+    "groupMode": "ScaleMode"
+  }
+}

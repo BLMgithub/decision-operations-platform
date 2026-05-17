@@ -1,0 +1,10 @@
+// Welcome to DAX query view! Learn more about DAX queries at https://aka.ms/dax-queries.
+// Right-click on tables, columns, or measures in the data pane to access quick queries, or ask Copilot for help writing DAX.
+
+// Select "Run" to try this sample DAX query.
+EVALUATE
+    ROW(
+		"total_weekly_min_avg_delay", MIN(customer_weekly_fact[weekly_avg_delivery_delay]),
+		"total_weekly_avg_delay", AVERAGE(customer_weekly_fact[weekly_avg_delivery_delay]),
+		"total_weekly_max_avg_delay", MAX(customer_weekly_fact[weekly_avg_delivery_delay])
+	)

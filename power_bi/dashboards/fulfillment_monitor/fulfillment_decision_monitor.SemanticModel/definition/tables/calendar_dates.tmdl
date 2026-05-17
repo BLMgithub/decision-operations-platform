@@ -1,0 +1,107 @@
+table calendar_dates
+	lineageTag: 16c5f41e-77e9-43e9-8acf-9dc4dcff8e02
+	dataCategory: Time
+
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: Short Date
+		lineageTag: 86cd238e-f4d5-4867-8bf3-5bb6c8174a9a
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: 098bf8b4-e238-43dd-a0ff-4e8d68919be8
+		summarizeBy: none
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column Month
+		dataType: int64
+		formatString: 0
+		lineageTag: e582093b-c052-4834-b72d-9acb23efc630
+		summarizeBy: none
+		sourceColumn: Month
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Name'
+		dataType: string
+		lineageTag: a44d2bd4-264d-4d92-a6c9-e50954e34c3a
+		summarizeBy: none
+		sourceColumn: Month Name
+		sortByColumn: Month
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Year Month'
+		dataType: string
+		lineageTag: 06404fbc-5d56-47f8-9b23-2c13bf49fc5f
+		summarizeBy: none
+		sourceColumn: Year Month
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Week Start Date'
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 45fd65e8-1faf-4b53-90c9-031aafcb953a
+		summarizeBy: none
+		sourceColumn: Week Start Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Week Number'
+		dataType: string
+		lineageTag: f5d59099-1865-497e-ab7a-647c57ad0812
+		summarizeBy: none
+		sourceColumn: Week Number
+
+		annotation SummarizationSetBy = Automatic
+
+	partition calendar_dates = m
+		mode: import
+		source = ```
+				let
+				    Source = let
+				    SourceFact = seller_weekly_fact,
+				    MaxDateInFact = Date.From(List.Max(SourceFact[week_start_date])),
+				
+				    // List of dates
+				    StartDate = #date(2022, 12, 26),
+				    EndDate = MaxDateInFact,
+				    CalendarList = List.Dates(StartDate, Duration.Days(EndDate - StartDate) + 1, #duration(1, 0, 0, 0)),
+				    
+				    // Convert to table
+				    #"Converted to Table" = Table.FromList(CalendarList, Splitter.SplitByNothing(), {"Date"}, null, ExtraValues.Error),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Converted to Table",{{"Date", type date}}),
+				    
+				    // Date format columns
+				    #"Added Year" = Table.AddColumn(#"Changed Type", "Year", each Date.Year([Date]), Int64.Type),
+				    #"Added Month" = Table.AddColumn(#"Added Year", "Month", each Date.Month([Date]), Int64.Type),
+				    #"Added Month Name" = Table.AddColumn(#"Added Month", "Month Name", each Date.MonthName([Date]), type text),
+				    #"Added Year Month" = Table.AddColumn(#"Added Month Name", "Year Month", each Text.From([Year]) & "-" & Text.PadStart(Text.From([Month]), 2, "0"), type text),
+				    #"Added Week Number" = Table.AddColumn(#"Added Year Month", "Week Number", each " W" & Text.PadStart(Text.From(Date.WeekOfYear([Date])), 2, "0"), type text),
+				    // #"Added Year Week" = Table.AddColumn(#"Added Year Month", "Year Week", each Text.From([Year]) & " W" & Text.PadStart(Text.From(Date.WeekOfYear([Date])), 2, "0"), type text),
+				    #"Added Week Start Date" = Table.AddColumn(#"Added Week Number", "Week Start Date", each Date.StartOfWeek([Date], Day.Monday), type date)
+				in
+				    #"Added Week Start Date"
+				in
+				    Source
+				```
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
+  "name": "58b0240798e70804e4cc",
+  "position": {
+    "x": 1055,
+    "y": 104.54545443701377,
+    "z": 11500,
+    "height": 36.428571428571431,
+    "width": 189.09090909090907,
+    "tabOrder": 13000
+  },
+  "visualGroup": {
+    "displayName": "max-page-filter",
+    "groupMode": "ScaleMode"
+  },
+  "isHidden": true
+}

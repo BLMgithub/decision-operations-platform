@@ -1,0 +1,4 @@
+EVALUATE
+{
+	DISTINCTCOUNT(customer_dim[customer_id_int])
+}
