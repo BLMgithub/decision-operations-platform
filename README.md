@@ -8,7 +8,40 @@
 ## Overview
 Small to mid-sized organizations are trapped in a cycle where they outgrow the capabilities of spreadsheets but lack the technical infrastructure to migrate to databases. This creates a "structural debt" where the very tools that allow a business to be agile (spreadsheets) are the same tools that make their data fundamentally untrustworthy for scaling or reporting.
 
-### The Solution
+## The Result: Operational Decision Systems
+The ultimate purpose of this defensive architecture is to serve the **Presentation Layer** with absolute reliability. By the time data reaches Power BI, it has been stripped of anomalies, structurally validated, and semantically flattened.
+
+Because the pipeline utilizes **Atomic View Swaps** in BigQuery, the semantic models are updated instantaneously. This guarantees that Power BI scheduled refreshes (Import Mode) never encounter locked tables or partial data, resulting in zero downtime for business consumers.
+
+> **Dynamic Sensitivity Calibration**
+>
+>The reporting suite features interactive "Smoke Detectors." Built with dynamic What-If parameters, these dashboards allow operators to manually adjust alert sensitivity thresholds to match changing business realities (e.g., loosening thresholds during peak holiday seasons).
+>
+> Explore the  **[Power BI Directory](/power_bi)** to read detailed [operational guides](/power_bi/docs) or download the `.pbix` [releases](/power_bi/releases/).
+
+### Customer Experience & Revenue Exposure
+A decision-support system designed to monitor financial risk driven by fulfillment failures. It correlates delivery delays with buyer drop-off rates, allowing leadership to quantify the "cost of friction."
+
+* **Calibration Mechanism:** Utilizes a **Delay Threshold Parameter** to dynamically define what constitutes a critical "Danger Zone" for segment and regional prioritization.
+
+![Customer Experince Image](/assets/screenshots/customer-experience-monitor.png)
+
+### Fulfillment Decision Monitor
+An operational early-warning system that identifies logistics partners and sellers requiring immediate intervention by focusing on statistical deviations in network speed rather than absolute failure.
+
+* **Calibration Mechanism:** Controlled via **Standard Deviation & Slippage Thresholds** to filter out normal variance and flag true systemic slowdowns.
+
+![Fulfillment Decision Monitor](/assets/screenshots/seller-fulfillment-monitor.png)
+
+### Product Friction Monitor
+
+Designed to identify physical and structural fulfillment bottlenecks driven by product specifications (e.g., weight-driven outliers).
+
+* **Calibration Mechanism:** Leverages **Standard Deviation & Slippage Thresholds** applied to *lead-time volatility*, alerting operations teams to route oversize items to specialized freight before delays impact the customer.
+
+![Product Friction Monitor](/assets/screenshots/product-friction-monitor.png)
+
+## The Solution
 This project solves that challenge by delivering a highly resilient, event-driven data pipeline on Google Cloud Platform for reliable operational analytics. It guarantees data integrity through a strict Medallion architecture (Bronze, Silver, Gold) that relies on rigid data contracts and validation gates to catch and isolate bad data early in the lifecycle.
 
 ### Defensive Pipeline Architecture
