@@ -1,7 +1,7 @@
-# DAX Data Dictionary: Product Fulfillment Friction Dashboard
+# DAX Data Dictionary: Product Fulfillment Friction
 
-### Display Folder - <ins>Paging & Navigation Measures</ins>
-*Supports dynamic paging and item ranking to handle large datasets without overwhelming the visual interface.*
+### Paging and Navigation
+*Measures supporting dynamic paging and ranking for large datasets.*
 
 - Measure Name: **`item_rank`**
 - Description: *Ranks products by revenue at risk (descending).*
@@ -22,7 +22,7 @@
 <br>
 
 - Measure Name: **`item_rank_filter`**
-- Description: *Binary flag (1/0) that identifies if a products's rank falls within the currently selected page and page size.*
+- Description: *Binary flag (1/0) identifying if a product's rank falls within the selected page and page size.*
     ```dax
     VAR _page = [paging_helper Value]
     VAR _page_size = [table_items Value]
@@ -47,10 +47,10 @@
 <br>
 
 - Measure Name: **`max_page`**
-- Description: *Calculates the total number of pages available based on the current count of products at risk and the chosen page size.*
+- Description: *Calculates total pages based on the count of products at risk and the selected page size.*
     ```dax
     ROUNDUP(
-        DIVIDE(VALUE([seller_at_risk]), [table_items Value]), 
+        DIVIDE(VALUE([product_at_risk]), [table_items Value]), 
         0
     )
     ```
@@ -58,7 +58,7 @@
 <br>
 
 - Measure Name: **`current_viewed_filter`**
-- Description: *Conditional formatting logic used to highlight products who are both at risk and on the currently viewed page.*
+- Description: *Logic used to highlight products that are at risk and on the currently viewed page.*
     ```dax
     VAR _is_at_risk = [product_at_risk]
     VAR _is_on_page = [item_rank_filter]
@@ -74,7 +74,7 @@
 <br>
 
 - Measure Name: **`page_filter`**
-- Description: *Global filter logic used to restrict the paging slicer to the actual range of data available.*
+- Description: *Restricts the paging slicer to the available data range.*
     ```dax
     VAR _total_items = VALUE([product_at_risk])
     VAR items_per_page = [table_items Value]
@@ -94,11 +94,11 @@
 
 <br>
 
-### <ins>Display Folder - Prerequisites Measures</ins>
-*Fundamental building blocks and base aggregations required for higher-level logic. This section includes primary counts, temporal baselines, and the core outlier detection engine.*
+### Base Measures
+*Aggregations and counts used for temporal baselines and outlier detection.*
 
 - Measure Name: **`total_orders`**
-- Description: *Aggregate count of order items within the filtered period.*
+- Description: *Total count of order items within the selected period.*
     ```dax
     SUM(product_weekly_fact[weekly_order_count])
     ```
@@ -106,7 +106,7 @@
 <br>
 
 - Measure Name: **`avg_delivery_delay`**
-- Description: *Mean days of delay for delivered orders; negative values indicate early delivery.*
+- Description: *Average delivery delay in days.*
     ```dax
     AVERAGE(product_weekly_fact[weekly_avg_delivery_delay])
     ```
@@ -114,7 +114,7 @@
 <br>
 
 - Measure Name: **`total_cancelled`**
-- Description: *Aggregate volume of orders cancelled during the reporting week.*
+- Description: *Total volume of cancelled orders.*
     ```dax
     SUM(product_weekly_fact[weekly_cancelled_orders])
     ```
@@ -122,7 +122,7 @@
 <br>
 
 - Measure Name: **`total_revenue`**
-- Description: *Gross revenue generated across all product categories.*
+- Description: *Gross revenue across all product categories.*
     ```dax
     SUM(product_weekly_fact[weekly_revenue])
     ```
@@ -130,7 +130,7 @@
 <br>
 
 - Measure Name: **`avg_lead_time`**
-- Description: *Mean duration from order creation to final delivery.*
+- Description: *Average duration from order creation to delivery.*
     ```dax
     AVERAGE(product_weekly_fact[weekly_avg_lead_time])
     ```
@@ -138,7 +138,7 @@
 <br>
 
 - Measure Name: **`current_lead_time`**
-- Description: *Context-aware lead time for the specific date selection in visual filters.*
+- Description: *Average lead time for the selected date.*
     ```dax
     CALCULATE([avg_lead_time], calendar_date[Date])
     ```
@@ -146,7 +146,7 @@
 <br>
 
 - Measure Name: **`lead_time_4w_rolling_avg`**
-- Description: *Smoothed fulfillment performance baseline using a 28-day trailing window.*
+- Description: *Fulfillment performance baseline using a 28-day trailing window.*
     ```dax
     AVERAGEX(
         DATESINPERIOD('calendar_date'[Date], 
@@ -158,7 +158,7 @@
 <br>
 
 - Measure Name: **`is_outlier`**
-- Description: *Core "Smoke Detector" logic; flags products where current lead time exceeds the 4-week baseline + 1 StdDev.*
+- Description: *Flags products where lead time exceeds the 28-day baseline + 1 StdDev and the delay is > 0.5 days.*
     ```dax
     VAR slippage_delta = [current_lead_time] - [lead_time_4w_rolling_avg] 
     VAR is_meaningful = IF(slippage_delta > 0.5, 1, 0)
@@ -182,7 +182,7 @@
 <br>
 
 - Measure Name: **`lead_time_slippage`**
-- Description: *Calculates the lead time "Gap" only for products currently flagged as outliers.*
+- Description: *Quantifies lead-time delay in days for products identified as outliers.*
     ```dax
     VAR delta = [current_lead_time] - [lead_time_4w_rolling_avg] 
     RETURN 
@@ -195,11 +195,11 @@
 
 <br>
 
-### <ins>Display Folder - KPI Measures</ins>
-*High-level performance indicators used in cards and executive summaries. These measures quantify the scale of friction by aggregating risk across products and revenue.*
+### KPI Measures
+*Performance indicators used to track fulfillment friction and financial exposure.*
 
 - Measure Name: `product_at_risk`
-- Description: *Count of unique Product IDs currently flagged by the outlier detection logic.*
+- Description: *Count of unique Product IDs identified as outliers.*
     ```dax
     COUNTROWS(
         FILTER(
@@ -212,7 +212,7 @@
 <br>
 
 - Measure Name: `lead_time_volatility`
-- Description: *Statistical unpredictability (StdDev) restricted only to the subset of at-risk products.*
+- Description: *Statistical measure of lead-time variability for at-risk products.*
     ```dax
     VAR at_risk_products = 
         FILTER(
@@ -232,7 +232,7 @@
 <br>
 
 - Measure Name: `revenue_at_risk`
-- Description: *Total financial value currently impacted by fulfillment friction and outliers.*
+- Description: *Total revenue associated with fulfillment delays and outliers.*
     ```dax
     CALCULATE(
         [total_revenue], 
@@ -249,11 +249,11 @@
 
 <br>
 
-### <ins>Display Folder - Visual Measures</ins>
-*Support measures designed for specific charts and UI elements. This includes conditional formatting logic, dynamic axis scaling, and ranking filters for top-impact visuals.*
+### Visual and UI Measures
+*Measures supporting specific charts and UI elements.*
 
 - Measure Name: `product_weight`
-- Description: *Retrieves the static gram weight for the current product in the visual context.*
+- Description: *Weight (in grams) for the selected product.*
     ```dax
     LOOKUPVALUE(
         product_dim[product_weight_g], 
@@ -265,7 +265,7 @@
 <br>
 
 - Measure Name: `product_volume_categ`
-- Description: *Retrieves the weight-based classification (Small, Heavy, etc.) for categorical grouping.*
+- Description: *Weight-based classification (e.g., Small, Heavy) for grouping.*
     ```dax
     LOOKUPVALUE(
         product_dim[size_bucket], 
@@ -277,7 +277,7 @@
 <br>
 
 - Measure Name: `category_range_view`
-- Description: *Dynamic Y-Axis buffer calculation for the Category Revenue bar chart.*
+- Description: *Calculates the Y-Axis range for the Category Revenue chart.*
     ```dax
     VAR highest_value = 
         MAXX(
@@ -292,7 +292,7 @@
 <br>
 
 - Measure Name: `bubble_size_sensitivity`
-- Description: *Exponentially scales marker sizes in scatter plots to enhance visibility of high-impact outliers.*
+- Description: *Scales markers in scatter plots based on revenue risk.*
     ```dax
     [revenue_at_risk] ^ 1.5
     ```
@@ -300,7 +300,7 @@
 <br>
 
 - Measure Name: `top_10_filter_color`
-- Description: *Conditional formatting hex codes for highlighting the Top 10 revenue-at-risk outliers.*
+- Description: *Conditional formatting for the top 10 revenue-at-risk outliers.*
     ```dax
     VAR CurrentRank = 
         RANKX(
@@ -317,26 +317,8 @@
 
 <br>
 
-- Measure Name: `top_20_filter_color`
-- Description: *Conditional formatting hex codes for highlighting the Top 20 revenue-at-risk outliers.*
-    ```dax
-    VAR CurrentRank = 
-        RANKX(
-            ALLSELECTED(product_dim[product_id_int]), 
-            [revenue_at_risk], 
-            , 
-            DESC, 
-            Dense
-        ) 
-
-    RETURN 
-        IF(CurrentRank <= 20, "#5C86A8", "#999999")
-    ```
-
-<br>
-
 - Measure Name: `top_10_product_id`
-- Description: *Visual-level filter logic that enforces a strict 10-row limit regardless of ranking ties.*
+- Description: *Visual filter enforcing a 10-row limit for the top outliers.*
     ```dax
     VAR _rank = 
         RANK(
@@ -361,34 +343,8 @@
 
 <br>
 
-- Measure Name: `top_20_product_id`
-- Description: *Visual-level filter logic that enforces a strict 20-row limit regardless of ranking ties.*
-    ```dax
-    VAR _rank = 
-        RANK(
-            DENSE, 
-            FILTER(
-                ALLSELECTED(product_dim[product_id_int]), 
-                [product_at_risk] = 1
-                ), 
-            ORDERBY([revenue_at_risk], DESC)
-        ) 
-        
-    VAR _top_20 = 
-        IF(
-            _rank <= 20 && 
-            [product_at_risk] = 1, 
-            1, BLANK()
-        ) 
-
-    RETURN 
-        _top_20
-    ```
-
-<br>
-
 - Measure Name: `format_product_id_count`
-- Description: *String-formatted count of at-risk products for use in text-based slicers.*
+- Description: *Formatted count of at-risk products for slicers.*
     ```dax
     VAR _distinct_count = [product_at_risk] 
     VAR format_count = 
@@ -404,7 +360,7 @@
 <br>
 
 - Measure Name: `format_total_orders`
-- Description: *Smart-formatted order volume (K/M) for clean label display.*
+- Description: *Formatted order volume (K/M) for display.*
     ```dax
     VAR order_at_risk = 
         CALCULATE([total_orders], 
@@ -427,7 +383,7 @@
 <br>
 
 - Measure Name: `last_source_update`
-- Description: *Displays the most recent data sync timestamp from the BigQuery source.*
+- Description: *Timestamp of the most recent data sync.*
     ```dax
     MAX(source_last_update_time[Last_Update_Time])
     ```
@@ -438,11 +394,11 @@
 
 <br>
 
-### <ins>Display Folder: Tooltip Visual Measures</ins>
-*Context-specific measures optimized for tooltips. These provide granular details, such as segment breakdowns by weight bucket and formatted currency values, to enhance on-hover interactivity.*
+### Tooltip Measures
+*Measures optimized for formatting and tooltip interactivity.*
 
 - Measure Name: `tooltip_format_revenue`
-- Description: Precision formatting for revenue metrics specifically for hover-over details.
+- Description: *Formatted revenue metrics for tooltips.*
     ```dax
     IF(
         [revenue_at_risk] < 1000000, 
@@ -454,7 +410,7 @@
 <br>
 
 - Measure Name: `tooltip_oversize`
-- Description: *Count of outliers within the "Oversize" weight bucket for tooltip summaries.*
+- Description: *Count of outliers in the "Oversize" weight bucket.*
     ```dax
     COUNTROWS(
         FILTER(
@@ -468,7 +424,7 @@
 <br>
 
 - Measure Name: `tooltip_heavy`
-- Description: *Count of outliers within the "Heavy" weight bucket for tooltip summaries.*
+- Description: *Count of outliers in the "Heavy" weight bucket.*
     ```dax
     COUNTROWS(
         FILTER(
@@ -482,7 +438,7 @@
 <br>
 
 - Measure Name: `tooltip_standard`
-- Description: *Count of outliers within the "Standard" weight bucket for tooltip summaries.*
+- Description: *Count of outliers in the "Standard" weight bucket.*
     ```dax
     COUNTROWS(FILTER(VALUES(product_dim), product_dim[size_bucket] = "Standard" && [is_outlier] = 1))
     ```
@@ -490,7 +446,7 @@
 <br>
 
 - Measure Name: `tooltip_small`
-- Description: *Count of outliers within the "Small" weight bucket for tooltip summaries.*
+- Description: *Count of outliers in the "Small" weight bucket.*
     ```dax
     COUNTROWS(
             FILTER(
@@ -504,7 +460,7 @@
 <br>
 
 - Measure Name: `tooltip_week_start`
-- Description: *Provides the specific week start date context during bar/line hover.*
+- Description: *Week start date context for trend line tooltips.*
     ```dax
     SELECTEDVALUE(calendar_date[Week Start Date])
     ```
@@ -512,7 +468,7 @@
 <br>
 
 - Measure Name: `tooltip_product_id`
-- Description: *Displays the specific Product ID associated with a scatter plot data point.*
+- Description: *Retrieves the Product ID for tooltip labels.*
     ```dax
     SELECTEDVALUE(product_dim[product_id_int])
     ```

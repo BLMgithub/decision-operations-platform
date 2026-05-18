@@ -1,4 +1,4 @@
-# **Data Contract Stage**
+# Data Contract Stage
 
 **Files:**
 * **Executor:** [`contract_executor.py`](../../data_pipeline/contract/contract_executor.py)
@@ -6,72 +6,72 @@
 * **Registrar:** [`id_registrar.py`](../../data_pipeline/contract/id_registrar.py)
 * **Registry:** [`registry.py`](../../data_pipeline/contract/registry.py)
 
-**Role:** Structural Enforcement, Subtractive Filtering, and Discovery-First ID Mapping.
+**Role:** Structural Enforcement, Subtractive Filtering, and ID Mapping.
 
 ![contract-stage-diagram](/assets/diagrams/03-contract-stage-diagram.png)
 
-## **System Contract**
+## System Contract
 
 **Purpose**
-Enforces role-based structural rules and referential integrity on raw snapshots to ensure that only "contract-compliant" records reach the Silver layer. It acts as a gate that prunes malformed data, enforces referential integrity via ID propagation, and freezes the technical schema using a discovery-first integer mapping approach.
+Enforces role-based structural rules and referential integrity on raw snapshots. This stage removes non-compliant records, propagates invalidated IDs to maintain integrity across tables, and applies technical schemas through an integer mapping process.
 
 **Invariants**
-* **Subtractive-Only Row Logic:** With the exception of type casting, this stage never modifies business values or "repairs" data. If a row is non-compliant, it is dropped.
-* **Structural Parity:** Every file within a logical table's contracted zone MUST share an identical schema width and data types to support high-speed vertical concatenation in the Assembly stage.
-* **ID Propagation:** If an `order_id` is invalidated (e.g., due to nulls or unparsable dates), that ID is propagated to child tables to ensure a clean cascade drop.
-* **Discovery-First Mapping:** Guarantees that all UUIDs are resolved and mapped to deterministic `UInt32` integers BEFORE table enforcement begins, preventing join collisions and schema drift.
-* **Final Schema Freeze:** The terminal step for every role always executes `enforce_schema` to project only required columns and cast to strictly defined types.
+* **Subtractive Row Logic:** This stage does not modify business values or impute data. Non-compliant rows are removed.
+* **Structural Parity:** Files within a logical table's contracted zone share identical schema widths and data types to support concatenation in the Assembly stage.
+* **ID Propagation:** If an ID is invalidated (e.g., due to nulls or unparsable dates), that ID is propagated to related tables to ensure a clean cascade removal.
+* **Deterministic Mapping:** Resolves and maps UUIDs to `UInt32` integers before table enforcement to prevent join collisions and schema drift.
+* **Schema Enforcement:** The final step for every role executes `enforce_schema` to project required columns and cast to defined types.
 
 **Inputs**
-* `run_context`: `RunContext` (Path resolution for source raw snapshots and destination contracted zone).
-* `table_name`: `str` (Logical identifier used to look up role-based rules).
-* `master_mappings`: `dict[str, pl.LazyFrame]` (The pre-resolved dictionary of UUID-to-Integer mappings).
-* `invalid_order_ids`: `set` (Blacklist of IDs from preceding tables to be dropped).
-* `valid_order_ids`: `set` (Whitelist of IDs used to ensure child-parent referential integrity).
+* `run_context`: Path resolution for raw snapshots and the contracted zone.
+* `table_name`: Logical identifier for role-based rule lookup.
+* `master_mappings`: Pre-resolved dictionary of UUID-to-Integer mappings.
+* `invalid_order_ids`: IDs from preceding tables to be removed.
+* `valid_order_ids`: IDs used to maintain child-parent referential integrity.
 
 **Outputs**
-* **Contract Report:** `dict` (Telemetry including `initial_rows`, `final_rows`, and counts for each rule applied).
-* **Invalidated IDs:** `set` (New IDs discovered to be non-compliant during this run).
-* **Valid IDs:** `set` (Emitted specifically by the `orders` table to act as a parent whitelist).
-* **Side Effect:** Writes a schema-enforced and integer-mapped Parquet file to the `contracted/` directory.
+* **Contract Report:** Telemetry including `initial_rows`, `final_rows`, and rule application counts.
+* **Invalidated IDs:** IDs identified as non-compliant during the current run.
+* **Valid IDs:** Whitelist of parent IDs emitted by the `orders` table.
+* **Side Effect:** Writes schema-enforced and integer-mapped Parquet files to the `contracted/` directory.
 
-## **Execution Workflow**
+## Execution Workflow
 
-The Contract stage is split into a global Discovery phase and a table-specific Enforcement phase:
+The Contract stage consists of a global Discovery phase and a table-specific Enforcement phase:
 
-### **Phase A: Global Discovery**
-1. **Discover:** Scans all raw sources (CSV/Parquet) for the unique set of UUIDs in the current run.
-2. **Lookup:** Surgically retrieves existing mappings from Cloud Storage.
-3. **Generate:** Maps truly new UUIDs to a continuous integer sequence.
-4. **Promote:** Persists new mapping deltas to local disk and synchronizes them to central storage.
+### Phase A: Global Discovery
+1. **Scan:** Identifies unique UUIDs across all raw sources in the current run.
+2. **Lookup:** Retrieves existing mappings from Cloud Storage.
+3. **Generate:** Maps new UUIDs to a continuous integer sequence.
+4. **Persist:** Saves new mapping deltas to local disk and synchronizes them to central storage.
 
-### **Phase B: Table Enforcement**
-1. **Hydrate:** Fetches the raw snapshot from the lake's snapshot zone.
-2. **Logic Sequencing:** Fetches rules (dedupe, null-checks, cascade drops) from `ROLE_STEPS`.
-3. **Atomic Filtering:** Iteratively applies rules. For `event_fact` roles, it captures IDs triggering violations.
-4. **Structural Freeze:** Executes `enforce_schema` as the final step in the registry sequence to project the required columns.
-5. **ID Mapping:** Joins the filtered and projected DataFrame against the `master_mappings` to attach integer IDs.
-6. **Persistence:** Saves the resulting compliant and integer-mapped dataset to the Silver layer.
+### Phase B: Table Enforcement
+1. **Load:** Retrieves the raw snapshot from the source zone.
+2. **Rule Application:** Executes rules (deduplication, null checks, cascade removals) defined in `ROLE_STEPS`.
+3. **Filtering:** Iteratively applies rules and captures IDs triggering violations for `event_fact` roles.
+4. **Schema Projection:** Executes `enforce_schema` to project the required columns.
+5. **ID Mapping:** Joins the filtered DataFrame against `master_mappings` to attach integer IDs.
+6. **Persistence:** Saves the compliant and mapped dataset to the Silver layer.
 
-## **Boundaries**
+## Boundaries
 
-| This component **DOES** | This component **DOES NOT** |
+| This component | This component does NOT |
 | :--- | :--- |
-| Discover UUIDs across all raw sources (CSV/Parquet) before processing. | Calculate business metrics, KPIs, or aggregates. |
-| Subtractively filter rows violating structural or temporal rules. | Impute missing values or repair malformed records. |
-| Propagate `order_id` invalidations to child tables (Cascade Drop). | Perform cross-table business joins (delegated to Assembly). |
-| Guarantee fixed-width schemas via terminal `enforce_schema`. | Alter business definitions or rename columns. |
-| Map UUIDs to UInt32 primitives for optimized joins. | Handle cross-run global state (delegated to Storage Adapter). |
+| Identifies UUIDs across raw sources before processing. | Calculate business metrics or aggregates. |
+| Removes rows violating structural or temporal rules. | Impute missing values or repair records. |
+| Propagates ID invalidations to child tables. | Perform cross-table business joins. |
+| Enforces fixed-width schemas. | Alter business definitions or rename columns. |
+| Maps UUIDs to UInt32 primitives. | Manage global state across runs. |
 
-## **Failure & Severity Model**
+## Failure & Severity Model
 
-### **Operational Failures (Fatal)**
-* **Discovery Failure:** If mappings cannot be resolved, the pipeline halts to prevent schema corruption.
-* **Schema Breach:** If `enforce_schema` is called but a required column is missing from the source data.
-* **Persistence Failure:** If disk I/O or GCS promotion fails during the write phase.
+### System Failures
+* **Mapping Failure:** If UUID mappings cannot be resolved, the pipeline halts to prevent corruption.
+* **Schema Violation:** Occurs if a required column is missing from the source data during `enforce_schema`.
+* **I/O Failure:** Triggered by disk or cloud storage errors during the write phase.
 
-### **Functional Findings (Warnings)**
-* **Contract Violations:** Data issues (duplicates, nulls) result in row removal and are logged in the telemetry report.
-* **Referential Cleanup:** 
+### Data Findings
+* **Contract Violations:** Data issues result in row removal and are logged in the report.
+* **Referential Integrity:** 
     * **Cascade:** Dropped child records are logged under `removed_cascade_rows`.
-    * **Orphans:** Records without parent references are dropped and logged under `removed_ghost_orphan_rows`.
+    * **Orphans:** Records without parent references are removed and logged under `removed_ghost_orphan_rows`.

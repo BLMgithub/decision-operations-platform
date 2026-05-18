@@ -1,4 +1,4 @@
-# **Assembly Stage**
+# Assembly Stage
 
 **Files:**
 * **Executor:** [`assembly_executor.py`](../../data_pipeline/assembly/assembly_executor.py)
@@ -8,71 +8,71 @@
 
 ![assembled-stage-diagram](/assets/diagrams/04-assemble-stage-diagram.png)
 
-## **System Contract**
+## System Contract
 
 **Purpose**
 
-Integrates multiple normalized relational tables into a unified, analytical "Event" dataset and extracts high-fidelity "Dimension" references. It transforms raw business facts into a ready-to-model state by enforcing cardinality rules, leveraging the Primitive Integer Pipeline for memory efficiency, and calculating temporal performance metrics.
+Integrates normalized relational tables into a unified analytical dataset and extracts dimension references. This stage enforces cardinality rules, applies integer mapping for memory efficiency, and calculates temporal performance metrics.
 
 **Invariants**
-* **Strict Order-ID Grain:** The primary event output is guaranteed to be exactly 1 row per `order_id_int`. Any operation causing cardinality explosion triggers a terminal failure.
-* **Inner-Join Priority:** To maintain analytical integrity, orders without corresponding items are purged.
-* **Temporal Determinism:** All lead times, lags, and delays are calculated as integer-day durations based on validated UTC timestamps pre-normalized to microsecond resolution.
-* **Reference Uniqueness:** Dimension reference tables (Customers, Products) are strictly deduplicated by their primary keys.
+* **Order-ID Grain:** The primary event output maintains a 1:1 grain per `order_id_int`. Cardinality issues trigger a terminal failure.
+* **Join Logic:** Orders without corresponding items are removed to maintain integrity.
+* **Temporal Calculations:** Lead times and delays are calculated as integer-day durations using UTC timestamps.
+* **Reference Uniqueness:** Dimension tables (Customers, Products) are deduplicated by their primary keys.
 
 **Inputs**
-* `run_context`: `RunContext` (Path resolution for Silver/contracted and Gold/assembled zones).
-* **Source Tables:** `df_orders`, `df_order_items`, `df_payments` (from the contracted layer).
+* `run_context`: Path resolution for Silver and Gold zones.
+* **Source Tables:** `df_orders`, `df_order_items`, `df_payments` from the Silver layer.
 
 **Outputs**
-* **Assembly Report:** `dict` (Step-level status and informational logs).
-* **Assembled Events:** `parquet` (The unified analytical order-grain table).
-* **Dimension Refs:** `parquet` (Unique snapshots of customer and product attributes).
+* **Assembly Report:** Status and informational logs for each step.
+* **Assembled Events:** Unified analytical table at the order grain.
+* **Dimension Refs:** Deduplicated snapshots of customer and product attributes.
 
-## **Execution Workflow**
+## Execution Workflow
 
-The **Executor** coordinates two distinct sub-orchestrations:
+The executor manages two distinct workflows:
 
-### **Workflow I: Event Assembly**
-1.  **Batch Load:** Fetches the required triplet (`orders`, `items`, `payments`) from the Silver zone.
-2.  **Merge:** Joins datasets using `merge_data`. It performs an inner join on items and a left join on payments to preserve financial data without losing order context.
-    *   **Optimization:** Employs **Integer-Joins** on pre-mapped `UInt32/UInt64` IDs (e.g., `order_id_int`) provided by the Contract Registrar to drastically reduce memory overhead. Utilizes pre-aggregation on payments and items to ensure a strict 1:1 grain, preventing row explosions.
-3.  **Derivation:** Executes `derive_fields` to calculate fulfillment lead times and extract ISO-calendar attributes.
-    *   **Optimization:** Applies memory-efficient casting (e.g., `Int16` for durations, `Categorical` for repetitive strings) and drops intermediate columns early to minimize row width.
-4.  **Schema Freeze:** Projects the final `ASSEMBLE_SCHEMA` and casts all columns to `ASSEMBLE_DTYPES`.
-    *   **Optimization:** Omitted sorting to enable zero-copy streaming, maintaining a non-blocking execution plan compatible with `sink_parquet()`.
-5.  **Export & Clean:** Persists the table using `sink_parquet()` for streaming output and triggers `gc.collect()` to free memory before dimension processing.
+### Workflow I: Event Assembly
+1.  **Load:** Retrieves `orders`, `items`, and `payments` from the Silver zone.
+2.  **Merge:** Joins datasets using an inner join for items and a left join for payments.
+    *   **Optimization:** Uses integer joins on `UInt32/UInt64` IDs to reduce memory overhead. Pre-aggregates payments and items to ensure a 1:1 grain.
+3.  **Derivation:** Calculates fulfillment lead times and extracts ISO-calendar attributes.
+    *   **Optimization:** Applies data type casting (e.g., `Int16` for durations, `Categorical` for repetitive strings) and drops intermediate columns to reduce memory footprint.
+4.  **Schema Enforcement:** Projects the final `ASSEMBLE_SCHEMA` and casts to `ASSEMBLE_DTYPES`.
+    *   **Optimization:** Skips sorting to enable streaming and non-blocking execution.
+5.  **Export:** Saves the table using `sink_parquet()` for streaming output and triggers garbage collection.
 
-### **Workflow II: Dimension Reference Extraction**
+### Workflow II: Dimension Reference Extraction
 1.  **Selection:** Iterates through the `DIMENSION_REFERENCES` registry.
-2.  **Deduplication:** Extracts the required column subset and drops duplicate primary keys.
-3.  **Export:** Persists each dimension (e.g., `df_customers`) as an independent artifact.
+2.  **Deduplication:** Extracts required columns and removes duplicate primary keys.
+3.  **Export:** Saves each dimension table as an independent artifact.
 
-## **Optimization & Memory Invariants**
+## Optimization & Resource Management
 
-* **Primitive Integer Pipeline:** To operate within 4GB RAM, the pipeline converts 36-byte UUID strings into 8-byte `UInt64` hashes for joins, and 4-byte `UInt32` categoricals for payloads. This is the primary driver of memory efficiency for 36M+ row datasets.
-* **Streaming-First Join:** By deferring aggregations until after raw joins on `order_id`, leveraging Polars' streaming engine to avoid massive, materialized hash tables.
-* **Low-Level Memory Reclamation:** The executor utilizes `ctypes.CDLL('libc.so.6').malloc_trim(0)` at high-water mark transitions. This forces the Linux allocator to release free memory back to the OS, preventing Cloud Run from terminating the process due to bloated (but unused) heap memory.
-* **Zero-Copy Streaming:** `sink_parquet()` is used to prevent the pipeline from fully materializing the assembly result set in memory.
+* **Integer Mapping:** Converts UUID strings to `UInt64` hashes for joins and `UInt32` for payloads. This reduces memory overhead when processing large datasets.
+* **Streaming Joins:** Defers aggregations until after joins, leveraging the Polars streaming engine to avoid large materialized tables.
+* **Memory Reclamation:** Uses `malloc_trim(0)` during high-water mark transitions to release free memory back to the OS.
+* **Zero-Copy Streaming:** Employs `sink_parquet()` to avoid materializing the entire result set in memory.
 
-## **Boundaries**
+## Boundaries
 
-| This component **DOES** | This component **DOES NOT** |
+| This component | This component does NOT |
 | :--- | :--- |
-| Join multiple relational tables into a flat grain. | Perform data cleaning (handled in Contract stage). |
-| Calculate time-deltas (e.g., `lead_time_days`). | Perform complex multi-stage aggregations (delegated to Semantic stage). |
-| Enforce 1:1 cardinality for the final event grain. | Handle schema validation of raw data. |
-| Deduplicate dimension attributes. | Manage partitioning logic (managed by the loader/exporter). |
-| Manage peak memory via explicit `gc` triggers and concurrency control. | Change historical values or re-map IDs. |
-| Utilize Hash-Joins for high-cardinality keys. | Perform blocking sorts on large datasets. |
+| Joins relational tables into a flat grain. | Perform data cleaning (handled in Contract stage). |
+| Calculates time-deltas (e.g., lead times). | Perform multi-stage aggregations (delegated to Semantic stage). |
+| Enforces 1:1 cardinality for the event grain. | Validate raw data schemas. |
+| Deduplicates dimension attributes. | Manage partitioning logic. |
+| Manages peak memory and garbage collection. | Change historical values or re-map IDs. |
+| Uses Hash-Joins for high-cardinality keys. | Perform blocking sorts on large datasets. |
 
-## **Failure & Severity Model**
+## Failure & Severity Model
 
-### **Operational Failures (System Level)**
-* **Task Failure:** Individual transformation steps (Merge, Derive, Freeze) are wrapped in a fail-safe `task_wrapper`. Exceptions are trapped, logged, and return a `failed` status for that step.
-* **Executor Trapping:** The top-level orchestration in `assembly_executor.py` uses `try-except-finally` blocks to catch and log unexpected pipeline crashes while ensuring memory reclamation.
-* **Loading Missing Table:** If a required table (e.g., `df_orders`) is missing from the Silver zone, the stage returns `failed` immediately.
-* **Export Failure:** Disk I/O errors or path resolution issues during the `export_file` call halt the lifecycle.
+### System Failures
+* **Task Failure:** Transformation steps are wrapped in a handler that logs exceptions and returns a failure status.
+* **Executor Safety:** Top-level orchestration uses `try-except-finally` blocks to catch crashes and ensure resource cleanup.
+* **Missing Data:** If a required table is missing from the Silver zone, the stage fails.
+* **I/O Failure:** Storage or path errors during export halt the lifecycle.
 
-### **Functional Findings (Data Level)**
-* **Partial Payments:** Orders without payments are allowed (via Left Join); the system fills these with `None/NaN`, which is considered a valid business state rather than a failure.
+### Data Findings
+* **Optional Joins:** Orders without payments are allowed; the system fills missing values with nulls, which is treated as a valid state.

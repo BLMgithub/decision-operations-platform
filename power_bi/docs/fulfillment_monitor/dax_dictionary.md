@@ -1,10 +1,10 @@
-# DAX Data Dictionary: Fulfillment Decision Monitor Dashboard
+# DAX Data Dictionary: Fulfillment Decision Monitor
 
-### Display Folder - <ins>Paging & Navigation Measures</ins>
-*Supports dynamic paging and item ranking to handle large datasets without overwhelming the visual interface.*
+### Paging and Navigation
+*Measures supporting dynamic paging and ranking for large datasets.*
 
 - Measure Name: **`item_rank`**
-- Description: *Ranks sellers by latency slippage (descending) specifically for those with revenue at risk.*
+- Description: *Ranks sellers by latency slippage (descending) for those with revenue at risk.*
     ```dax
     CALCULATE(
         RANKX(
@@ -17,7 +17,7 @@
 <br>
 
 - Measure Name: **`item_rank_filter`**
-- Description: *Binary flag (1/0) that identifies if a seller's rank falls within the currently selected page and page size.*
+- Description: *Binary flag (1/0) identifying if a seller's rank falls within the selected page and page size.*
     ```dax
     VAR _page = [paging_helper Value]
     VAR _page_size = [table_items Value]
@@ -37,7 +37,7 @@
 <br>
 
 - Measure Name: **`max_page`**
-- Description: *Calculates the total number of pages available based on the current count of sellers at risk and the chosen page size.*
+- Description: *Calculates total pages based on the count of sellers at risk and the selected page size.*
     ```dax
     ROUNDUP(
         DIVIDE(VALUE([seller_at_risk]), [table_items Value]), 
@@ -48,7 +48,7 @@
 <br>
 
 - Measure Name: **`current_viewed_filter`**
-- Description: *Conditional formatting logic used to highlight sellers who are both at risk and on the currently viewed page.*
+- Description: *Logic used to highlight sellers who are at risk and on the currently viewed page.*
     ```dax
     VAR _is_at_risk = [seller_at_risk]
     VAR _is_on_page = [item_rank_filter]
@@ -64,7 +64,7 @@
 <br>
 
 - Measure Name: **`page_filter`**
-- Description: *Global filter logic used to restrict the paging slicer to the actual range of data available.*
+- Description: *Restricts the paging slicer to the available data range.*
     ```dax
     VAR _total_items = VALUE([seller_at_risk])
     VAR items_per_page = [table_items Value]
@@ -85,7 +85,7 @@
 <br>
 
 - Measure Name: **`revenue_at_risk`**
-- Description: *Sum of revenue for sellers identified as outliers. This version is additive across time for paging and intervention lists.*
+- Description: *Total revenue for sellers identified as outliers.*
     ```dax
     SUMX(
         VALUES(calendar_dates[Week Start Date]),
@@ -103,11 +103,11 @@
 
 <br>
 
-### <ins>Display Folder - Prerequisites Measures</ins>
-*Fundamental building blocks and base aggregations required for higher-level logic. This section includes primary counts, temporal baselines, and the core outlier detection engine.*
+### Base Measures
+*Aggregations and counts used for temporal baselines and outlier detection.*
 
 - Measure Name: **`latency`**
-- Description: *Basic average of the delivery delay (Estimated vs. Actual delivery dates).*
+- Description: *Average delivery delay (Actual vs. Estimated delivery dates).*
     ```dax
     AVERAGE(seller_weekly_fact[weekly_avg_delivery_delay])
     ```
@@ -115,7 +115,7 @@
 <br>
 
 - Measure Name: **`latency_current_week`**
-- Description: *Retrieves the average latency for the most recent week in the current filter context.*
+- Description: *Average latency for the selected week.*
     ```dax
     CALCULATE([latency], calendar_dates[Date])
     ```
@@ -123,7 +123,7 @@
 <br>
 
 - Measure Name: **`latency_previous_week`**
-- Description: *Retrieves the latency from exactly seven days prior to the current selection for trend analysis.*
+- Description: *Latency from seven days prior to the selection for trend analysis.*
     ```dax
     CALCULATE(
         [latency],
@@ -134,7 +134,7 @@
 <br>
 
 - Measure Name: **`latency_4w_rolling_avg`**
-- Description: *Smoothed fulfillment performance baseline using a 28-day trailing window to establish "Normal" behavior.*
+- Description: *Fulfillment performance baseline using a 28-day trailing window.*
     ```dax
     AVERAGEX(
         DATESINPERIOD('calendar_dates'[Date], 
@@ -146,7 +146,7 @@
 <br>
 
 - Measure Name: **`is_outlier`**
-- Description: *Core "Smoke Detector" logic; flags sellers where current latency exceeds the 4-week baseline + 1 StdDev and the slip is > 0.5 days.*
+- Description: *Flags sellers where current latency exceeds the 28-day baseline + 1 StdDev and the delay is > 0.5 days.*
     ```dax
     VAR current_latency = [latency_current_week]
     VAR _4w_avg_latency = [latency_4w_rolling_avg]
@@ -181,7 +181,7 @@
 <br>
 
 - Measure Name: **`matrix_slippage_tracker`**
-- Description: *Ensures sellers remain visible in history heatmaps if they are outliers in the current global selection.*
+- Description: *Maintains seller visibility in history heatmaps for currently identified outliers.*
     ```dax
     VAR global_flag = [is_outlier_global]
     VAR cell_slippage = [latency_current_week] - [latency_4w_rolling_avg]
@@ -199,7 +199,7 @@
 <br>
 
 - Measure Name: **`is_outlier_global`**
-- Description: *Calculates outlier status ignoring local visual date filters to support matrix row persistence.*
+- Description: *Calculates outlier status ignoring local visual date filters.*
     ```dax
     CALCULATE(
         [is_outlier],
@@ -210,7 +210,7 @@
 <br>
 
 - Measure Name: **`logistics_delay`**
-- Description: *Isolates the courier's portion of the delay by removing internal warehouse processing time.*
+- Description: *Calculates courier delay by removing internal warehouse processing time.*
     ```dax
     VAR total_delay = [latency_current_week]
     VAR result = total_delay - [internal_delay]
@@ -221,7 +221,7 @@
 <br>
 
 - Measure Name: **`latency_slippage`**
-- Description: *Quantifies the exact "speed loss" in days only for sellers currently flagged as outliers.*
+- Description: *Quantifies delivery delay (in days) for sellers identified as outliers.*
     ```dax
     VAR delta = [latency_current_week] - [latency_4w_rolling_avg]
     RETURN
@@ -234,11 +234,11 @@
 
 <br>
 
-### Display Folder - <ins>KPI Measures</ins>
-*High-level performance indicators used in cards and executive summaries. These measures quantify systemic health and the scale of active bottlenecks.*
+### KPI Measures
+*Performance indicators quantifying systemic health and bottlenecks.*
 
 - Measure Name: **`seller_at_risk`**
-- Description: *Count of unique Seller IDs currently flagged by the outlier detection logic.*
+- Description: *Count of unique sellers currently identified as outliers.*
     ```dax
     COUNTROWS(
         FILTER(
@@ -251,7 +251,7 @@
 <br>
 
 - Measure Name: **`network_slowdown`**
-- Description: *Percentage of total order volume currently losing speed compared to the 4-week baseline.*
+- Description: *Percentage of total order volume currently delayed compared to the 28-day baseline.*
     ```dax
     VAR _slipping_vol =
         SUMX(
@@ -268,7 +268,7 @@
 <br>
 
 - Measure Name: **`delivery_stability`**
-- Description: *Measures statistical unpredictability; high values indicate delivery dates are becoming inconsistent.*
+- Description: *Statistical measure of delivery date variability.*
     ```dax
     VAR _4w_avg_latency = [latency_4w_rolling_avg]
     VAR _stddev =
@@ -287,11 +287,11 @@
 
 <br>
 
-### <ins>Display Folder - Visual Measures</ins>
-*Support measures designed for specific charts and UI elements, including diagnostic isolation, ranking, and conditional formatting.*
+### Visual and UI Measures
+*Measures designed for specific charts and UI elements.*
 
 - Measure Name: **`internal_delay`**
-- Description: *Calculates the average time taken by sellers to approve/process orders (Warehouse Lag).*
+- Description: *Average time taken by sellers to approve or process orders (Warehouse Lag).*
     ```dax
     VAR result = AVERAGE(seller_weekly_fact[weekly_avg_approval_lag])
     RETURN
@@ -300,7 +300,7 @@
 <br>
 
 - Measure Name: **`is_new_seller`**
-- Description: *Flags sellers in their first 30 days of operation to provide onboarding context.*
+- Description: *Flags sellers in their first 30 days of operation.*
     ```dax
     VAR first_order = SELECTEDVALUE(seller_dim[first_order_date])
     VAR current_date = MAX(calendar_dates[Date])
@@ -315,7 +315,7 @@
 <br>
 
 - Measure Name: **`last_source_update`**
-- Description: *Displays the most recent data sync timestamp from the source metadata.*
+- Description: *Timestamp of the most recent data refresh from source metadata.*
     ```dax
     MAX(source_last_update_time[Last_Update_Time])
     ```
@@ -323,7 +323,7 @@
 <br>
 
 - Measure Name: **`bubble_size_sensivity`**
-- Description: *Exponentially scales scatter plot markers to improve visual differentiation of high-slippage sellers.*
+- Description: *Scales scatter plot markers based on latency slippage.*
     ```dax
     [latency_slippage] ^ 4.5
     ```
@@ -331,7 +331,7 @@
 <br>
 
 - Measure Name: **`total_order_volume`**
-- Description: *Aggregate count of all order items across the filtered dataset.*
+- Description: *Total count of all order items.*
     ```dax
     SUM(seller_weekly_fact[weekly_order_count])
     ```
@@ -339,7 +339,7 @@
 <br>
 
 - Measure Name: **`wrapper_is_outlier`**
-- Description: *String-based flag ("Active" / "No") for cleaner display of outlier status in intervention tables.*
+- Description: *Status flag ("Active" / "No") for outlier status in intervention tables.*
     ```dax
     IF([is_outlier], "Active", "No")
     ```
@@ -349,11 +349,11 @@
 
 <br>
 
-### <ins>Display Folder -Tooltip Visual Measures</ins>
-*Context-specific measures optimized for tooltips to provide granular impact details without cluttering the primary UI.*
+### Tooltip Measures
+*Measures optimized for tooltips and hover interactivity.*
 
 - Measure Name: **`tooltip_revenue_exposed`**
-- Description: *Total financial value currently handled by sellers flagged as outliers.*
+- Description: *Total revenue handled by sellers identified as outliers.*
     ```dax
     VAR result = 
     SUMX(
@@ -374,7 +374,7 @@
 <br>
 
 - Measure Name: **`tooltip_week_start_date`**
-- Description: *Provides specific week context during hover-over analysis on trend lines.*
+- Description: *Week context for trend line tooltips.*
     ```dax
     SELECTEDVALUE(calendar_dates[Week Start Date])
     ```
@@ -382,7 +382,7 @@
 <br>
 
 - Measure Name: **`tooltip_seller_id`**
-- Description: *Retrieves the specific Seller ID in context for detailed tooltip labels.*
+- Description: *Retrieves the Seller ID for tooltip labels.*
     ```dax
     SELECTEDVALUE(seller_dim[seller_id_int])
     ```
