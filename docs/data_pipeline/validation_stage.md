@@ -1,4 +1,4 @@
-# **Validation Stage**
+# Validation Stage
 
 **Files:** 
 * **Executor:** [`validation_executor.py`](../../data_pipeline/validation/validation_executor.py)
@@ -8,67 +8,60 @@
 
 ![validation-stage-diagram](/assets/diagrams/02-validation-stage-diagram.png)
 
-## **System Contract**
+## System Contract
 
 **Purpose** 
 
-Evaluates raw datasets against declared structural contracts before any mutation or transformation occurs. It prevents "garbage-in" scenarios by detecting schema violations, structural inconsistencies, and referential integrity issues. In the modern Polars-native architecture, it also serves as a verification gate for the 'Normalize-at-Source' I/O strategy.
+The validation stage evaluates raw datasets against structural contracts before processing. It identifies schema violations, structural inconsistencies, and referential integrity issues to prevent malformed data from entering the pipeline.
 
 **Invariants** 
-* **Non-Mutation Guarantee:** This stage is strictly read-only. It never modifies values, removes rows, or casts types in the source data.
-* **Resolution Verification:** Asserts that all timestamps are pre-normalized to microsecond (us) resolution by the I/O layer.
+* **Read-Only Operation:** This stage is strictly read-only. It does not modify values, remove rows, or cast data types.
+* **Resolution Verification:** Verifies that timestamps are normalized to microsecond (us) resolution.
 * **Severity Hierarchy:** 
-    * `errors`: Fatal structural violations (e.g., missing columns, duplicate PKs).
-    * `warnings`: Admissible integrity issues (e.g., orphan records, chronological anomalies).
-* **Execution Sequence:** Base structural validations are mandatory and must pass for a table before role-specific or cross-table validations are attempted.
+    * `errors`: Fatal structural violations (e.g., missing columns, duplicate Primary Keys).
+    * `warnings`: Integrity issues (e.g., orphaned records, chronological anomalies).
+* **Sequential Execution:** Base structural validations must pass for a table before role-specific or cross-table validations occur.
 
 **Inputs:** 
-* `run_context`: `RunContext` (Object containing path resolution for the raw snapshot).
-* `TABLE_CONFIG`: `Registry` (Defines Primary Keys, Required Columns, and Entity Roles).
-* `base_path`: `Path` (Optional override; defaults to the run-scoped snapshot directory).
+* `run_context`: Configuration object for path resolution.
+* `TABLE_CONFIG`: Registry defining Primary Keys, Required Columns, and Entity Roles.
+* `base_path`: Optional override; defaults to the run-scoped snapshot directory.
 
 **Outputs** 
-* **Validation Report:** `dict` (Standardized telemetry object containing `status`, `errors`, `warnings`, and `info`).
+* **Validation Report:** Standardized dictionary containing `status`, `errors`, `warnings`, and `info`.
 
-## **Execution Workflow**
+## Execution Workflow
 
-The **Executor** coordinates the validation lifecycle through the following deterministic steps:
+The executor coordinates the validation lifecycle through these steps:
 
-1.  **Table Discovery:** Iterates through all logical tables registered in `TABLE_CONFIG`.
-2.  **Data Loading:** Attempts to load each table as a DataFrame. If a table is missing, an `error` is logged to the report.
-3.  **Base Validation:** Dispatches the DataFrame to `run_base_validations` to check for:
-    * Presence of required columns.
-    * Uniqueness of Primary Keys and column names using Polars-native expressions.
-    * Compliance with non-nullable constraints.
-4.  **Role-Specific Dispatch:** If base validations pass, the executor applies specialized rules:
-    * `event_fact`: Triggers `run_event_fact_validations` (temporal chronology and microsecond resolution verification).
-    * `transaction_detail`: Triggers `run_transaction_detail_validations` (numeric range checks).
-5.  **Cross-Table Integrity:** Once all tables are processed individually, `run_cross_table_validations` evaluates Foreign Key relationships (e.g., ensuring all Items belong to an existing Order).
+1.  **Table Discovery:** Iterates through logical tables registered in `TABLE_CONFIG`.
+2.  **Data Loading:** Loads each table as a DataFrame. Logs an error if a table is missing.
+3.  **Base Validation:** Checks for required columns, Primary Key uniqueness, and non-nullable constraints using Polars expressions.
+4.  **Role-Specific Rules:**
+    * `event_fact`: Verifies temporal chronology and microsecond resolution.
+    * `transaction_detail`: Performs numeric range checks.
+5.  **Cross-Table Integrity:** Evaluates Foreign Key relationships once individual table processing is complete.
 
-## **Boundaries**
+## Boundaries
 
-| This component **DOES** | This component **DOES NOT** |
+| This component | This component does NOT |
 | :--- | :--- |
-| Load logical tables from the snapshot zone. | Remove rows or filter data. |
-| Detect schema and primary key violations. | Correct or impute missing values. |
-| Verify microsecond (us) timestamp resolution. | Deduplicate records (delegated to Contract stage). |
-| Evaluate temporal chronology using clean Polars syntax. | Perform data type casting. |
-| Detect numeric anomalies (negative prices/lags). | Mutate the physical state of the data lake. |
-| Produce structured, machine-readable reports. | Halt the pipeline (Decision owned by global orchestrator). |
+| Loads tables from the snapshot zone. | Remove rows or filter data. |
+| Detects schema and primary key violations. | Correct or impute missing values. |
+| Verifies microsecond (us) timestamp resolution. | Deduplicate records. |
+| Evaluates temporal chronology. | Perform data type casting. |
+| Detects numeric anomalies. | Mutate data state. |
+| Produces structured reports. | Halt the pipeline independently. |
 
-## **Failure & Severity Model**
+## Failure & Severity Model
 
-### **Operational Failures (System Level)**
-* **Missing Logical Table:** Logged as a fatal `error` in the report; the table is marked as unprocessable.
-* **Load Failure:** If a Parquet file is corrupted, the executor traps the exception and logs it as an `error`.
+### System Failures
+* **Missing Table:** Logged as a fatal error; the table is marked as unprocessable.
+* **Corrupted Data:** Catches file-loading exceptions and logs them as errors.
 
-* **Functional Findings (Data Level)**
-* **Structural Errors & Integrity Warnings:** 
-    * Fatal structural violations (e.g., PK duplicates) OR integrity issues (e.g., orphan records) set the stage status to `failed`. 
-    * This informs the orchestrator that the data contains quality issues, though the diagnostic pass will still complete for all tables.
-* **The Halting Caveat:** 
-    * **Initial Validation:** The orchestrator allows the pipeline to proceed if only `warnings` are present, delegating the cleanup to the `Contract Stage`.
-    * **Post-Contract (Revalidation):** In this phase, `warnings` are treated as fatal. Since the contract stage should have already pruned orphans and anomalies, any remaining warning triggers a terminal `RuntimeError` to prevent downstream corruption.
-
-* **Incomplete Context:** 
-    * If a parent table (e.g., `df_orders`) is missing, cross-table validation is skipped and logged as `info` rather than a failure.
+### Data Validation Findings
+* **Status Flags:** Structural violations or integrity issues set the stage status to `failed`. The orchestrator determines whether to proceed based on the run phase.
+* **Phase-Based Halting:** 
+    * **Initial Validation:** The orchestrator allows the run to continue if only `warnings` are present, delegating cleanup to the Contract Stage.
+    * **Post-Contract Revalidation:** Any remaining `warnings` are treated as fatal errors to prevent downstream corruption.
+* **Contextual Dependencies:** Cross-table validation is skipped and logged as `info` if a required parent table is missing.

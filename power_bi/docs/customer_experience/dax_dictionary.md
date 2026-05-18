@@ -1,10 +1,10 @@
-# DAX Data Dictionary: Customer Experience & Revenue Exposure Dashboard
+# DAX Data Dictionary: Customer Experience & Revenue Exposure
 
-### <ins>Display Folder - _prerequisite_measures</ins>
-*Fundamental building blocks and base aggregations required for higher-level logic. This section includes primary counts, temporal baselines, and period-over-period comparison logic.*
+### Base Measures
+*Foundational aggregations and counts used for period-over-period comparison and KPI calculation.*
 
 - Measure Name: **`total_revenue`**
-- Description: *Gross revenue generated across all customer segments and regions.*
+- Description: *Total revenue across all customer segments and regions.*
     ```dax
     SUM(customer_weekly_fact[weekly_revenue])
     ```
@@ -12,7 +12,7 @@
 <br>
 
 - Measure Name: **`total_order`**
-- Description: *Aggregate count of orders within the filtered period.*
+- Description: *Total count of orders within the selected period.*
     ```dax
     SUM(customer_weekly_fact[weekly_order_count])
     ```
@@ -20,7 +20,7 @@
 <br>
 
 - Measure Name: **`total_delivered`**
-- Description: *Count of orders successfully delivered to customers.*
+- Description: *Count of successfully delivered orders.*
     ```dax
     SUM(customer_weekly_fact[weekly_delivered_orders])
     ```
@@ -28,7 +28,7 @@
 <br>
 
 - Measure Name: **`total_cancelled`**
-- Description: *Volume of orders cancelled by the customer or system.*
+- Description: *Total count of cancelled orders.*
     ```dax
     SUM(customer_weekly_fact[weekly_cancelled_orders])
     ```
@@ -47,7 +47,7 @@
 <br>
 
 - Measure Name: **`active_customer_prev_month`**
-- Description: *Baseline count of unique active customers from the previous calendar month.*
+- Description: *Distinct count of unique customers who placed an order in the previous calendar month.*
     ```dax
     CALCULATE(
         DISTINCTCOUNT(customer_weekly_fact[customer_id_int]),
@@ -58,7 +58,7 @@
 <br>
 
 - Measure Name: **`MoM_drop_off_customers`**
-- Description: *Identifies customers active in the previous month who have not placed an order in the current month.*
+- Description: *Count of customers active in the previous month who have not placed an order in the current month.*
     ```dax
     VAR prev_period_customer = 
         CALCULATETABLE(
@@ -84,11 +84,11 @@
 
 <br>
 
-### <ins>Display Folder - KPI_measures</ins>
-*High-level performance indicators used for proactive monitoring. These measures quantify financial exposure and customer retention health.*
+### KPI Measures
+*Performance indicators used to track financial exposure and customer retention.*
 
 - Measure Name: **`revenue_at_risk`**
-- Description: *Total financial value currently impacted by fulfillment delays exceeding the dynamic threshold.*
+- Description: *Total revenue associated with delivery delays exceeding the defined threshold.*
     ```dax
     VAR threshold = SELECTEDVALUE(delay_threshold_parameter[threshold_parameter], 3)
 
@@ -108,7 +108,7 @@
 <br>
 
 - Measure Name: **`MoM_drop_off_rate`**
-- Description: *The percentage of last month's active buyers who failed to return in the current month.*
+- Description: *Percentage of buyers from the previous month who did not return in the current month.*
     ```dax
     DIVIDE([MoM_drop_off_customers], [active_customer_prev_month], 0)
     ```
@@ -116,7 +116,7 @@
 <br>
 
 - Measure Name: **`cancellation_rate`**
-- Description: *The ratio of cancelled orders to total order volume.*
+- Description: *Ratio of cancelled orders to total order volume.*
     ```dax
     DIVIDE([total_cancelled], [total_order], 0)
     ```
@@ -127,11 +127,11 @@
 
 <br>
 
-### <ins>Display Folder - visual_measures</ins>
-*Support measures designed for specific charts and UI elements, including weighted averages and conditional formatting logic.*
+### Visual and UI Measures
+*Measures supporting visualizations, including weighted averages and conditional formatting logic.*
 
 - Measure Name: **`weighted_avg_delivery_delay`**
-- Description: *Volume-weighted average of delivery delays to ensure accuracy across segments with varying order counts.*
+- Description: *Volume-weighted average of delivery delays.*
     ```dax
     DIVIDE(
         SUMX(customer_weekly_fact, 
@@ -144,7 +144,7 @@
 <br>
 
 - Measure Name: **`weighted_avg_approval_lag`**
-- Description: *Volume-weighted average of the time taken for order approval.*
+- Description: *Volume-weighted average of order processing time (lag).*
     ```dax
     DIVIDE(
         SUMX(customer_weekly_fact, 
@@ -157,7 +157,7 @@
 <br>
 
 - Measure Name: **`weighted_avg_lead_time`**
-- Description: *Volume-weighted average of total fulfillment duration (Creation to Delivery).*
+- Description: *Volume-weighted average of total fulfillment duration.*
     ```dax
     DIVIDE(
         SUMX(customer_weekly_fact,
@@ -170,7 +170,7 @@
 <br>
 
 - Measure Name: **`bubble_size_sensitivity`**
-- Description: *Scales scatter plot markers to highlight high-revenue segments experiencing extreme delays.*
+- Description: *Scales markers in the scatter plot visualization.*
     ```dax
     [revenue_at_risk] ^ 0.8
     ```
@@ -178,7 +178,7 @@
 <br>
 
 - Measure Name: **`color_format_revenue_at_risk`**
-- Description: *Calculates the percentage of revenue at risk for conditional formatting rules.*
+- Description: *Calculates the ratio of revenue at risk for conditional formatting rules.*
     ```dax
     DIVIDE([revenue_at_risk], [total_revenue])
     ```
@@ -186,7 +186,7 @@
 <br>
 
 - Measure Name: **`last_source_update`**
-- Description: *Displays the most recent data sync timestamp from the BigQuery source.*
+- Description: *Most recent data refresh timestamp from the BigQuery source.*
     ```dax
     MAX(source_last_update[Last_Update_Time])
     ```
@@ -197,11 +197,11 @@
 
 <br>
 
-### <ins>Display Folder - visual_measures_tooltip</ins>
-*Context-specific measures optimized for on-hover interactivty, providing granular diagnostics and clean string formatting.*
+### Tooltip Measures
+*Measures optimized for on-hover interactivty and formatting.*
 
 - Measure Name: **`tooltip_revenue_at_risk`**
-- Description: *Smart currency formatting (K/M) for revenue at risk in tooltips.*
+- Description: *Currency formatting for revenue at risk in tooltips.*
     ```dax
     IF(
         [revenue_at_risk] < 1000000, 
@@ -246,7 +246,7 @@
 <br>
 
 - Measure Name: **`tooltip_MoM_drop_off_customer`**
-- Description: *Formatted volume of dropped-off customers (K) for hover details.*
+- Description: *Formatted count of dropped-off customers.*
     ```dax
     IF(
         FORMAT([MoM_drop_off_customers], "0"), 
@@ -257,7 +257,7 @@
 <br>
 
 - Measure Name: **`tooltip_highlight_top_3`**
-- Description: *Conditional formatting hex codes to highlight the top 3 states by revenue risk in bar chart tooltips.*
+- Description: *Hex codes to highlight the top 3 states by revenue risk.*
     ```dax
     VAR state_rank =
         RANKX(

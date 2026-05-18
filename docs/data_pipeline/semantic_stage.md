@@ -1,4 +1,4 @@
-# **Semantic Modeling Stage**
+# Semantic Modeling Stage
 
 **Files:**
 * **Executor:** [`semantic_executor.py`](../../data_pipeline/semantic/semantic_executor.py)
@@ -9,67 +9,67 @@
 
 ![semantic-stage-diagram](/assets/diagrams/05-semantic-stage-diagram.png)
 
-## **System Contract**
+## System Contract
 
 **Purpose**
 
-Transforms the unified Gold-layer "Order-Grain" event table into entity-centric Fact and Dimension modules. It performs temporal aggregations, calculates long-term performance metrics, and leverages the Primitive Integer Pipeline for efficient, high-fidelity analytical modeling.
+Transforms the unified analytical table into entity-centric Fact and Dimension modules. This stage performs temporal aggregations, calculates long-term performance metrics, and applies integer mapping for analytical modeling.
 
 **Invariants**
 
-* **Temporal Grain:** All fact tables are aggregated at the ISO-Week level, aligned deterministically to the Monday of each week (`W-MON`).
+* **Temporal Grain:** Fact tables are aggregated at the ISO-Week level (`W-MON`).
 * **Entity Grain:** 
-    * **Fact Tables:** Strictly 1 row per `(Entity_ID, order_year_week)`.
-    * **Dimension Tables:** Strictly 1 row per `Entity_ID`.
-* **Technical Contract:** Every output table is subject to a "Freeze" pass that guarantees 1:1 schema matching and strict dtype casting as defined in the `SEMANTIC_MODULES` registry.
+    * **Fact Tables:** One row per `(Entity_ID, order_year_week)`.
+    * **Dimension Tables:** One row per `Entity_ID`.
+* **Technical Enforcement:** Output tables are subject to a schema enforcement pass that ensures matching columns and data types as defined in the `SEMANTIC_MODULES` registry.
 
 **Inputs**
-* `run_context`: `RunContext` (Path resolution and `run_id` lineage).
-* `assembled_events`: `pl.LazyFrame` (The unified analytical source from the Assembly stage, optimized for streaming).
-* `SEMANTIC_MODULES`: `Registry` (Defines builders, expected tables, grains, and technical schemas).
+* `run_context`: Path resolution and lineage tracking.
+* `assembled_events`: Unified analytical source from the Assembly stage.
+* `SEMANTIC_MODULES`: Registry defining builders, tables, grains, and schemas.
 
 **Outputs**
-* **Semantic Report:** `dict` (Hierarchical status of module-level and table-level processing).
-* **Semantic Modules:** `parquet` (Fact and Dimension tables for Sellers, Customers, and Products).
+* **Semantic Report:** Status of module and table processing.
+* **Semantic Modules:** Fact and Dimension tables for Sellers, Customers, and Products in Parquet format.
 
-## **Execution Workflow**
+## Execution Workflow
 
-The **Executor** coordinates the semantic build through a modular, registry-driven loop:
+The executor manages the semantic build through a registry-driven loop:
 
-1.  **Source Verification:** Loads the `assembled_events` `LazyFrame`. If the source is missing or cannot be scanned, the stage terminates with a `failed` status.
-2.  **Module Initialization:** Iterates through `SEMANTIC_MODULES` defined in the registry.
-3.  **Builder Execution:** Dispatches the `LazyFrame` data to the module's `builder` function (e.g., `build_seller_semantic`).
-4.  **Contract Enforcement:** For every table returned by a builder, the executor calls `validate_and_freeze_table` to:
-    * Assert the uniqueness of the defined **Grain**.
-    * Project the exact **Schema** (dropping internal helper columns).
-    * Enforce strict **Data Types**.
-5.  **Partitioned Export:** Persists artifacts into module-specific subdirectories within the semantic zone, using a date-partitioned naming convention.
-    *   **Optimization:** Utilizes `sink_parquet` for `LazyFrame` exports, ensuring zero-copy streaming and constant memory usage.
-6.  **Memory Management:** Explicitly deletes `LazyFrames` and triggers `gc.collect()` after every individual table export (Fact and Dim) to purge intermediate memory usage.
+1.  **Source Verification:** Loads the `assembled_events` dataset. If the source is missing, the stage fails.
+2.  **Module Initialization:** Iterates through the `SEMANTIC_MODULES` registry.
+3.  **Builder Execution:** Dispatches data to module-specific builder functions.
+4.  **Enforcement:** For each table produced, the executor:
+    * Verifies grain uniqueness.
+    * Projects the defined schema and removes internal helper columns.
+    * Enforces data types.
+5.  **Export:** Saves artifacts into module-specific subdirectories using a date-partitioned convention.
+    *   **Optimization:** Uses `sink_parquet` for streaming exports to maintain a low memory footprint.
+6.  **Memory Management:** Triggers garbage collection after each table export to clear intermediate memory.
 
-## **Optimization & Memory Invariants**
+## Optimization & Resource Management
 
-* **Integer Key Optimization:** To optimize memory during grouping operations, builders leverage pre-mapped `UInt32/UInt64` keys (e.g., `seller_id_int`). This maintains a constant memory profile during non-blocking aggregation and eliminates the overhead of string-based hash tables.
-* **Narrow Aggregation Payloads:** All aggregation results (counts, sums) are immediately downcast to `Int16` or `Float32` within the `agg()` block. This prevents the materialized result set from expanding in memory.
-* **Metric Downcasting:** Durations, counts, and years are forced to `Int16` (2 bytes) to minimize row width during streaming.
-* **Streaming Export:** `sink_parquet()` is utilized for all fact and dimension table exports, enabling zero-copy streaming of results directly from the query plan to storage.
+* **Integer Keys:** Builders use pre-mapped `UInt32/UInt64` keys for grouping operations to reduce memory overhead compared to string-based joins.
+* **Aggregated Data Types:** Aggregation results are downcast to smaller types (e.g., `Int16`, `Float32`) within the `agg()` block to reduce the size of the result set.
+* **Type Casting:** Durations, counts, and year attributes are cast to `Int16` to reduce row width.
+* **Streaming Export:** Employs `sink_parquet()` to stream results directly to storage.
 
-## **Boundaries**
+## Boundaries
 
-| This component **DOES** | This component **DOES NOT** |
+| This component | This component does NOT |
 | :--- | :--- |
-| Perform multi-level aggregations (Sum, Mean, Count). | Filter "bad" data (handled in Validation/Contract stages). |
-| Derive entity-level attributes (e.g., `first_order_date`). | Resolve order-item join cardinality. |
-| Align all temporal metrics to the ISO Week grain. | Mutate the "Assembled Events" source. |
-| Utilize Integer-Key grouping for constant memory. | Manage the physical publish/pointer logic. |
-| Organize data into Fact/Dimension modules via streaming. | Perform cross-module joins. |
+| Performs multi-level aggregations. | Filter malformed data (handled in prior stages). |
+| Derives entity-level attributes. | Resolve join cardinality issues. |
+| Aligns metrics to the ISO Week grain. | Mutate the "Assembled Events" source. |
+| Uses integer keys for grouping. | Manage physical publishing or pointer logic. |
+| Organizes data into Fact/Dimension modules. | Perform cross-module joins. |
 
-## **Failure & Severity Model**
+## Failure & Severity Model
 
-### **Operational Failures (System Level)**
-* **Missing Source:** Failure to load `assembled_events` results in an immediate stage failure.
-* **Trapped Exceptions:** Unexpected errors during module building or table processing are caught by `try-except` blocks in the executor. These are logged to the report, and the stage status is set to `failed`.
-* **Registry Mismatch:** If a builder returns a table name not defined in the `SEMANTIC_MODULES` registry, the executor raises a `RuntimeError`.
+### System Failures
+* **Missing Source:** Failure to load the input dataset results in an immediate stage failure.
+* **Handled Exceptions:** Errors during building or processing are caught, logged to the report, and the stage is marked as failed.
+* **Registry Mismatch:** The executor raises an error if a builder returns a table not defined in the registry.
 
-### **Functional Findings (Data Level)**
-* **Schema Violation:** If a required column defined in the registry is missing from the builder's output, the freeze step raises a `KeyError` or `RuntimeError`, which is trapped.
+### Data Findings
+* **Schema Violation:** If a required column is missing from a builder's output, the enforcement step raises an error that is caught and logged.

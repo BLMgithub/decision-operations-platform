@@ -1,6 +1,6 @@
 # Measurement Methodology
 
-This section details the methodology used to capture the memory metrics in the [`GCP Stress-Test Metrics (Scaling Efficiency)`](/README.md#gcp-stress-test-metrics-scaling-efficiency)
+This section details the methodology used to capture the memory metrics in the [`GCP Stress-Test Metrics (Scaling Efficiency)`](../../../README.md#gcp-stress-test-metrics-scaling-efficiency)
 
 The telemetry logger below was added to the orchestrator for a specific benchmarking run. 
 
@@ -28,7 +28,7 @@ finally:
     stop_event.set()
     logger_thread.join()
 ```
-Since `psutil` requires C-extensions to compile, the **Dockerfile** was modified to include the necessary build tools and the package itself. This allowed for benchmarking without altering the project's permanent [`requirements.txt`](/data_pipeline/requirements.txt).
+Since `psutil` requires C-extensions to compile, the **Dockerfile** was modified to include the necessary build tools and the package itself. This allowed for benchmarking without altering the project's permanent [`requirements.txt`](../../../data_pipeline/requirements.txt).
 
 ```docker
 FROM python:3.11-slim

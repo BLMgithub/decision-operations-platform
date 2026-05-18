@@ -1,4 +1,4 @@
-# **Publish Stage**
+# Publish Stage
 
 **Files:**
 * **Executor:** [`publish_executor.py`](../../data_pipeline/publish/publish_executor.py)
@@ -6,50 +6,50 @@
 
 **Role:** Production Promotion and Versioning.
 
-## **System Contract**
+## System Contract
 
 **Purpose**
 
-Serves as the final gate and deployment mechanism for the pipeline. It transitions validated semantic artifacts into a permanent, versioned storage layer and updates a dual-pointer system: a `latest_version.json` manifest for automated systems and BigQuery Authorized Views for Power BI/Business Intelligence tools.
+The publish stage serves as the final deployment mechanism for the pipeline. It transitions validated semantic artifacts into versioned storage and updates a dual-pointer system: a `latest_version.json` manifest for automated systems and BigQuery Authorized Views for BI tools.
 
 **Invariants**
-* **Integrity-Gated Promotion:** Promotion to the production zone is strictly prohibited if any table defined in the `SEMANTIC_MODULES` registry is missing or inaccessible.
-* **Atomic Multi-System Swap:** The "switch" to the new version must happen across both GCS and BigQuery. The BigQuery View swap ensures Power BI never experiences "partial data" reads during the file promotion phase.
-* **Version Immutability:** Once a run is archived in a `v{run_id}` directory, the files are treated as read-only snapshots; they are never updated or overwritten by subsequent runs.
-* **SQL Decoupling:** Dashboards connect to "Stable" Views (e.g., `published_seller_weekly_fact`) which are dynamically redirected to version-specific External Tables (e.g., `seller_weekly_fact_v20260413`).
+* **Integrity Gates:** Promotion to the production zone is prevented if any table defined in the `SEMANTIC_MODULES` registry is missing or inaccessible.
+* **Coordinated Update:** The transition to a new version occurs across both Cloud Storage and BigQuery. The BigQuery View swap ensures that BI tools do not encounter partial data during the file promotion phase.
+* **Version Immutability:** Files archived in a `v{run_id}` directory are read-only and are not overwritten by subsequent runs.
+* **SQL Decoupling:** Dashboards connect to stable Views (e.g., `published_seller_weekly_fact`) which are redirected to version-specific External Tables.
 
 **Inputs**
-* `run_context`: `RunContext` (Contains the unique `run_id` and the semantic/published path configurations).
-* `SEMANTIC_MODULES`: `Registry` (The source of truth for which artifacts must exist to pass the integrity gate).
+* `run_context`: Configuration containing the `run_id` and path settings.
+* `SEMANTIC_MODULES`: Registry defining the required artifacts for a successful release.
 
 **Outputs**
-* **Publish Report:** `dict` (Telemetry for the integrity check, file promotion status, and SQL/JSON pointer updates).
-* **Versioned Artifacts:** A new directory `/published/v{run_id}/` containing the full suite of semantic Fact and Dimension tables.
-* **BigQuery Pointers:** Updated External Tables and Authorized Views reflecting the new version.
-* **Latest Pointer:** An updated `latest_version.json` file in the root of the published zone.
+* **Publish Report:** Status of integrity checks, file promotions, and pointer updates.
+* **Versioned Artifacts:** A new `/published/v{run_id}/` directory containing semantic Fact and Dimension tables.
+* **BigQuery Pointers:** Updated External Tables and Authorized Views.
+* **Latest Pointer:** Updated `latest_version.json` file in the published zone root.
 
-## **Execution Workflow**
+## Execution Workflow
 
-The **Executor** ensures the production release follows a fail-fast, four-phase sequence:
+The executor manages the production release through a four-phase sequence:
 
-1.  **Integrity Gate:** `run_integrity_gate` scans the semantic zone to verify that 100% of the expected tables (defined in the registry) were successfully produced.
-2.  **Promotion:** `promote_semantic_version` transfers all verified artifacts from the transient run-scoped directory to a permanent versioned path (`/published/v{run_id}`).
-3.  **SQL Sync:** `swap_bigquery_view` executes DDL commands to create versioned External Tables and atomically redirect the "Published" Views used by dashboards.
-4.  **Activation:** `activate_published_version` performs the terminal swap of the `latest_version.json` file, effectively "going live" for downstream file-system consumers.
+1.  **Integrity Gate:** Scans the semantic zone to verify that all expected tables defined in the registry exist.
+2.  **Promotion:** Transfers verified artifacts from the run-scoped directory to a permanent versioned path (`/published/v{run_id}`).
+3.  **SQL Sync:** Executes DDL commands to create versioned External Tables and redirect the Authorized Views.
+4.  **Activation:** Updates the `latest_version.json` file to point to the new version.
 
-## **Boundaries**
+## Boundaries
 
-| This component **DOES** | This component **DOES NOT** |
+| This component | This component does NOT |
 | :--- | :--- |
-| Verify the physical existence of semantic artifacts. | Re-validate data quality (handled in Validation/Contract). |
-| Copy or upload files to a versioned production path. | Perform any data transformation or aggregation. |
-| Manage BigQuery DDL for External Tables and Views. | Manage historical version cleanup (Garbage collection). |
-| Update the atomic production pointers (SQL and JSON). | Handle automated rollbacks (pointers must be reverted manually). |
-| Capture lifecycle metadata (Publication timestamps). | Modify the contents of the `.parquet` files. |
+| Verifies the existence of semantic artifacts. | Re-validate data quality (handled in prior stages). |
+| Copies files to the versioned production path. | Perform data transformation or aggregation. |
+| Manages BigQuery DDL for tables and views. | Manage historical version cleanup. |
+| Updates production pointers (SQL and JSON). | Handle automated rollbacks. |
+| Captures publication metadata. | Modify the contents of Parquet files. |
 
-## **Failure & Severity Model**
+## Failure & Severity Model
 
-### **Operational Failures (System Level)**
-* **Storage Access Denied:** If the service account lacks write permissions to the published zone (Local or GCS), the lifecycle halts before activation.
-* **BigQuery DDL Error:** If the SQL swap fails (e.g., dataset permissions or syntax), the `latest_version.json` is never updated, ensuring systems stay in sync.
-* **Network/IO Exception:** Interrupted file transfers during the promotion phase result in an immediate `failed` status, ensuring the pointers remain on the previous stable version.
+### System Failures
+* **Storage Access Failure:** If write permissions are missing for the published zone, the lifecycle halts before activation.
+* **BigQuery DDL Error:** If the SQL swap fails, the `latest_version.json` is not updated to keep pointers synchronized.
+* **I/O Interruptions:** Errors during file transfer result in a failure status, leaving pointers on the previous stable version.

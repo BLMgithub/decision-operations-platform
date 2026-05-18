@@ -1,65 +1,63 @@
-# **Data Extractor Stage**
+# Data Extractor Stage
 
 **Files:**
 * **Executor:** [`run_extract.py`](../../data_extract/run_extract.py)
 * **Logic:** [`extract_logic.py`](../../data_extract/shared/extract_logic.py)
 * **Utilities:** [`utils.py`](../../data_extract/shared/utils.py)
 
-**Role:** Source Ingestion and Cloud Mirroring Gateway.
+**Role:** Source Ingestion and Storage Mirroring.
 
-## **System Contract**
+## System Contract
 
 **Purpose**
 
-Automates the secure transfer of source data from Google Drive to Google Cloud Storage (GCS). It ensures that raw inputs are preserved in an immutable archival zone while simultaneously providing a clean trigger-point for the downstream data pipeline.
+Automates the transfer of source data from Google Drive to Google Cloud Storage (GCS). It preserves raw inputs in an archival zone and provides a trigger-point for the downstream data pipeline.
 
 **Invariants**
-* **Folder-Level Deduplication:** Every source folder is processed exactly once. Re-execution is blocked by the existence of a `.success` marker in the archival bucket.
-* **Dual-Mirroring Guarantee:** Every extracted file must be successfully written to both the **Archival Bucket** (compliance/audit) and the **Pipeline Bucket** (raw landing zone) before the extraction is considered successful.
-* **Namespace Protection:** The extractor only operates on subfolders belonging to the strictly defined `PARENT_FOLDER`. It cannot "see" or extract files from the wider Drive environment.
-* **Metadata Lineage:** Every extraction run generates a unique `execution_id` (UUID) and a JSON manifest documenting file names, timestamps, and status.
+* **Idempotency:** Each source folder is processed once. Re-execution is prevented by checking for a `.success` marker in the archival bucket.
+* **Storage Mirroring:** Extracted files are written to both the **Archival Bucket** and the **Pipeline Bucket** for a transfer to be considered successful.
+* **Access Scoping:** The extractor only operates on subfolders within the defined `PARENT_FOLDER`. It cannot access files outside this scope.
+* **Metadata Logging:** Each extraction run generates a unique `execution_id` and a JSON manifest documenting file names, timestamps, and status.
 
 **Inputs**
-* `target_child_folder`: `str` (The identifier of the operational batch to ingest).
-* **Drive Service Account**: (Credentials with read-access to the `operations-upload-folder`).
+* `target_child_folder`: Identifier of the folder to ingest.
+* **Drive Service Account**: Credentials with read-access to the source folder.
 
 **Outputs**
-* **Archival Artifacts:** Mirror of source files in `gs://ops-archival-storage-dev/archive/{folder_name}/`.
-* **Pipeline Artifacts:** Mirror of source files in `gs://ops-pipeline-storage-dev/raw/`.
-* **Success Marker:** An empty `gs://.../{folder_name}.success` file used for idempotency.
-* **Extraction Log:** A JSON metadata file summarizing the run.
+* **Archival Artifacts:** Mirror of source files in the archival bucket.
+* **Pipeline Artifacts:** Mirror of source files in the pipeline's raw landing zone.
+* **Success Marker:** An empty `.success` file used for idempotency.
+* **Extraction Log:** JSON metadata file summarizing the run.
 
-## **Execution Workflow**
+## Execution Workflow
 
-The **Extractor** manages the ingestion lifecycle through the following steps:
+The extractor manages the ingestion lifecycle through these steps:
 
-1.  **Deduplication Check:** Queries GCS for the success marker. If present, the job terminates immediately with a "Skipped" status.
-2.  **Hierarchy Resolution:** Uses the Drive API to locate the `folder_id` of the target child, ensuring it resides strictly under the authorized parent root.
-3.  **Manifest Fetching:** Retrieves a list of all files in the target folder, filtering out system-reserved files (e.g., `instruction.txt`).
-4.  **Extraction Loop:** For each valid file:
-    * Downloads the binary content from Google Drive into memory.
-    * Uploads the content to the **Archival Bucket** (long-term persistence).
-    * Uploads the content to the **Pipeline Bucket** (transient raw landing).
-5.  **Audit Persistence:** Generates and uploads the run metadata log.
-6.  **Marker Placement:** Upon 100% success of the file loop, writes the `.success` file to GCS.
+1.  **Duplicate Check:** Queries GCS for the success marker. If present, the job terminates with a "Skipped" status.
+2.  **Path Resolution:** Uses the Drive API to locate the target folder ID and verifies its parent root.
+3.  **File Discovery:** Lists files in the target folder, filtering out non-data files.
+4.  **Extraction Loop:** For each file:
+    * Downloads content from Google Drive to memory.
+    * Uploads content to the archival and pipeline buckets.
+5.  **Logging:** Generates and uploads the run metadata log.
+6.  **Finalization:** Writes the `.success` file to GCS after all files are successfully processed.
 
+## Boundaries
 
-## **Boundaries**
-
-| This component **DOES** | This component **DOES NOT** |
+| This component | This component does NOT |
 | :--- | :--- |
-| Extract files from Google Drive to GCS. | Modify or delete any files in the source Drive. |
-| Mirror files across two separate administrative buckets. | Validate the internal schema or data quality of files. |
-| Enforce folder-grain idempotency. | Rename or transform file content. |
-| Log every file-level transfer result. | Trigger the main pipeline directly (Triggered via GCS events). |
-| Filter out non-data files (instruction files). | Handle multi-part Drive uploads (expects completed files). |
+| Extracts files from Google Drive to GCS. | Modify or delete files in the source Drive. |
+| Mirrors files across separate buckets. | Validate internal schemas or data quality. |
+| Enforces folder-level idempotency. | Rename or transform file content. |
+| Logs file transfer results. | Trigger the main pipeline directly. |
+| Filters non-data files. | Handle multi-part Drive uploads. |
 
-## **Failure & Severity Model**
+## Failure & Severity Model
 
-### **Operational Failures (System Level)**
-* **Missing Hierarchy:** If the `PARENT_FOLDER` or `target_child_folder` cannot be resolved, the orchestrator returns `exit 1`.
-* **API Throttling/Auth:** If Drive or GCS credentials fail, the process halts. No success marker is written, allowing for a clean retry.
+### System Failures
+* **Resolution Failure:** If folders cannot be identified, the orchestrator returns an error code.
+* **API/Auth Failure:** If credentials fail, the process stops without writing a success marker, allowing for retries.
 
-### **Functional Findings (Data Level)**
-* **Partial Extraction:** If a single file in a batch fails to upload to either bucket, the entire batch is marked as `failed`. The success marker is **not** written, ensuring that a subsequent run will attempt to re-process the *entire* folder.
-* **Empty Source:** If the target folder contains no valid data files, the extractor logs a warning but terminates with `exit 1` (Failure) to prevent a "phantom" successful run from triggering downstream processes.
+### Data Findings
+* **Partial Extraction:** If any file in a batch fails to upload, the entire batch is marked as failed. The success marker is not written to ensure the entire folder is re-processed.
+* **Empty Source:** If no valid data files are found, the extractor logs a warning and returns an error code to prevent triggering downstream processes.

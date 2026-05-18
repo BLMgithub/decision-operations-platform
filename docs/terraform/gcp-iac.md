@@ -1,40 +1,40 @@
 # GCP Infrastructure: Operations Analytics Pipeline
 
-This repository contains the Terraform configuration for the Operations Analytics data pipeline. The infrastructure is designed to be serverless, event-driven, and highly secure, utilizing Google Cloud Run, Workflows, and Eventarc.
+This repository contains the Terraform configuration for the Operations Analytics data pipeline. The infrastructure is serverless and event-driven, using Cloud Run, Workflows, and Eventarc.
 
 ## Architecture Overview
-The pipeline follows a **Trigger-Action-Archive** flow:
-1.  **Extraction:** A Cloud Scheduler job triggers the `drive-extractor` Cloud Run job at midnight (PHT).
-2.  **Archival:** The extractor saves raw data into the **Archival Bucket** (Coldline storage for 3 years).
+The pipeline follows this execution flow:
+1.  **Extraction:** Cloud Scheduler triggers the `drive-extractor` Cloud Run job daily.
+2.  **Archival:** The extractor saves raw data to the **Archival Bucket** (Coldline storage).
 3.  **Dispatch:** An Eventarc trigger detects the new file and invokes a Google Workflow (`pipeline-dispatcher`).
-4.  **Processing:** The Workflow triggers the main `operations-pipeline` Cloud Run job (2 vCPU, 8Gi RAM) for heavy-duty data processing.
-5.  **Transient Storage:** Intermediate files are stored in the **Pipeline Bucket** with a 7-day TTL on raw data to minimize costs and exposure.
-6.  **Serving Layer:** The final semantic models are published as **BigQuery External Tables** and presented via stable **Authorized Views** for Power BI and dashboard consumers.
+4.  **Processing:** The Workflow triggers the main `operations-pipeline` Cloud Run job for data processing.
+5.  **Transient Storage:** Intermediate files are stored in the **Pipeline Bucket** with a 7-day TTL on raw data.
+6.  **Serving Layer:** Semantic models are published as **BigQuery External Tables** and accessed via **Authorized Views**.
 
 ## Prerequisites
 *   **Terraform:** Version `~> 1.5.0`
 *   **Provider:** `hashicorp/google` version `~> 7.0`
-*   **Backend:** GCS bucket `operations-terraform-state-vault-2026` must exist for state management.
+*   **Backend:** GCS bucket `operations-terraform-state-vault-2026` for state management.
 
-## Post-Provisioning (CI/CD Handshake)
-The integration between GCP and GitHub Actions requires a one-time "Bootstrap" extraction to populate Repository Secrets. This process completes the cryptographic trust relationship established by Workload Identity Federation (WIF).
+## Post-Provisioning (CI/CD Setup)
+Integrating GCP with GitHub Actions requires a bootstrap process to populate Repository Secrets and establish the trust relationship via Workload Identity Federation (WIF).
 
-### Secret Injection Matrix
-| GitHub Secret | Source / Origin | Purpose |
+### Required GitHub Secrets
+| GitHub Secret | Source | Purpose |
 | :--- | :--- | :--- |
-| `WIF_PROVIDER` | `terraform output -raw GITHUB_WIF_PROVIDER_NAME` | Logical path for the WIF identity provider handshake. |
-| `DEPLOYER_SA_EMAIL` | `github-actions-deployer@...` | Target identity for GitHub OIDC impersonation. |
-| `GCP_PROJECT_ID` | `var.project_id` | Project scoping for GCP API and resource discovery. |
+| `WIF_PROVIDER` | `terraform output -raw GITHUB_WIF_PROVIDER_NAME` | WIF identity provider path. |
+| `DEPLOYER_SA_EMAIL` | `github-actions-deployer@...` | Identity for GitHub OIDC impersonation. |
+| `GCP_PROJECT_ID` | `var.project_id` | GCP Project ID. |
 
-### Bootstrapping Constraint
-The initial infrastructure provisioning must be executed by a maintainer with `Project IAM Admin` or `Owner` privileges. This "privileged apply" is required to establish the WIF provider and assign the administrative roles to the `github-actions-deployer` service account. Subsequent updates are autonomously managed by the CI/CD identity.
+### Provisioning Requirements
+The initial infrastructure must be provisioned by a user with `Project IAM Admin` or `Owner` privileges to establish the WIF provider and assign roles to the `github-actions-deployer` service account. Subsequent updates are managed by the CI/CD pipeline.
 
 ## Infrastructure Components
 
 ### Compute & Jobs (`jobs.tf`)
 | Resource Name | Type | Memory | Timeout | Purpose |
 | :--- | :--- | :--- | :--- | :--- |
-| `operations-pipeline` | Cloud Run Job | 8Gi | 30m | Main Polars-based processing engine. Includes 10Gi Local SSD mount at `/tmp`. |
+| `operations-pipeline` | Cloud Run Job | 8Gi | 30m | Processing engine. Includes 10Gi Local SSD mount at `/tmp`. |
 | `drive-extractor` | Cloud Run Job | 1Gi | 15m | Pulls source data from external APIs. |
 | `ops-repo` | Artifact Registry | n/a | n/a | Docker repository for pipeline images. |
 
@@ -43,39 +43,39 @@ The initial infrastructure provisioning must be executed by a maintainer with `P
 | :--- | :--- | :--- |
 | `ops-archival-storage` | GCS Bucket | Move to Coldline after 400 days; Delete after 3 years. |
 | `ops-pipeline-storage` | GCS Bucket | Delete files with prefix `raw/` after 7 days. |
-| `seller_semantic` | BQ Dataset | **Protected:** `prevent_destroy = true`; Logical container for Seller fact/dim views. |
-| `customer_semantic` | BQ Dataset | **Protected:** `prevent_destroy = true`; Logical container for Customer fact/dim views. |
-| `product_semantic` | BQ Dataset | **Protected:** `prevent_destroy = true`; Logical container for Product fact/dim views. |
+| `seller_semantic` | BQ Dataset | Protected from destruction. |
+| `customer_semantic` | BQ Dataset | Protected from destruction. |
+| `product_semantic` | BQ Dataset | Protected from destruction. |
 
-## Infrastructure-as-Code Workarounds
+## Implementation Details
 
-### Cloud Run Local SSD Strategy (Preview)
-The `operations-pipeline` utilizes a **Local SSD** mount at `/tmp` (10Gi) **by provisioning manually** to offload memory pressure from Polars streaming joins. 
-*   **The Problem:** As of April 2026, the Google Terraform provider does not natively support the `DISK` medium for `empty_dir` volumes (it defaults to `MEMORY`). 
-*   **The Resolution:** Provision manually and utilize lifecycle `ignore_changes` on the `medium` attribute. This allows the job to be created with the SSD partition enabled via the CLI or UI, while preventing Terraform from "correcting" it back to RAM-based storage during subsequent runs.
+### Cloud Run Local SSD
+The `operations-pipeline` uses a Local SSD mount at `/tmp` to offload memory pressure during joins.
+*   **Constraint:** The Google Terraform provider does not natively support the `DISK` medium for `empty_dir` volumes (it defaults to `MEMORY`).
+*   **Configuration:** Provision the SSD partition manually and use `ignore_changes` on the `medium` attribute in Terraform to prevent reversion to RAM-based storage.
 
-### BigQuery Accidental Deletion Protection
-To safeguard analytical history, all semantic datasets are configured with:
-*   `delete_contents_on_destroy = false`: Ensures data/views remain even if the resource is deleted.
-*   `prevent_destroy = true`: Forces a manual override to destroy the dataset, protecting it from `terraform destroy` or accidental refactoring.
+### BigQuery Deletion Protection
+To safeguard data, semantic datasets are configured with:
+*   `delete_contents_on_destroy = false`: Ensures data and views persist if the resource is deleted.
+*   `prevent_destroy = true`: Requires a manual override to destroy the dataset.
 
 ### Orchestration (`orchestration.tf`)
-*   **Cloud Scheduler:** `0 0 * * *` (Daily 12AM PHT) triggers the Extractor.
-*   **Eventarc:** Monitors `object.v1.finalized` on the Archival bucket.
-*   **Workflows:** `pipeline-dispatcher` evaluates logic to trigger the main pipeline.
+*   **Cloud Scheduler:** Triggers the Extractor daily at 12AM PHT.
+*   **Eventarc:** Monitors `object.v1.finalized` events on the Archival bucket.
+*   **Workflows:** `pipeline-dispatcher` triggers the main pipeline.
 
-## IAM & Security Matrix (`iam_bindings.tf`, `wif.tf`)
+## IAM & Security (`iam_bindings.tf`, `wif.tf`)
 
-This project implements **Zero Trust** via Workload Identity Federation and granular Service Account (SA) permissions.
+This project uses Workload Identity Federation and granular Service Account permissions.
 
-### Identity Registry
-| Identity Name | Role/Purpose |
+### Service Accounts
+| Identity Name | Purpose |
 | :--- | :--- |
-| `github-actions-deployer` | CI/CD automation for infra and code updates. |
-| `drive-extractor-sa` | I/O identity for data extraction and archival. |
-| `ops-pipeline-sa` | Compute identity for the main processing pipeline. |
-| `eventarc-invoker-sa` | Orchestration identity to receive events and trigger workflows. |
-| `job-invoker-sa` | Scheduler identity to trigger Cloud Run jobs. |
+| `github-actions-deployer` | CI/CD automation. |
+| `drive-extractor-sa` | Data extraction and archival. |
+| `ops-pipeline-sa` | Main processing pipeline. |
+| `eventarc-invoker-sa` | Event routing and workflow triggers. |
+| `job-invoker-sa` | Triggering Cloud Run jobs. |
 
 ### Permission Bindings
 | Identity | Target | Roles | Rationale |
@@ -89,21 +89,20 @@ This project implements **Zero Trust** via Workload Identity Federation and gran
 
 ### Workload Identity Federation
 *   **Pool:** `github-pool`
-*   **Trust Policy:** Restricted to `${var.github_repo}` to prevent unauthorized repository access.
+*   **Trust Policy:** Restricted to `${var.github_repo}` to prevent unauthorized access.
 
 ## Inputs & Variables (`variables.tf`)
-| Name | Type | Sensitive | Description |
-| :--- | :--- | :--- | :--- |
-| `project_id` | `string` | No | Target Google Cloud Project ID. |
-| `region` | `string` | No | The Project GCP region. |
-| `environment` | `string` | No | Deployment environment (dev, prod). |
-| `github_repo` | `string` | No | Format: `owner/repository`. |
-| `bq_dataset_id` | `string` | No | BigQuery dataset containing externalized GCS tables. |
-| `alert_email_map` | `map` | **Yes** | Monitoring notification recipients. |
-
+| Name | Type | Description |
+| :--- | :--- | :--- |
+| `project_id` | `string` | Target Google Cloud Project ID. |
+| `region` | `string` | GCP region. |
+| `environment` | `string` | Deployment environment (dev, prod). |
+| `github_repo` | `string` | Format: `owner/repository`. |
+| `bq_dataset_id` | `string` | BigQuery dataset ID. |
+| `alert_email_map` | `map` | Monitoring notification recipients (Sensitive). |
 
 ## State Management
-State is managed remotely in GCS to ensure consistency and locking.
+State is stored remotely in GCS.
 ```hcl
 terraform {
   backend "gcs" {
