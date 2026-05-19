@@ -1,6 +1,6 @@
 # Measurement Methodology
 
-This section details the methodology used to capture the memory metrics in the [`GCP Stress-Test Metrics (Scaling Efficiency)`](../../../README.md#gcp-stress-test-metrics-scaling-efficiency)
+This section details the methodology used to capture the memory metrics in the [`GCP Stress-Test Metrics (Scaling Efficiency)`](../../../README.md###gcp-stress-test-metrics-scaling-efficiency)
 
 The telemetry logger below was added to the orchestrator for a specific benchmarking run. 
 
