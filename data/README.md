@@ -3,7 +3,7 @@
 This directory serves as the local state provider for the pipeline when executing in a non-cloud environment. It mimics the structure of the Google Cloud Storage (GCS) buckets.
 
 ## Synthetic Dataset
-To replicate the high-volume environment described in the [GCP Stress-Test Metrics (Scaling Efficiency)](/README.md#gcp-stress-test-metrics-scaling-efficiency) section, you can download the 40M-row synthetic dataset here: [**Kaggle Dataset Link**](https://www.kaggle.com/datasets/melvidabryan/e-commerce-synthetic-dataset)
+To replicate the high-volume environment described in the [GCP Stress-Test Metrics (Scaling Efficiency)](/README.md###GCP-Stress-Test-Metrics) section, you can download the 40M-row synthetic dataset here: [**Kaggle Dataset Link**](https://www.kaggle.com/datasets/melvidabryan/e-commerce-synthetic-dataset)
 
 > *Note: This upload contains the **Contracted Version** of the dataset. The original "Raw" state, totaling approximately ~26GB of unrefined CSVs was omitted to prioritize transfer efficiency.*
 

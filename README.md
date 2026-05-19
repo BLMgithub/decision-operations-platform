@@ -64,6 +64,8 @@ By leveraging the Polars Rust engine (Lazy API), the system achieves near-optima
 | 40M Snapshot (8GB / 4 vCPU) |
 | :---: |
 | ![engine-performance-8gb](assets/screenshots/engine-performance-8gb-4cpu.png) |
+> Benchmark data: [`40m_stats_log.csv`](assets/benchmarks/polars/)
+> Dataset : [`Dataset Information`](data/)
 
 | Metric | Data | 
 |:---|:---|
@@ -71,6 +73,7 @@ By leveraging the Polars Rust engine (Lazy API), the system achieves near-optima
 | Provision Spec | 8 GB RAM / 4 vCPU |
 | Efficiency (Processing) | ~307k Rows / Second |
 | Total Runtime (Wall-Clock) | 130 Seconds |
+
 
 *   **Maximized Memory Density:** The **Primitive Integer Pipeline** allows a ~5.34GB analytical model to process within the 8GB RAM limit by shrinking join-key overhead by ~16x.
 *   **Near-Linear Performance Scaling:** The engine saturates available vCPUs, yielding high throughput during streaming execution.
